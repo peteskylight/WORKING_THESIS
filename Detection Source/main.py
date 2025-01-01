@@ -22,10 +22,10 @@ def main():
     
     #DIRECTORIES===
     
-    input_video_path = Tools.convert_slashes(r"C:\Users\peter\Desktop\WORKING THESIS FILES\src\test_videos\HD\Center.mp4")
-    output_video_orig_path = Tools.getAbsPath("src/output_videos/TESTORIG5.avi")
-    output_video_white_path = Tools.getAbsPath("src/output_videos/TESTWHITE5.avi")
-    student_detections_results = Tools.convert_slashes(r"C:\Users\peter\Desktop\WORKING THESIS FILES\src\cache\student_detections_results.pkl")
+    input_video_path = Tools.convert_slashes(r"C:\Users\peter\Desktop\WORKING THESIS FILES\Detection Source\test_videos\HD\Center.mp4")
+    output_video_orig_path = Tools.getAbsPath("Detection Source/output_videos/TESTORIG5.avi")
+    output_video_white_path = Tools.getAbsPath("Detection Source/output_videos/TESTWHITE5.avi")
+    student_detections_results = Tools.convert_slashes(r"C:\Users\peter\Desktop\WORKING THESIS FILES\Detection Source\cache\student_detections_results.pkl")
     
     #READ VIDEO===
     video_frames = video_utils.read_video(video_path=input_video_path,
