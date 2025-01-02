@@ -17,7 +17,6 @@ class PoseDetection:
         
         self.drawing_utils = DrawingUtils()
 
-    
     def getModel(self, frame, model, confidenceRate):
         # Recolor Feed from RGB to BGR
         image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -39,29 +38,20 @@ class PoseDetection:
     
     def getHumanPoseKeypoints(self, frame):
         
-        # Perform inference using the YOLO model
-        human_results = self.getModel(frame=frame,
-                                   model=self.human_detection_model,
-                                   confidenceRate=self.human_detection_conf)
+        return_bbox = None
         
-        student_dict = []
+        human_pose_results = self.getModel(frame = frame,
+                                            model = self.human_pose_model,
+                                            confidenceRate = self.human_pose_conf)
         
-        for result in human_results:
-            boxes = result.boxes
-            for box in boxes:
-                # Get the image per person
-                b = box.xyxy[0]
-                c = box.cls
-                
-                cropped_image = frame[int(b[1]):int(b[3]), int(b[0]):int(b[2])]
-                human_pose_results = self.getModel(frame = cropped_image,
-                                                   model = self.human_pose_model,
-                                                   confidenceRate = self.human_pose_conf)
-                
-                flatten_keypoints, normalized_keypoints = self.flatten_keypoints(human_pose_results=human_pose_results)
-                
-                self.drawing_utils.drawPoseLandmarks(cropped_image=cropped_image,
-                                                     normalized_keypoints = normalized_keypoints)
+        flatten_keypoints, normalized_keypoints = self.flatten_keypoints(human_pose_results=human_pose_results)
+
+        for result in human_pose_results:
+            bboxes = result.boxes.xyxy
+            
+            for bbox in bboxes:
+                return_bbox = bbox
         
-        return frame
-                
+        return frame, normalized_keypoints, return_bbox
+
+

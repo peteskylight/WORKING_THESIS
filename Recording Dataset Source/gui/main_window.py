@@ -16,9 +16,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-        self.camera_feed_instance = CameraFeed(self.camera_feed)
+        self.camera_feed_instance = CameraFeed(self.camera_feed, self.white_frame_feed, self)
+        
+        self.closeCamera.clicked.connect(self.camera_feed_instance.stop_camera)
         
         self.openCamera.clicked.connect(self.start_camera)
+        
         self.populate_camera_combo_box()
 
     def start_camera(self):

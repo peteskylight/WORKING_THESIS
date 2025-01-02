@@ -69,4 +69,3 @@ class DrawingUtils:
                 
         return output_video_keypoints
 
-
