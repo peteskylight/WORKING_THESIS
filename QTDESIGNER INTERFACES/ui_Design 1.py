@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'Design 1MFklTn.ui'
+## Form generated from reading UI file 'Design 1UECvSU.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.14.1
 ##
@@ -20,7 +20,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1091, 750)
+        MainWindow.resize(1093, 750)
         self.actionExit = QAction(MainWindow)
         self.actionExit.setObjectName(u"actionExit")
         self.actionOpen = QAction(MainWindow)
@@ -57,18 +57,35 @@ class Ui_MainWindow(object):
         self.label_Camera.setFont(font1)
         self.camera_feed = QLabel(self.createDatasetTab)
         self.camera_feed.setObjectName(u"camera_feed")
-        self.camera_feed.setGeometry(QRect(20, 60, 611, 421))
+        self.camera_feed.setGeometry(QRect(20, 60, 521, 331))
+        font2 = QFont()
+        font2.setPointSize(24)
+        font2.setBold(False)
+        font2.setItalic(True)
+        font2.setWeight(50)
+        self.camera_feed.setFont(font2)
+        self.camera_feed.setFrameShape(QFrame.Box)
+        self.camera_feed.setFrameShadow(QFrame.Sunken)
+        self.camera_feed.setAlignment(Qt.AlignCenter)
         self.openCamera = QPushButton(self.createDatasetTab)
         self.openCamera.setObjectName(u"openCamera")
         self.openCamera.setGeometry(QRect(260, 10, 131, 31))
-        font2 = QFont()
-        font2.setPointSize(12)
-        self.openCamera.setFont(font2)
+        font3 = QFont()
+        font3.setPointSize(12)
+        self.openCamera.setFont(font3)
+        self.showBoundingBoxChkBox = QCheckBox(self.createDatasetTab)
+        self.showBoundingBoxChkBox.setObjectName(u"showBoundingBoxChkBox")
+        self.showBoundingBoxChkBox.setGeometry(QRect(70, 400, 191, 31))
+        self.showBoundingBoxChkBox.setFont(font1)
+        self.showLandmarksChkBox = QCheckBox(self.createDatasetTab)
+        self.showLandmarksChkBox.setObjectName(u"showLandmarksChkBox")
+        self.showLandmarksChkBox.setGeometry(QRect(280, 400, 221, 31))
+        self.showLandmarksChkBox.setFont(font1)
         self.MainTab.addTab(self.createDatasetTab, "")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 1091, 21))
+        self.menubar.setGeometry(QRect(0, 0, 1093, 21))
         self.menuARMIS = QMenu(self.menubar)
         self.menuARMIS.setObjectName(u"menuARMIS")
         self.menuView = QMenu(self.menubar)
@@ -103,8 +120,10 @@ class Ui_MainWindow(object):
         self.actionExit_2.setText(QCoreApplication.translate("MainWindow", u"Exit", None))
         self.MainTab.setTabText(self.MainTab.indexOf(self.analyticstTab), QCoreApplication.translate("MainWindow", u"Analytics", None))
         self.label_Camera.setText(QCoreApplication.translate("MainWindow", u"Camera", None))
-        self.camera_feed.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
+        self.camera_feed.setText(QCoreApplication.translate("MainWindow", u"Camera Feed will show here", None))
         self.openCamera.setText(QCoreApplication.translate("MainWindow", u"Open Camera", None))
+        self.showBoundingBoxChkBox.setText(QCoreApplication.translate("MainWindow", u"Show Bounding Box", None))
+        self.showLandmarksChkBox.setText(QCoreApplication.translate("MainWindow", u"Show Body Landmarks", None))
         self.MainTab.setTabText(self.MainTab.indexOf(self.createDatasetTab), QCoreApplication.translate("MainWindow", u"Create Dataset", None))
         self.menuARMIS.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
         self.menuView.setTitle(QCoreApplication.translate("MainWindow", u"View", None))

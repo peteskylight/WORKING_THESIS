@@ -1,1 +1,1 @@
-from trackers.student_tracker import StudentTracker
+from trackers.pose_detection import PoseDetection

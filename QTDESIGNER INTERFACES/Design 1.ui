@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1091</width>
+    <width>1093</width>
     <height>750</height>
    </rect>
   </property>
@@ -79,12 +79,29 @@
        <rect>
         <x>20</x>
         <y>60</y>
-        <width>611</width>
-        <height>421</height>
+        <width>521</width>
+        <height>331</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <pointsize>24</pointsize>
+        <weight>50</weight>
+        <italic>true</italic>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Box</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Sunken</enum>
+      </property>
       <property name="text">
-       <string>TextLabel</string>
+       <string>Camera Feed will show here</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
       </property>
      </widget>
      <widget class="QPushButton" name="openCamera">
@@ -105,6 +122,42 @@
        <string>Open Camera</string>
       </property>
      </widget>
+     <widget class="QCheckBox" name="showBoundingBoxChkBox">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>400</y>
+        <width>191</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Show Bounding Box</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="showLandmarksChkBox">
+      <property name="geometry">
+       <rect>
+        <x>280</x>
+        <y>400</y>
+        <width>221</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Show Body Landmarks</string>
+      </property>
+     </widget>
     </widget>
    </widget>
   </widget>
@@ -113,7 +166,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1091</width>
+     <width>1093</width>
      <height>21</height>
     </rect>
    </property>

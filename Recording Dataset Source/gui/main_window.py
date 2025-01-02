@@ -6,8 +6,10 @@ from PySide2.QtGui import QFont
 
 from pygrabber.dshow_graph import FilterGraph
 
-from utils import CameraFeed
+from utils.camera import CameraFeed
+from utils.drawing_utils import DrawingUtils
 from gui import Ui_MainWindow
+from trackers import PoseDetection
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -15,6 +17,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         super().__init__()
         self.setupUi(self)
         self.camera_feed_instance = CameraFeed(self.camera_feed)
+        
         self.openCamera.clicked.connect(self.start_camera)
         self.populate_camera_combo_box()
 
