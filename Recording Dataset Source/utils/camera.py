@@ -45,6 +45,10 @@ class CameraFeed:
             self.drawing_utils.draw_bounding_box(frame=returned_frame,
                                                  box=bbox)
         
+        if self.main_window.show_skeleton_camera.isChecked():
+            self.drawing_utils.draw_keypoints_and_skeleton(frame=returned_frame,
+                                                           keypoints=normalized_keypoints)
+        
         processed_frame = returned_frame
         
         if self.main_window.darkMode_whiteframe.isChecked():
