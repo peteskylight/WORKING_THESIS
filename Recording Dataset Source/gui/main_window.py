@@ -1,6 +1,6 @@
 import sys
 import os
-import cv2
+import numpy as np
 import psutil
 import GPUtil
 from PySide2.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
@@ -19,7 +19,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        
+        self.isRecording = False
+
         self.camera_feed_instance = CameraFeed(self.camera_feed, self.white_frame_feed, self)
+        self.drawing_utils = DrawingUtils()
         
         self.closeCamera.clicked.connect(self.camera_feed_instance.stop_camera)
         
@@ -32,6 +36,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.add_action_button.clicked.connect(self.add_folder)
         
         self.delete_action_button.clicked.connect(self.delete_folder)
+        
+        self.recording_button.clicked.connect(self.toggle_button)
         
         self.populate_camera_combo_box()
 
@@ -81,8 +87,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             folder_path = os.path.join(directory, folder_name)
             if os.path.isdir(folder_path):
                 self.action_comboBox.addItem(folder_name)
-                
-    
+
     def add_folder(self):
         directory = self.directoryLineEdit.text()
         folder_name = self.action_comboBox.currentText()  # Assuming you have a QLineEdit for folder name input
@@ -112,7 +117,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         folder_name = self.action_comboBox.currentText()
 
         if not os.path.isdir(directory):
-            QMessageBox.critical(self, "Error", "The specified directory does not exist.")
+            QMessageBox.critical(self, "Error", "The specified directory does not exist. Check the chosen directory")
             return
 
         folder_path = os.path.join(directory, folder_name)
@@ -131,7 +136,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             except Exception as e:
                 QMessageBox.critical(self, "Error", f"An error occurred: {e}")
 
-        
-        
-
-
+    def toggle_button(self):
+        if self.recording_button.text() == "START\nRECORDING":
+            self.recording_button.setText("STOP\nRECORDING")
+            self.recording_button.setStyleSheet("""
+                QPushButton {
+                    background-color: rgb(170, 0, 0);
+                    border-radius: 15px; /* Adjust the radius as needed */
+                    color: black; /* Set the text color */
+                    border: 1px solid black; /* Optional: Add a border */
+                }
+            """)
+            
+        else:
+            self.recording_button.setText("START\nRECORDING")
+            self.recording_button.setStyleSheet("""
+                QPushButton {
+                    background-color: rgb(170, 255, 127);
+                    border-radius: 15px; /* Adjust the radius as needed */
+                    color: black; /* Set the text color */
+                    border: 1px solid black; /* Optional: Add a border */
+                }
+            """)

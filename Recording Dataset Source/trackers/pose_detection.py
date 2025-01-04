@@ -14,7 +14,7 @@ class PoseDetection:
         self.human_detection_conf = humanDetectConf
         self.human_pose_model = YOLO(humanPoseModel)
         self.human_pose_conf = humanPoseConf
-        
+    
         self.drawing_utils = DrawingUtils()
 
     def getModel(self, frame, model, confidenceRate):

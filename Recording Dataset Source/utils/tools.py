@@ -1,16 +1,19 @@
 import os
+import numpy as np
+from PySide2.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
 import argparse
 
 class Tools():
     def __init__(self):
         pass
+        
     
-    def getAbsPath(filePath):
+    def getAbsPath(self, filePath):
         abs_path = os.path.abspath(filePath)
         print(abs_path)
         return abs_path
 
-    def convert_slashes(directory_path):
+    def convert_slashes(self, directory_path):
         return directory_path.replace("\\", "/")
 
     def parse_arguments() -> argparse.Namespace: # For Camera
@@ -24,27 +27,17 @@ class Tools():
         args = parser.parse_args()
         return args
     
-    def addAction(number_of_Sequences):
-        noOfSequences = number_of_Sequences
-        
-        DATA_PATH = os.path.join('THESIS_FILES', 'HumanPose_DATA') 
-        actionsList = []
-        #actionInput = folderNameInput.get(1.0, "end-1c")
-
-        
-        # if actionInput == '':
-        #     messagebox.showinfo("Information", "Please enter action name!")
-        # else:
-        #     actionsList.append(actionInput)
-        #     for action in actionsList:
-        #         for sequence in range(1, noOfSequences+1):
-        #             try: 
-        #                 os.makedirs(os.path.join(DATA_PATH, action,
-        #                                         str(sequence)))
-        #             except FileExistsError:
-        #                 flagExist = True
-        #                 pass
-        #     if flagExist:
-        #         messagebox.showerror(title="Already Existed!", message="The name of action you entered already exists!")
-        #     folderNameInput.delete("1.0", "end")
+    def count_folders(self, directory): #Get the number of folders inside a folder
+        folder_count = 0
+        try:
+            for name in os.listdir(directory):
+                folder_path = os.path.join(directory, name)
+                if os.path.isdir(folder_path):
+                    folder_count += 1
+        except FileNotFoundError:
+            print("The specified directory does not exist.")
+        except Exception as e:
+            print(f"An error occurred: {e}")
+        return folder_count
+    
 
