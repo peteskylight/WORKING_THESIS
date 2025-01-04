@@ -38,6 +38,10 @@ class Tools():
             print("The specified directory does not exist.")
         except Exception as e:
             print(f"An error occurred: {e}")
-        return folder_count
+        
+        if folder_count == 0:
+            return 0
+        else:
+            return folder_count-1
     
 

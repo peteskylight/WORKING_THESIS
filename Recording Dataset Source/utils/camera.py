@@ -94,7 +94,7 @@ class CameraFeed:
                                         frame_num=self.frame_count)
             
             self.frame_count += 1
-            
+
             if self.frame_count % 30 == 0:
                 self.frame_count = 0
                 self.folder_count += 1
