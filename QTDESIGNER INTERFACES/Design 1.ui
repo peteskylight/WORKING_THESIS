@@ -929,11 +929,29 @@ RECORDING</string>
         <string>Browse</string>
        </property>
       </widget>
-      <widget class="QTableView" name="tableView">
+      <widget class="QPushButton" name="refresh_action_list">
+       <property name="geometry">
+        <rect>
+         <x>90</x>
+         <y>360</y>
+         <width>91</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>11</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Refresh</string>
+       </property>
+      </widget>
+      <widget class="QTableWidget" name="tableWidget">
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>150</y>
+         <y>160</y>
          <width>241</width>
          <height>192</height>
         </rect>

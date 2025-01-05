@@ -3,7 +3,7 @@ import os
 import numpy as np
 import psutil
 import GPUtil
-from PySide2.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
+from PySide2.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QDesktopWidget, QTableWidgetItem
 from PySide2.QtCore import QRect, QCoreApplication, QMetaObject, QTimer, QTime
 from PySide2.QtGui import QFont
 
@@ -18,6 +18,7 @@ from trackers import PoseDetection
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
+        
         self.setupUi(self)
         
         self.isRecording = False
@@ -29,7 +30,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         self.openCamera.clicked.connect(self.start_camera)
         
-        self.browseButton.clicked.connect(self.open_file_explorer)
+        self.browseButton.clicked.connect(self.browse_button_functions)
         
         self.refresh_button.clicked.connect(lambda: self.scan_directory(self.directoryLineEdit.text()))
         
@@ -39,8 +40,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         self.recording_button.clicked.connect(self.toggle_button)
         
+        self.refresh_action_list.clicked.connect(self.showActionsToTable)
+        
         self.populate_camera_combo_box()
 
+        
+        
+        # Center the window on the screen
+        self.center()
+        
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_usage)
         self.timer.timeout.connect(self.update_time)
@@ -158,3 +166,41 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     border: 1px solid black; /* Optional: Add a border */
                 }
             """)
+        
+    def center(self):
+        # Get the screen geometry
+        screen_geometry = QDesktopWidget().availableGeometry()
+        # Get the window geometry
+        window_geometry = self.frameGeometry()
+        # Move the window to the center of the screen
+        window_geometry.moveCenter(screen_geometry.center())
+        self.move(window_geometry.topLeft())
+            
+
+
+    def showActionsToTable(self):
+        # Set the folder path
+        folder_path = self.directoryLineEdit.text()
+
+        # Get the list of folders and subfolders
+        folders = [f for f in os.listdir(folder_path) if os.path.isdir(os.path.join(folder_path, f))]
+
+        # Set the number of rows and columns in the table
+        self.action_table.setRowCount(len(folders))
+        self.action_table.setColumnCount(2)
+
+        # Populate the table with folder names and number of subfolders
+        for row, folder in enumerate(folders):
+            folder_item = QTableWidgetItem(folder)
+            subfolder_count = len([f for f in os.listdir(os.path.join(folder_path, folder)) if os.path.isdir(os.path.join(folder_path, folder, f))])
+            subfolder_item = QTableWidgetItem(str(subfolder_count))
+
+            self.action_table.setItem(row, 0, folder_item)
+            self.action_table.setItem(row, 1, subfolder_item)
+
+    def browse_button_functions(self):
+        self.open_file_explorer()
+        self.showActionsToTable()
+
+        
+

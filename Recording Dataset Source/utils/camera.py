@@ -95,7 +95,7 @@ class CameraFeed:
             
             self.frame_count += 1
 
-            if self.frame_count % 30 == 0:
+            if self.frame_count % int(self.main_window.sequence_slider.value()) == 0:
                 self.frame_count = 0
                 self.folder_count += 1
                 os.mkdir(os.path.join(destination_directory, str(self.folder_count)))
@@ -162,65 +162,3 @@ class CameraFeed:
 
 
 
-
-# import os
-# import numpy as np
-# from PySide2.QtWidgets import QMessageBox
-
-# def check_and_prepare_folder(self):
-#     chosen_directory = self.main_window.directoryLineEdit.text()
-#     chosen_action = self.main_window.action_comboBox.currentText()
-#     destination_directory = os.path.join(chosen_directory, chosen_action)
-    
-#     if not self.alreadyChecked:
-#         if len(npy_files) < 30:
-#             # Delete all npy files in the folder
-#             for f in npy_files:
-#                 os.remove(os.path.join(folder_path, f))
-#             print("Deleted all npy files in the folder and reset frame_num to 0.")
-#             self.frame_count = 0
-#         self.alreadyChecked = True
-#         return folder_count, 0  # Reset frame_num to 0
-    
-#     return folder_count, None  # No need to reset frame_num
-
-# def record_and_save_keypoints(self, normalized_keypoints, frame_num):
-#     flattenedList = normalized_keypoints.flatten()
-#     chosen_directory = self.main_window.directoryLineEdit.text()
-#     chosen_action = self.main_window.action_comboBox.currentText()
-#     destination_directory = os.path.join(chosen_directory, chosen_action)
-#     print("HOORAY!!!")
-#     no_of_sequences = self.main_window.sequence_slider.value()
-    
-    
-#     # Check if the folder with the name same as the folder count has 30 npy files
-#     folder_path = os.path.join(destination_directory, str(folder_count))
-#     npy_files = [f for f in os.listdir(folder_path) if f.endswith('.npy')]
-            
-            
-            
-#     if not os.path.isdir(destination_directory):
-#         QMessageBox.critical(self.main_window, "Error", "The specified directory does not exist. Check the chosen directory.")
-#         return
-    
-#     # Increment folder count every 30 frames
-#     folder_count = self.tools_utils.count_folders(directory=destination_directory)
-#     if frame_num % 30 == 0:
-#         folder_count += 1
-    
-#     final_destination_directory = os.path.join(destination_directory, str(folder_count))
-
-#     # NEW Export keypoints
-#     npy_path = os.path.join(final_destination_directory, str(frame_num))
-#     np.save(npy_path, flattenedList)
-#     frame_num += 1
-
-# # Example usage
-# if self.main_window.recording_button.text() == "STOP\nRECORDING":
-#     folder_count, reset_frame_num = self.check_and_prepare_folder()
-#     if reset_frame_num is not None:
-#         frame_num = reset_frame_num
-#     else:
-#         frame_num = 2  # Replace with actual frame number
-
-#     self.record_and_save_keypoints(normalized_keypoints=normalized_keypoints, frame_num=frame_num)
