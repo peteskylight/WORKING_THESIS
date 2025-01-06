@@ -40,6 +40,7 @@ class CameraFeed:
         self.timer.timeout.connect(self.update_frame)
         self.countdown_timer.timeout.connect(self.update_countdown)  # Connect the countdown timer to the update_countdown method
 
+
     def start_camera(self, index):
         self.cap = cv2.VideoCapture(index)  
         self.timer.start(10)  # Keep the camera feed timer at 10 milliseconds
@@ -84,29 +85,40 @@ class CameraFeed:
         if self.main_window.show_skeleton_white_frame.isChecked():
             self.drawing_utils.draw_keypoints_and_skeleton(frame=white_frame,
                                                  keypoints=normalized_keypoints)
-            
+        
+
+
         #===FOR LOGGING
         
+        
+        
         if self.main_window.recording_button.text() == "STOP\nRECORDING":
-            chosen_directory = self.main_window.directoryLineEdit.text()
-            chosen_action = self.main_window.action_comboBox.currentText()
-            destination_directory = os.path.join(chosen_directory, chosen_action)
+            if self.main_window.status_label.text() == "RECORDING":
+                chosen_directory = self.main_window.directoryLineEdit.text()
+                chosen_action = self.main_window.action_comboBox.currentText()
+                destination_directory = os.path.join(chosen_directory, chosen_action)
+        
+                self.folder_count = self.tools_utils.count_folders(directory=destination_directory)
+                
+                # Ensure the folder exists before recording keypoints
+                if not os.path.isdir(os.path.join(destination_directory, str(self.folder_count))):
+                    os.mkdir(os.path.join(destination_directory, str(self.folder_count)))
+                
+                self.record_and_save_keypoints(normalized_keypoints=normalized_keypoints,
+                                            frame_num=self.frame_count)
             
-            self.folder_count = self.tools_utils.count_folders(directory=destination_directory)
-            
-            # Ensure the folder exists before recording keypoints
-            if not os.path.isdir(os.path.join(destination_directory, str(self.folder_count))):
-                os.mkdir(os.path.join(destination_directory, str(self.folder_count)))
-            
-            self.record_and_save_keypoints(normalized_keypoints=normalized_keypoints,
-                                        frame_num=self.frame_count)
-            self.frame_count += 1
+                self.frame_count += 1
 
-            if self.frame_count % int(self.main_window.sequence_slider.value()) == 0:
-                self.frame_count = 0
-                self.folder_count += 1
-                os.mkdir(os.path.join(destination_directory, str(self.folder_count)))
-                self.countdown = int(self.main_window.interval_slider.value())  # Set countdown
+                if self.frame_count % int(self.main_window.sequence_slider.value()) == 0:
+                    self.main_window.status_label.setText("NOT RECORDING")
+                    self.frame_count = 0
+                    self.folder_count += 1
+                    os.mkdir(os.path.join(destination_directory, str(self.folder_count)))
+                    self.countdown = int(self.main_window.interval_slider.value())  # Set countdown
+                    self.countdown_timer.start(1000)  # Restart the countdown timer
+
+            if self.countdown == 0:
+                self.main_window.status_label.setText("RECORDING")
 
         elif self.main_window.recording_button.text() == "START\nRECORDING":
            self.frame_count = 0
@@ -120,6 +132,7 @@ class CameraFeed:
                 text_x = (processed_frame.shape[1] - text_size[0]) // 2
                 text_y = (processed_frame.shape[0] + text_size[1]) // 2
                 cv2.putText(processed_frame, countdown_text, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, 5, (255, 255, 255), 10, cv2.LINE_AA)
+            
             # Convert the frame to QImage
             height, width, channel = processed_frame.shape
             bytes_per_line = 3 * width
@@ -143,6 +156,10 @@ class CameraFeed:
     def update_countdown(self):
         if self.countdown > 0:
             self.countdown -= 1
+        else:
+            self.countdown_timer.stop()  # Stop the countdown timer when countdown reaches 0
+            
+            
 
     def stop_camera(self):
         self.timer.stop()
@@ -176,3 +193,7 @@ class CameraFeed:
         # NEW Export keypoints
         npy_path = os.path.join(final_destination_directory, str(frame_num))
         np.save(npy_path, flattenedList)
+
+    def countdownEnd(self):
+        self.frame_count = 0
+        self.main_window.status_label.setText("RECORDING")

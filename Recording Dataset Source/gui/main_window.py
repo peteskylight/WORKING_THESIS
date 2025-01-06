@@ -168,6 +168,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     border: 1px solid black; /* Optional: Add a border */
                 }
             """)
+            self.status_label.setText("RECORDING")
             self.startBlinking()
             
         else:
@@ -180,7 +181,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     border: 1px solid black; /* Optional: Add a border */
                 }
             """)
-            self.stopBlinking()
+            self.status_label.setText("NOT RECORDING")
             
         
     def center(self):
@@ -219,10 +220,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.showActionsToTable()
 
     def startBlinking(self):
-        self.status_label.setText("RECORDING")
+        
         self.status_label.setStyleSheet("""
                 QLabel {
-                    color: rgb(170, 0, 0);
+                    color: rgb(0, 255, 0);
                 }
             """)
         self.status_label.setVisible(True) # Ensure the label is visible when starting
