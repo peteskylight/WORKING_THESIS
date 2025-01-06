@@ -8,6 +8,7 @@ from PySide2.QtGui import QImage, QPixmap
 from trackers.pose_detection import PoseDetection
 from utils.drawing_utils import DrawingUtils
 from utils.tools import Tools
+from utils.cvfpscalc import CvFpsCalc
 
 class CameraFeed:
     def __init__(self, label, white_frame_label, main_window):
@@ -16,6 +17,10 @@ class CameraFeed:
                                             humanPoseModel='yolov8n-pose.pt',
                                             humanPoseConf=0.4
                                             )
+        
+        #Get FPS
+        self.getFPS = CvFpsCalc(buffer_len=10)
+        
         self.drawing_utils = DrawingUtils()
         self.tools_utils = Tools()
         
@@ -122,6 +127,8 @@ class CameraFeed:
             scaled_white_pixmap = white_pixmap.scaled(self.white_frame_label.size(), Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
             self.white_frame_label.setPixmap(scaled_white_pixmap)
             
+            fps = self.getFPS.get()
+            self.main_window.fps_label.setText(str(fps))
             
 
     def stop_camera(self):
@@ -148,6 +155,7 @@ class CameraFeed:
         
         if not os.path.isdir(destination_directory):
             QMessageBox.critical(self.main_window, "Error", "The specified directory does not exist. Check the chosen directory.")
+            self.main_window.toggle_button()
             return
         
         final_destination_directory = os.path.join(destination_directory, str(self.folder_count))
@@ -156,7 +164,7 @@ class CameraFeed:
         npy_path = os.path.join(final_destination_directory, str(frame_num))
         np.save(npy_path, flattenedList)
         
-        
+
 
 
 

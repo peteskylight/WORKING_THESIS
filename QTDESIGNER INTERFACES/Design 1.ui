@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1204</width>
-    <height>724</height>
+    <height>734</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -947,7 +947,7 @@ RECORDING</string>
         <string>Refresh</string>
        </property>
       </widget>
-      <widget class="QTableWidget" name="tableWidget">
+      <widget class="QTableWidget" name="action_table">
        <property name="geometry">
         <rect>
          <x>10</x>

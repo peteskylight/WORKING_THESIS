@@ -3,8 +3,8 @@ import os
 import numpy as np
 import psutil
 import GPUtil
-from PySide2.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QDesktopWidget, QTableWidgetItem
-from PySide2.QtCore import QRect, QCoreApplication, QMetaObject, QTimer, QTime
+from PySide2.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QDesktopWidget, QTableWidgetItem, QWidget
+from PySide2.QtCore import QRect, QCoreApplication, QMetaObject, QTimer, QTime, Qt
 from PySide2.QtGui import QFont
 
 from pygrabber.dshow_graph import FilterGraph
@@ -20,6 +20,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         super().__init__()
         
         self.setupUi(self)
+        
+        self.setWindowFlags(self.windowFlags() | Qt.WindowMinimizeButtonHint | Qt.WindowCloseButtonHint)
+        self.setWindowFlags(self.windowFlags() & ~Qt.WindowMaximizeButtonHint)
         
         self.isRecording = False
 
@@ -53,6 +56,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.timer.timeout.connect(self.update_usage)
         self.timer.timeout.connect(self.update_time)
         self.timer.start(1000)
+        
+        self.blink_timer = QTimer(self)
+        self.blink_timer.timeout.connect(self.toggleLabelVisibility)
         
     def start_camera(self):
         selected_index = self.cameraComboBox.currentIndex()
@@ -155,6 +161,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     border: 1px solid black; /* Optional: Add a border */
                 }
             """)
+            self.startBlinking()
             
         else:
             self.recording_button.setText("START\nRECORDING")
@@ -166,6 +173,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     border: 1px solid black; /* Optional: Add a border */
                 }
             """)
+            self.stopBlinking()
+            
         
     def center(self):
         # Get the screen geometry
@@ -202,5 +211,28 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.open_file_explorer()
         self.showActionsToTable()
 
+    def startBlinking(self):
+        self.status_label.setText("RECORDING")
+        self.status_label.setStyleSheet("""
+                QLabel {
+                    color: rgb(170, 0, 0);
+                }
+            """)
+        self.status_label.setVisible(True) # Ensure the label is visible when starting
+        self.blink_timer.start(750) # Start the blink timer with 750 milliseconds interval
+    
+    def stopBlinking(self):
+        self.status_label.setStyleSheet("""
+                QLabel {
+                    color: rgb(0, 255, 0);
+                }
+            """)
+        self.blink_timer.stop()
+        self.status_label.setText("NOT RECORDING")
+        self.status_label.setVisible(True)
+        
+    def toggleLabelVisibility(self):
+        self.status_label.setVisible(not self.status_label.isVisible())
+        
         
 
