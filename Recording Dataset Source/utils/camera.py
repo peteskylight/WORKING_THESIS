@@ -18,7 +18,7 @@ class CameraFeed:
                                             humanPoseConf=0.4
                                             )
         
-        #Get FPS
+        # Get FPS
         self.getFPS = CvFpsCalc(buffer_len=10)
         
         self.drawing_utils = DrawingUtils()
@@ -28,23 +28,26 @@ class CameraFeed:
         self.folder_count = 0
         self.frame_count = 0
         self.alreadyChecked = False
+        self.countdown = 0  # Add countdown attribute
     
         self.label = label
         self.white_frame_label = white_frame_label
         self.main_window = main_window
         self.cap = None
         self.timer = QTimer()
+        self.countdown_timer = QTimer()  # Add a separate timer for the countdown
 
         self.timer.timeout.connect(self.update_frame)
+        self.countdown_timer.timeout.connect(self.update_countdown)  # Connect the countdown timer to the update_countdown method
 
     def start_camera(self, index):
         self.cap = cv2.VideoCapture(index)  
-        self.timer.start(10) 
+        self.timer.start(10)  # Keep the camera feed timer at 10 milliseconds
+        self.countdown_timer.start(1000)  # Set the countdown timer to 1000 milliseconds (1 second)
 
     def update_frame(self): #GET THE FRAME HERE
         ret, output_frame = self.cap.read()
         color = 255 #255 - WHITE, 0 - BLACK
-        
         
         returned_frame = output_frame
         
@@ -97,19 +100,26 @@ class CameraFeed:
             
             self.record_and_save_keypoints(normalized_keypoints=normalized_keypoints,
                                         frame_num=self.frame_count)
-            
             self.frame_count += 1
 
             if self.frame_count % int(self.main_window.sequence_slider.value()) == 0:
                 self.frame_count = 0
                 self.folder_count += 1
                 os.mkdir(os.path.join(destination_directory, str(self.folder_count)))
+                self.countdown = int(self.main_window.interval_slider.value())  # Set countdown
 
         elif self.main_window.recording_button.text() == "START\nRECORDING":
            self.frame_count = 0
             
         #===FOR SHOWING IN LABELS
         if ret:
+            # Display countdown
+            if self.countdown > 0:
+                countdown_text = f"{self.countdown}"
+                text_size = cv2.getTextSize(countdown_text, cv2.FONT_HERSHEY_SIMPLEX, 3, 5)[0]
+                text_x = (processed_frame.shape[1] - text_size[0]) // 2
+                text_y = (processed_frame.shape[0] + text_size[1]) // 2
+                cv2.putText(processed_frame, countdown_text, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, 5, (255, 255, 255), 10, cv2.LINE_AA)
             # Convert the frame to QImage
             height, width, channel = processed_frame.shape
             bytes_per_line = 3 * width
@@ -130,9 +140,13 @@ class CameraFeed:
             fps = self.getFPS.get()
             self.main_window.fps_label.setText(str(fps))
             
+    def update_countdown(self):
+        if self.countdown > 0:
+            self.countdown -= 1
 
     def stop_camera(self):
         self.timer.stop()
+        self.countdown_timer.stop()  # Stop the countdown timer
         if self.cap is not None:
             self.cap.release()
             
@@ -155,7 +169,6 @@ class CameraFeed:
         
         if not os.path.isdir(destination_directory):
             QMessageBox.critical(self.main_window, "Error", "The specified directory does not exist. Check the chosen directory.")
-            self.main_window.toggle_button()
             return
         
         final_destination_directory = os.path.join(destination_directory, str(self.folder_count))
@@ -163,10 +176,3 @@ class CameraFeed:
         # NEW Export keypoints
         npy_path = os.path.join(final_destination_directory, str(frame_num))
         np.save(npy_path, flattenedList)
-        
-
-
-
-
-
-

@@ -47,7 +47,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         self.populate_camera_combo_box()
 
+        #Slider Value Change
         
+        self.interval_slider.valueChanged.connect(self.updateIntervalLabel)
+        self.sequence_slider.valueChanged.connect(self.updateSequenceLabel)
+        
+        #Set Column Names
+        
+        self.action_table.setHorizontalHeaderLabels(["Actions", "# of Recordings"])
         
         # Center the window on the screen
         self.center()
@@ -234,5 +241,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def toggleLabelVisibility(self):
         self.status_label.setVisible(not self.status_label.isVisible())
         
+    def updateIntervalLabel(self, value):
+        self.interval_label.setText(str(value))
         
-
+    def updateSequenceLabel(self, value):
+        self.sequence_label.setText(str(value))
