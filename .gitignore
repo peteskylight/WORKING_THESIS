@@ -2,4 +2,6 @@
 *.avi
 *.mp4
 THESISVENV/
+THESISVIRTUALVENV/
+
 
