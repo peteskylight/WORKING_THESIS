@@ -3,9 +3,9 @@ import os
 import numpy as np
 import psutil
 import GPUtil
-from PySide2.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QDesktopWidget, QTableWidgetItem, QWidget
-from PySide2.QtCore import QRect, QCoreApplication, QMetaObject, QTimer, QTime, Qt
-from PySide2.QtGui import QFont
+from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QTableWidgetItem, QWidget
+from PySide6.QtCore import QRect, QCoreApplication, QMetaObject, QTimer, QTime, Qt
+from PySide6.QtGui import QScreen
 
 from pygrabber.dshow_graph import FilterGraph
 
@@ -14,16 +14,18 @@ from utils.drawing_utils import DrawingUtils
 from gui import Ui_MainWindow
 from trackers import PoseDetection
 
-
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
         
         self.setupUi(self)
         
-        self.setWindowFlags(self.windowFlags() | Qt.WindowMinimizeButtonHint | Qt.WindowCloseButtonHint)
-        self.setWindowFlags(self.windowFlags() & ~Qt.WindowMaximizeButtonHint)
+        #self.setWindowFlags(self.windowFlags() | Qt.WindowMinimizeButtonHint | Qt.WindowCloseButtonHint)
+        #self.setWindowFlags(self.windowFlags() & ~Qt.WindowMaximizeButtonHint)
         
+        #Disable Maximize Button
+        self.setWindowFlag(Qt.WindowMaximizeButtonHint, False)
+
         self.isRecording = False
 
         self.camera_feed_instance = CameraFeed(self.camera_feed, self.white_frame_feed, self)
@@ -47,13 +49,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         self.populate_camera_combo_box()
 
-        #Slider Value Change
-        
+        # Slider Value Change
         self.interval_slider.valueChanged.connect(self.updateIntervalLabel)
         self.sequence_slider.valueChanged.connect(self.updateSequenceLabel)
         
-        #Set Column Names
-        
+        # Set Column Names
         self.action_table.setHorizontalHeaderLabels(["Actions", "# of Recordings"])
         
         # Center the window on the screen
@@ -131,8 +131,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         except Exception as e:
             QMessageBox.critical(self, "Error", f"An error occurred: {e}")
         
-        
-    
     def delete_folder(self):
         directory = self.directoryLineEdit.text()
         folder_name = self.action_comboBox.currentText()
@@ -183,17 +181,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             """)
             self.status_label.setText("NOT RECORDING")
             
-        
     def center(self):
         # Get the screen geometry
-        screen_geometry = QDesktopWidget().availableGeometry()
+        screen = QApplication.primaryScreen()
+        screen_geometry = screen.availableGeometry()
         # Get the window geometry
         window_geometry = self.frameGeometry()
         # Move the window to the center of the screen
         window_geometry.moveCenter(screen_geometry.center())
         self.move(window_geometry.topLeft())
-            
-
 
     def showActionsToTable(self):
         # Set the folder path
@@ -220,7 +216,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.showActionsToTable()
 
     def startBlinking(self):
-        
         self.status_label.setStyleSheet("""
                 QLabel {
                     color: rgb(0, 255, 0);

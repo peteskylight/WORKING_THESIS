@@ -1,9 +1,9 @@
 import cv2
 import os
-from PySide2.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
+from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
 import numpy as np
-from PySide2.QtCore import QTimer, Qt
-from PySide2.QtGui import QImage, QPixmap
+from PySide6.QtCore import QTimer, Qt
+from PySide6.QtGui import QImage, QPixmap
 
 from trackers.pose_detection import PoseDetection
 from utils.drawing_utils import DrawingUtils

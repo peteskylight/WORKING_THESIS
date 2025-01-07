@@ -1,6 +1,6 @@
 import os
 import numpy as np
-from PySide2.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
+from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
 import argparse
 
 class Tools():
