@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1218</width>
-    <height>657</height>
+    <width>1202</width>
+    <height>680</height>
    </rect>
   </property>
   <property name="font">
@@ -26,7 +26,7 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>0</y>
+      <y>40</y>
       <width>1200</width>
       <height>591</height>
      </rect>
@@ -62,34 +62,12 @@
      <attribute name="title">
       <string>Import Video</string>
      </attribute>
-     <widget class="QPushButton" name="import_video_button">
-      <property name="geometry">
-       <rect>
-        <x>60</x>
-        <y>300</y>
-        <width>171</width>
-        <height>51</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>14</pointsize>
-        <bold>false</bold>
-       </font>
-      </property>
-      <property name="autoFillBackground">
-       <bool>false</bool>
-      </property>
-      <property name="text">
-       <string>Import Video</string>
-      </property>
-     </widget>
      <widget class="QLabel" name="label_13">
       <property name="geometry">
        <rect>
-        <x>30</x>
-        <y>20</y>
-        <width>371</width>
+        <x>10</x>
+        <y>10</y>
+        <width>471</width>
         <height>271</height>
        </rect>
       </property>
@@ -106,35 +84,7 @@
        <enum>QFrame::Shadow::Raised</enum>
       </property>
       <property name="text">
-       <string>Upload a video to see preview</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignmentFlag::AlignCenter</set>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_14">
-      <property name="geometry">
-       <rect>
-        <x>440</x>
-        <y>20</y>
-        <width>371</width>
-        <height>271</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>16</pointsize>
-        <italic>true</italic>
-       </font>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::Shape::WinPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Shadow::Raised</enum>
-      </property>
-      <property name="text">
-       <string>Upload a video to see preview</string>
+       <string>Import a video to see preview</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -143,10 +93,10 @@
      <widget class="QGroupBox" name="groupBox_2">
       <property name="geometry">
        <rect>
-        <x>940</x>
+        <x>970</x>
         <y>0</y>
-        <width>241</width>
-        <height>501</height>
+        <width>221</width>
+        <height>541</height>
        </rect>
       </property>
       <property name="font">
@@ -155,8 +105,596 @@
        </font>
       </property>
       <property name="title">
-       <string>Preview Details</string>
+       <string>Advanced Options</string>
       </property>
+      <widget class="QFrame" name="frame_6">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>290</y>
+         <width>201</width>
+         <height>241</height>
+        </rect>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::Shape::Box</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Shadow::Sunken</enum>
+       </property>
+       <widget class="QLabel" name="label_19">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>10</y>
+          <width>101</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Filename:</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_20">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>60</y>
+          <width>101</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Video Duration:</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_21">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>110</y>
+          <width>121</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>File Size:</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_22">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>160</y>
+          <width>121</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Frame Dimensions:</string>
+        </property>
+       </widget>
+      </widget>
+     </widget>
+     <widget class="QLabel" name="label_14">
+      <property name="geometry">
+       <rect>
+        <x>490</x>
+        <y>10</y>
+        <width>471</width>
+        <height>271</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>16</pointsize>
+        <italic>true</italic>
+       </font>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Shape::WinPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Shadow::Raised</enum>
+      </property>
+      <property name="text">
+       <string>Upload a video to see preview</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QFrame" name="frame_3">
+      <property name="geometry">
+       <rect>
+        <x>490</x>
+        <y>290</y>
+        <width>471</width>
+        <height>131</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Shape::WinPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Shadow::Raised</enum>
+      </property>
+      <widget class="QLabel" name="label_16">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>471</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>18</pointsize>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Classroom Heatmap View</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignmentFlag::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="checkBox">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>30</y>
+         <width>241</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>14</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Test-Taking Time Duration</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="checkBox_2">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>60</y>
+         <width>271</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>14</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Behavior Change Frequencies</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="checkBox_3">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>90</y>
+         <width>271</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>14</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Behavior Count Frequencies</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QFrame" name="frame_4">
+      <property name="geometry">
+       <rect>
+        <x>490</x>
+        <y>430</y>
+        <width>471</width>
+        <height>111</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Shape::WinPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Shadow::Raised</enum>
+      </property>
+      <widget class="QLabel" name="label_17">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>471</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>18</pointsize>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Other Visualizations</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignmentFlag::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="checkBox_4">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>40</y>
+         <width>371</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>14</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Behavior Count Frequencies [Linked List]</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="checkBox_5">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>70</y>
+         <width>371</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>14</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Event Timeline</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QFrame" name="frame_5">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>290</y>
+        <width>471</width>
+        <height>251</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Shape::WinPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Shadow::Raised</enum>
+      </property>
+      <widget class="QLabel" name="label_15">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>140</y>
+         <width>171</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <italic>true</italic>
+        </font>
+       </property>
+       <property name="text">
+        <string>Video File Location:</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>160</y>
+         <width>331</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>14</pointsize>
+         <italic>true</italic>
+        </font>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="import_video_button">
+       <property name="geometry">
+        <rect>
+         <x>350</x>
+         <y>150</y>
+         <width>111</width>
+         <height>51</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>14</pointsize>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="autoFillBackground">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>Browse</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButton">
+       <property name="geometry">
+        <rect>
+         <x>120</x>
+         <y>200</y>
+         <width>221</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>16</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Analyze Video</string>
+       </property>
+      </widget>
+      <widget class="QFrame" name="frame_7">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>10</y>
+         <width>451</width>
+         <height>121</height>
+        </rect>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::Shape::Box</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Shadow::Sunken</enum>
+       </property>
+       <property name="lineWidth">
+        <number>2</number>
+       </property>
+       <widget class="QLabel" name="label_23">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>40</y>
+          <width>91</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+          <italic>false</italic>
+         </font>
+        </property>
+        <property name="text">
+         <string>Top Left</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignmentFlag::AlignCenter</set>
+        </property>
+       </widget>
+       <widget class="QDial" name="dial">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>60</y>
+          <width>50</width>
+          <height>51</height>
+         </rect>
+        </property>
+        <property name="invertedAppearance">
+         <bool>false</bool>
+        </property>
+        <property name="invertedControls">
+         <bool>false</bool>
+        </property>
+       </widget>
+       <widget class="QDial" name="dial_2">
+        <property name="geometry">
+         <rect>
+          <x>60</x>
+          <y>60</y>
+          <width>50</width>
+          <height>51</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QDial" name="dial_3">
+        <property name="geometry">
+         <rect>
+          <x>120</x>
+          <y>60</y>
+          <width>50</width>
+          <height>51</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QDial" name="dial_4">
+        <property name="geometry">
+         <rect>
+          <x>170</x>
+          <y>60</y>
+          <width>50</width>
+          <height>51</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QDial" name="dial_5">
+        <property name="geometry">
+         <rect>
+          <x>230</x>
+          <y>60</y>
+          <width>50</width>
+          <height>51</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QDial" name="dial_6">
+        <property name="geometry">
+         <rect>
+          <x>280</x>
+          <y>60</y>
+          <width>50</width>
+          <height>51</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QDial" name="dial_7">
+        <property name="geometry">
+         <rect>
+          <x>340</x>
+          <y>60</y>
+          <width>50</width>
+          <height>51</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QDial" name="dial_8">
+        <property name="geometry">
+         <rect>
+          <x>390</x>
+          <y>60</y>
+          <width>50</width>
+          <height>51</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_24">
+        <property name="geometry">
+         <rect>
+          <x>130</x>
+          <y>40</y>
+          <width>91</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+          <italic>false</italic>
+         </font>
+        </property>
+        <property name="text">
+         <string>Top Right</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignmentFlag::AlignCenter</set>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_25">
+        <property name="geometry">
+         <rect>
+          <x>240</x>
+          <y>40</y>
+          <width>91</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+          <italic>false</italic>
+         </font>
+        </property>
+        <property name="text">
+         <string>Bottom Right</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignmentFlag::AlignCenter</set>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_26">
+        <property name="geometry">
+         <rect>
+          <x>350</x>
+          <y>40</y>
+          <width>91</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+          <italic>false</italic>
+         </font>
+        </property>
+        <property name="text">
+         <string>Bottom Left</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignmentFlag::AlignCenter</set>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_27">
+        <property name="geometry">
+         <rect>
+          <x>110</x>
+          <y>10</y>
+          <width>241</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>14</pointsize>
+          <italic>true</italic>
+         </font>
+        </property>
+        <property name="text">
+         <string>Classroom Reference Points</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignmentFlag::AlignCenter</set>
+        </property>
+       </widget>
+      </widget>
      </widget>
     </widget>
     <widget class="QWidget" name="createDatasetTab">
@@ -244,7 +782,7 @@
        <rect>
         <x>10</x>
         <y>70</y>
-        <width>901</width>
+        <width>911</width>
         <height>471</height>
        </rect>
       </property>
@@ -262,7 +800,7 @@
         <rect>
          <x>10</x>
          <y>10</y>
-         <width>431</width>
+         <width>441</width>
          <height>242</height>
         </rect>
        </property>
@@ -292,7 +830,7 @@
         <rect>
          <x>460</x>
          <y>10</y>
-         <width>431</width>
+         <width>441</width>
          <height>242</height>
         </rect>
        </property>
@@ -498,7 +1036,7 @@
         <rect>
          <x>10</x>
          <y>350</y>
-         <width>881</width>
+         <width>891</width>
          <height>111</height>
         </rect>
        </property>
@@ -538,7 +1076,7 @@
          <rect>
           <x>120</x>
           <y>20</y>
-          <width>251</width>
+          <width>271</width>
           <height>31</height>
          </rect>
         </property>
@@ -557,7 +1095,7 @@
          <rect>
           <x>120</x>
           <y>60</y>
-          <width>111</width>
+          <width>121</width>
           <height>31</height>
          </rect>
         </property>
@@ -849,9 +1387,9 @@ RECORDING</string>
        <widget class="QPushButton" name="delete_action_button">
         <property name="geometry">
          <rect>
-          <x>260</x>
+          <x>270</x>
           <y>60</y>
-          <width>111</width>
+          <width>121</width>
           <height>31</height>
          </rect>
         </property>
@@ -1036,7 +1574,7 @@ RECORDING</string>
      <widget class="QGroupBox" name="groupBox">
       <property name="geometry">
        <rect>
-        <x>920</x>
+        <x>930</x>
         <y>60</y>
         <width>261</width>
         <height>481</height>
@@ -1143,6 +1681,15 @@ RECORDING</string>
          <height>151</height>
         </rect>
        </property>
+       <property name="frameShape">
+        <enum>QFrame::Shape::WinPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Shadow::Raised</enum>
+       </property>
+       <property name="lineWidth">
+        <number>2</number>
+       </property>
        <property name="autoScrollMargin">
         <number>9</number>
        </property>
@@ -1165,13 +1712,13 @@ RECORDING</string>
         <bool>false</bool>
        </property>
        <property name="wordWrap">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="cornerButtonEnabled">
         <bool>false</bool>
        </property>
        <property name="rowCount">
-        <number>4</number>
+        <number>7</number>
        </property>
        <property name="columnCount">
         <number>2</number>
@@ -1194,6 +1741,9 @@ RECORDING</string>
        <attribute name="verticalHeaderDefaultSectionSize">
         <number>25</number>
        </attribute>
+       <row/>
+       <row/>
+       <row/>
        <row/>
        <row/>
        <row/>
@@ -1386,7 +1936,7 @@ border-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0,
      <widget class="QLabel" name="label_5">
       <property name="geometry">
        <rect>
-        <x>680</x>
+        <x>790</x>
         <y>10</y>
         <width>81</width>
         <height>16</height>
@@ -1402,29 +1952,10 @@ border-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0,
        <string>CPU Usage</string>
       </property>
      </widget>
-     <widget class="QLabel" name="label_6">
-      <property name="geometry">
-       <rect>
-        <x>780</x>
-        <y>10</y>
-        <width>81</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Segoe UI</family>
-        <pointsize>10</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>RAM Usage</string>
-      </property>
-     </widget>
      <widget class="QLabel" name="cpu_label">
       <property name="geometry">
        <rect>
-        <x>680</x>
+        <x>790</x>
         <y>20</y>
         <width>91</width>
         <height>41</height>
@@ -1481,7 +2012,7 @@ border-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0,
      <widget class="QLabel" name="ram_label">
       <property name="geometry">
        <rect>
-        <x>780</x>
+        <x>930</x>
         <y>20</y>
         <width>91</width>
         <height>41</height>
@@ -1535,51 +2066,10 @@ border-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0,
        <string>--</string>
       </property>
      </widget>
-     <widget class="QLCDNumber" name="timeLCD">
-      <property name="geometry">
-       <rect>
-        <x>1030</x>
-        <y>10</y>
-        <width>151</width>
-        <height>51</height>
-       </rect>
-      </property>
-      <property name="lineWidth">
-       <number>1</number>
-      </property>
-      <property name="midLineWidth">
-       <number>0</number>
-      </property>
-      <property name="digitCount">
-       <number>8</number>
-      </property>
-      <property name="segmentStyle">
-       <enum>QLCDNumber::SegmentStyle::Filled</enum>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_7">
-      <property name="geometry">
-       <rect>
-        <x>990</x>
-        <y>10</y>
-        <width>41</width>
-        <height>21</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Segoe UI</family>
-        <pointsize>10</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>TIME:</string>
-      </property>
-     </widget>
      <widget class="QLabel" name="label_9">
       <property name="geometry">
        <rect>
-        <x>880</x>
+        <x>1060</x>
         <y>10</y>
         <width>81</width>
         <height>16</height>
@@ -1598,7 +2088,7 @@ border-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0,
      <widget class="QLabel" name="gpu_label">
       <property name="geometry">
        <rect>
-        <x>880</x>
+        <x>1060</x>
         <y>20</y>
         <width>91</width>
         <height>41</height>
@@ -1655,7 +2145,7 @@ border-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0,
      <widget class="QLabel" name="label_10">
       <property name="geometry">
        <rect>
-        <x>590</x>
+        <x>670</x>
         <y>10</y>
         <width>51</width>
         <height>21</height>
@@ -1674,7 +2164,7 @@ border-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0,
      <widget class="QLabel" name="fps_label">
       <property name="geometry">
        <rect>
-        <x>590</x>
+        <x>670</x>
         <y>20</y>
         <width>91</width>
         <height>41</height>
@@ -1728,7 +2218,92 @@ border-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0,
        <string>--</string>
       </property>
      </widget>
+     <widget class="QLabel" name="label_6">
+      <property name="geometry">
+       <rect>
+        <x>930</x>
+        <y>10</y>
+        <width>81</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Segoe UI</family>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>RAM Usage</string>
+      </property>
+     </widget>
     </widget>
+   </widget>
+   <widget class="QLabel" name="label_18">
+    <property name="geometry">
+     <rect>
+      <x>840</x>
+      <y>0</y>
+      <width>351</width>
+      <height>91</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Gabriola</family>
+      <pointsize>72</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>LearnScope</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTop|Qt::AlignmentFlag::AlignTrailing</set>
+    </property>
+   </widget>
+   <widget class="QLCDNumber" name="timeLCD">
+    <property name="geometry">
+     <rect>
+      <x>190</x>
+      <y>0</y>
+      <width>151</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Shadow::Sunken</enum>
+    </property>
+    <property name="lineWidth">
+     <number>1</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="digitCount">
+     <number>8</number>
+    </property>
+    <property name="segmentStyle">
+     <enum>QLCDNumber::SegmentStyle::Filled</enum>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_7">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>0</y>
+      <width>41</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Segoe UI</family>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Time:</string>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -1736,7 +2311,7 @@ border-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0,
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1218</width>
+     <width>1202</width>
      <height>33</height>
     </rect>
    </property>
