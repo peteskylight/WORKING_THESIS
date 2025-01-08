@@ -10,3 +10,6 @@ Recording Dataset Source/gui/__pycache__/__init__.cpython-311.pyc
 THESISVIRTUALENV/Lib/site-packages/absl/__init__.py
 THESISVIRTUALENV/Lib/site-packages/_distutils_hack/__init__.py
 
+*.py
+THESISVIRTUALENV/Lib/site-packages/absl/app.pyi
+/THESISVIRTUALENV
