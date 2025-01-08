@@ -5,3 +5,8 @@ THESISVENV/
 THESISVIRTUALVENV/
 
 
+Recording Dataset Source/gui/__pycache__/__init__.cpython-311.pyc
+*.pyc
+THESISVIRTUALENV/Lib/site-packages/absl/__init__.py
+THESISVIRTUALENV/Lib/site-packages/_distutils_hack/__init__.py
+
