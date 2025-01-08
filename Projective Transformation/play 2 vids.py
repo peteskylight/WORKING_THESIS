@@ -1,8 +1,8 @@
 import cv2
 
 # Load the videos
-video_path1 = r"C:\Users\peter\Desktop\WORKING THESIS FILES\output_original.avi"
-video_path2 = r"C:\Users\peter\Desktop\WORKING THESIS FILES\output_white_frame.avi"
+video_path1 = r"C:\Users\USER\Desktop\WORKING THESIS FILES\output_original.avi"
+video_path2 = r"C:\Users\USER\Desktop\WORKING THESIS FILES\output_white_frame.avi"
 cap1 = cv2.VideoCapture(video_path1)
 cap2 = cv2.VideoCapture(video_path2)
 
@@ -17,7 +17,7 @@ width2 = int(cap2.get(cv2.CAP_PROP_FRAME_WIDTH))
 height2 = int(cap2.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
 # Scale factor
-scale_factor = 0.5
+scale_factor = 0.25
 
 # Create a window to display the videos
 cv2.namedWindow('Two Videos', cv2.WINDOW_NORMAL)

@@ -8,9 +8,9 @@ model = YOLO('yolov8n-pose.pt')
 # Function to process each frame
 def process_frame(frame, M, colors, scaled_points):
     height, width, channels = frame.shape
-
+ 
     # Perform detection
-    results = model(frame)
+    results = model(frame, conf = 0.3, classes=0, iou=0.5, agnostic_nms=True)
 
     # Create a white frame
     white_frame = np.ones_like(frame) * 255
@@ -48,7 +48,7 @@ def process_frame(frame, M, colors, scaled_points):
     return frame, white_frame
 
 # Load the video
-video_path = r"C:\Users\peter\Desktop\THESIS FILES\START\Right_Corner.mp4"
+video_path = r"C:\Users\USER\Desktop\WORKING THESIS FILES\RESOURCES\Sample Vids\Right_Corner.mp4"
 cap = cv2.VideoCapture(video_path)
 
 # Get video properties
@@ -77,7 +77,7 @@ scaled_points[:, 0] += center_offset_x - scaled_points[:, 0].min()
 scaled_points[:, 1] += center_offset_y - scaled_points[:, 1].min()
 
 # Define points for perspective transformation
-pts1 = np.float32([[228,348], [1180,308], [1915,534], [width,height]])
+pts1 = np.float32([[228,348], [1180,308], [1915,534], [0,height]])
 pts2 = scaled_points
 
 # Apply perspective transformation to the white frame
