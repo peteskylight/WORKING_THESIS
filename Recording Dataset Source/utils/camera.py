@@ -186,6 +186,7 @@ class CameraFeed:
         
         if not os.path.isdir(destination_directory):
             QMessageBox.critical(self.main_window, "Error", "The specified directory does not exist. Check the chosen directory.")
+            self.main_window.toggle_button()
             return
         
         final_destination_directory = os.path.join(destination_directory, str(self.folder_count))

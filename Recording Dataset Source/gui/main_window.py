@@ -20,8 +20,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         self.setupUi(self)
         
-        #self.setWindowFlags(self.windowFlags() | Qt.WindowMinimizeButtonHint | Qt.WindowCloseButtonHint)
-        #self.setWindowFlags(self.windowFlags() & ~Qt.WindowMaximizeButtonHint)
+        #Hide the create dataset tab
+        #self.actionviewCreateDataset.triggered.connect(self.toggleCreateDatasetTab)
+        
+        self.createDatasetTab_index = 2
+        self.hidden_tab = self.MainTab.widget(self.createDatasetTab_index)  # Index of the tab you want to hide
+        self.hidden_tab_index = self.createDatasetTab_index  # Index of the tab you want to hide
+        self.hidden_tab_title = self.MainTab.tabText(self.hidden_tab_index)
+        # Initially hide the tab
+        self.MainTab.removeTab(self.hidden_tab_index)
+        # Connect the QAction's triggered signal to the toggle_tab method
+        self.actionviewCreateDataset.triggered.connect(self.toggle_tab)
+
         
         #Disable Maximize Button
         self.setWindowFlag(Qt.WindowMaximizeButtonHint, False)
@@ -242,3 +252,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
     def updateSequenceLabel(self, value):
         self.sequence_label.setText(str(value))
+            
+
+        
+    def toggle_tab(self):
+        # Toggle the visibility of the tab
+        if self.hidden_tab_index == -1 or not self.MainTab.isTabVisible(self.hidden_tab_index):
+            # Add the tab back
+            self.MainTab.addTab(self.hidden_tab, self.hidden_tab_title)
+            self.hidden_tab_index = self.MainTab.indexOf(self.hidden_tab)
+            self.MainTab.setCurrentIndex(self.hidden_tab_index)
+        else:
+            # Remove the tab
+            self.MainTab.removeTab(self.hidden_tab_index)
+            self.hidden_tab_index = -1
+
+
