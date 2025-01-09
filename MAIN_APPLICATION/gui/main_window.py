@@ -1,4 +1,5 @@
 import sys
+import cv2
 import os
 import numpy as np
 import psutil
@@ -11,11 +12,13 @@ from PySide6.QtMultimediaWidgets import QVideoWidget
 
 from pygrabber.dshow_graph import FilterGraph
 
+from ultralytics import YOLO
+
 from utils.camera import CameraFeed
 from utils.drawing_utils import DrawingUtils
 from gui import Ui_MainWindow
 from trackers import PoseDetection
-from utils import VideoUtils, Tools
+from utils import VideoProcessor, Tools
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
@@ -26,7 +29,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #==== Create INSTANCES =========
         
         self.drawing_utils = DrawingUtils()
-        self.video_utils = VideoUtils()
         self.tools_utils = Tools()
         
         
@@ -42,9 +44,27 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         #============ FOR IMPORTING VIDEO TAB ===========
         
-        self.video_frames = None
+        #Create INSTANCES\
+        self.human_detect_model = YOLO("yolov8n.pt")
+        self.human_pose_model = YOLO("yolov8n-pose.pt")
+        self.human_detect_conf = int(self.human_detect_conf_slider.value())/100
+        self.human_pose_conf = int(self.human_pose_conf_slider.value())/100
+        
+        self.human_pose_detection = PoseDetection(humanDetectionModel="yolov8n.pt",
+                                                  humanDetectConf=self.human_detect_conf,
+                                                  humanPoseModel="yolov8n-pose.pt",
+                                                  humanPoseConf=self.human_pose_conf)
+        
+        self.human_detect_results = None
+        
+        self.video_processor = None
+        self.is_playing = False
+        
+        self.fps_loading_rate_slider.valueChanged.connect(self.update_frame_processing)
         
         self.import_video_button.clicked.connect(self.browse_video)
+        
+        self.play_pause_button.clicked.connect(self.toggle_play_pause)
 
         
         #============ FOR CREATE DATASET TAB ============
@@ -290,17 +310,50 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         directory, _ = QFileDialog.getOpenFileName(self, "Select Video File", "", "Video Files (*.mp4 *.avi *.mkv *.mov *.wmv)")
         if directory:
             self.videoDirectory.setText(f"{directory}")
-            self.video_utils.read_video(directory, resize_frames=False)
-            self.video_frames = self.video_utils.get_frames()
-            self.display_video_preview(processed_frame=self.video_frames[0])
+            self.start_video_processing(directory)
 
-    def display_video_preview(self, processed_frame):
-        # Convert the frame to QImage
-        height, width, channel = processed_frame.shape
-        bytes_per_line = 3 * width
-        q_img = QImage(processed_frame.data, width, height, bytes_per_line, QImage.Format_RGB888).rgbSwapped()
+    def start_video_processing(self, video_path):
+        process_every = self.fps_loading_rate_slider.value()
+        self.video_processor = VideoProcessor(video_path, resize_frames=True, process_every=process_every)
+        self.video_processor.frame_processed.connect(self.update_frame)
+        self.video_processor.start()
 
-        # Set the QImage to the QLabel with aspect ratio maintained and white spaces
-        pixmap = QPixmap.fromImage(q_img)
-        scaled_pixmap = pixmap.scaled(self.video_preview_label.vid.size(), Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
-        self.video_preview_label.setPixmap(scaled_pixmap)
+    def update_frame(self, frame):
+        if frame is not None and self.is_playing:
+            
+            # self.human_detect_results = self.human_pose_detection.getResults(frame=frame,
+            #                                      model=self.human_detect_model,
+            #                                      confidenceRate=self.human_detect_conf)
+            # for result in self.human_detect_results:
+            #     boxes = result.boxs.xyxy
+            #     for box in boxes:
+            #         self.drawing_utils.draw_bounding_box(frame=frame,
+            #                                              box=box)
+            
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            
+            height, width, channel = frame.shape
+            bytes_per_line = 3 * width
+            q_img = QImage(frame.data, width, height, bytes_per_line, QImage.Format_RGB888)
+            pixmap = QPixmap.fromImage(q_img).scaled(self.video_preview_label.size(), Qt.KeepAspectRatio)
+            self.video_preview_label.setPixmap(pixmap)
+            
+            
+
+    def update_frame_processing(self):
+        process_every = self.fps_loading_rate_slider.value()
+        if self.video_processor:
+            self.video_processor.set_process_every(process_every)
+
+    def toggle_play_pause(self):
+        if self.is_playing:
+            self.is_playing = False
+            self.play_pause_button.setText("Play")
+        else:
+            self.is_playing = True
+            self.play_pause_button.setText("Pause")
+
+    def closeEvent(self, event):
+        if self.video_processor:
+            self.video_processor.stop()
+        event.accept()

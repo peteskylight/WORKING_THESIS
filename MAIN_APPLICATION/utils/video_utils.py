@@ -1,26 +1,40 @@
 import cv2
+from PySide6.QtCore import QThread, Signal
 import numpy as np
 
-class VideoUtils:
-    
-    def __init__(self) -> None:
-        self.frames = []
-        pass
+class VideoProcessor(QThread):
+    frame_processed = Signal(object)
 
-    def read_video(self, video_path, resize_frames):
-        cap = cv2.VideoCapture(video_path)
-        while True:
+    def __init__(self, video_path, resize_frames, process_every):
+        super().__init__()
+        self.video_path = video_path
+        self.resize_frames = resize_frames
+        self.process_every = process_every
+        self._running = True
+
+    def run(self):
+        cap = cv2.VideoCapture(self.video_path)
+        frame_count = 0
+        while self._running:
             ret, frame = cap.read()
             if not ret:
                 break
-            if resize_frames:
-                resized_frame = cv2.resize(frame, (640, 384))
-                self.frames.append(resized_frame)
-            else:
-                self.frames.append(frame)
+            if self.resize_frames:
+                frame = cv2.resize(frame, (640, 384))
+            frame_count += 1
+            if frame_count % self.process_every == 0:
+                self.frame_processed.emit(frame)
         cap.release()
 
+    def stop(self):
+        self._running = False
+        self.wait()
 
+    def set_process_every(self, process_every):
+        self.process_every = process_every
+
+    #Old Code
+    
     def save_video(self, output_video_frames, output_video_path, monitorFrames=False):
         fourcc = cv2.VideoWriter_fourcc(*'MJPG')
         
@@ -32,11 +46,7 @@ class VideoUtils:
                 cv2.imshow("Monitor Frames", frame)
                 cv2.waitKey(10)
         out.release()
-        
     
     def generate_white_frame(self, height, width):
         white_frame = np.ones((height, width, 3), dtype=np.uint8) * 255 # Create a white frame (all pixel values set to 255)
         return white_frame
-
-    def get_frames(self):
-        return self.frames

@@ -1,4 +1,4 @@
-from utils.video_utils import VideoUtils
+from utils.video_utils import VideoProcessor
 from utils.drawing_utils import DrawingUtils
 from utils.tools import Tools
 from utils.camera import CameraFeed

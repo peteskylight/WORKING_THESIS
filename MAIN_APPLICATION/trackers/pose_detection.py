@@ -17,7 +17,7 @@ class PoseDetection:
     
         self.drawing_utils = DrawingUtils()
 
-    def getModel(self, frame, model, confidenceRate):
+    def getResults(self, frame, model, confidenceRate):
         # Recolor Feed from RGB to BGR
         image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         image.flags.writeable = False
