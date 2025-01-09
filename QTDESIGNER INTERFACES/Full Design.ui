@@ -917,7 +917,7 @@ Points</string>
      <widget class="QLabel" name="label_29">
       <property name="geometry">
        <rect>
-        <x>200</x>
+        <x>20</x>
         <y>250</y>
         <width>81</width>
         <height>20</height>
@@ -960,6 +960,19 @@ Points</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignmentFlag::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="play_pause_button">
+      <property name="geometry">
+       <rect>
+        <x>200</x>
+        <y>240</y>
+        <width>75</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Play/Pause</string>
       </property>
      </widget>
     </widget>
