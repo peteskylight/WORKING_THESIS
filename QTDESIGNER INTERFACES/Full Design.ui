@@ -12,7 +12,7 @@
   </property>
   <property name="font">
    <font>
-    <pointsize>12</pointsize>
+    <pointsize>11</pointsize>
    </font>
   </property>
   <property name="windowTitle">
@@ -2264,9 +2264,9 @@ border-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0,
    <widget class="QLCDNumber" name="timeLCD">
     <property name="geometry">
      <rect>
-      <x>190</x>
+      <x>170</x>
       <y>0</y>
-      <width>151</width>
+      <width>171</width>
       <height>41</height>
      </rect>
     </property>
@@ -2303,6 +2303,45 @@ border-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0,
     </property>
     <property name="text">
      <string>Time:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="date_label">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>0</y>
+      <width>131</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Segoe UI</family>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Today is Wednesday</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="day_label">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>151</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Segoe UI</family>
+      <pointsize>10</pointsize>
+      <italic>false</italic>
+     </font>
+    </property>
+    <property name="text">
+     <string>Today is</string>
     </property>
    </widget>
   </widget>
