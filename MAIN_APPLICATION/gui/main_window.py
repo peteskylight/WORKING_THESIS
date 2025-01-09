@@ -15,17 +15,14 @@ from utils.camera import CameraFeed
 from utils.drawing_utils import DrawingUtils
 from gui import Ui_MainWindow
 from trackers import PoseDetection
-from utils import VideoUtils, Tools, VideoProcessor
+from utils import VideoUtils, Tools
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
         
         self.setupUi(self)
-        
-        #Hide the create dataset tab
-        #self.actionviewCreateDataset.triggered.connect(self.toggleCreateDatasetTab)
-        
+
         #==== Create INSTANCES =========
         
         self.drawing_utils = DrawingUtils()
@@ -45,20 +42,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         #============ FOR IMPORTING VIDEO TAB ===========
         
-        #For Video Feed
-        self.video_processor = None
-        self.video_feed_timer = QTimer()
-        self.video_feed_timer.timeout.connect(self.show_next_frame)
-        self.current_frame_index = 0
-        
-        
-        #Declare nothing
         self.video_frames = None
-        self.is_playing = False
         
         self.import_video_button.clicked.connect(self.browse_video)
-        
-        self.play_pause_button.clicked.connect(self.toggle_play_pause_video)
+
         
         #============ FOR CREATE DATASET TAB ============
         
@@ -66,8 +53,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setWindowFlag(Qt.WindowMaximizeButtonHint, False)
 
         self.camera_feed_instance = CameraFeed(self.camera_feed, self.white_frame_feed, self)
-        
-        
         
         self.closeCamera.clicked.connect(self.camera_feed_instance.stop_camera)
         
@@ -305,52 +290,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         directory, _ = QFileDialog.getOpenFileName(self, "Select Video File", "", "Video Files (*.mp4 *.avi *.mkv *.mov *.wmv)")
         if directory:
             self.videoDirectory.setText(f"{directory}")
-            self.start_video_processing(directory)
+            self.video_utils.read_video(directory, resize_frames=False)
+            self.video_frames = self.video_utils.get_frames()
+            self.display_video_preview(processed_frame=self.video_frames[0])
 
-    def start_video_processing(self, video_path):
-        self.video_processor = VideoProcessor(video_path, resize_frames=False)
-        self.video_processor.frame_processed.connect(self.update_video_frame)
-        self.video_processor.start()
-            
-    def get_video_frames(self):
-        if self.video_processor:
-            return self.video_processor.get_frames()   
-        return []
+    def display_video_preview(self, processed_frame):
+        # Convert the frame to QImage
+        height, width, channel = processed_frame.shape
+        bytes_per_line = 3 * width
+        q_img = QImage(processed_frame.data, width, height, bytes_per_line, QImage.Format_RGB888).rgbSwapped()
 
-    def update_video_frame(self, frame):
-        if frame is not None:
-            self.video_feed_timer.start(1000 // 30)  # GET THE FRAMERATE OF THE VIDEO
-            self.show_next_frame()
-
-    def show_next_frame(self):
-        frames = self.get_video_frames()
-        if self.is_playing:
-            if frames and self.current_frame_index < len(frames):
-                frame = frames[self.current_frame_index]
-                self.current_frame_index += 1
-                
-                # Convert the frame to QImage
-                height, width, channel = frame.shape
-                bytes_per_line = 3 * width
-                q_img = QImage(frame.data, width, height, bytes_per_line, QImage.Format_RGB888).rgbSwapped()
-
-                # Set the QImage to the QLabel with aspect ratio maintained and white spaces
-                pixmap = QPixmap.fromImage(q_img)
-                scaled_pixmap = pixmap.scaled(self.video_preview_label.size(), Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
-                self.video_preview_label.setPixmap(scaled_pixmap)
-            else:
-                self.video_feed_timer.stop()
-
-    def closeEvent(self, event):
-        if self.video_processor:
-            self.video_processor.stop()
-        event.accept()
-        
-    def toggle_play_pause_video(self):
-        if self.is_playing:
-            self.is_playing = False
-            self.play_pause_button.setText("Play")
-        else:
-            self.is_playing = True
-            self.play_pause_button.setText("Pause")
-            self.show_next_frame()
+        # Set the QImage to the QLabel with aspect ratio maintained and white spaces
+        pixmap = QPixmap.fromImage(q_img)
+        scaled_pixmap = pixmap.scaled(self.video_preview_label.vid.size(), Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
+        self.video_preview_label.setPixmap(scaled_pixmap)
