@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'Full DesignQbhZMm.ui'
+## Form generated from reading UI file 'Full DesignrJjlaX.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.8.1
 ##
@@ -130,11 +130,13 @@ class Ui_MainWindow(object):
         self.fps_loading_rate_slider.setObjectName(u"fps_loading_rate_slider")
         self.fps_loading_rate_slider.setGeometry(QRect(20, 180, 160, 22))
         self.fps_loading_rate_slider.setMinimum(1)
-        self.fps_loading_rate_slider.setMaximum(1000)
-        self.fps_loading_rate_slider.setSingleStep(50)
-        self.fps_loading_rate_slider.setPageStep(50)
-        self.fps_loading_rate_slider.setValue(200)
+        self.fps_loading_rate_slider.setMaximum(60)
+        self.fps_loading_rate_slider.setSingleStep(1)
+        self.fps_loading_rate_slider.setPageStep(1)
+        self.fps_loading_rate_slider.setValue(30)
         self.fps_loading_rate_slider.setOrientation(Qt.Orientation.Horizontal)
+        self.fps_loading_rate_slider.setTickPosition(QSlider.TickPosition.TicksAbove)
+        self.fps_loading_rate_slider.setTickInterval(10)
         self.label_38 = QLabel(self.frame_6)
         self.label_38.setObjectName(u"label_38")
         self.label_38.setGeometry(QRect(10, 70, 121, 31))
@@ -353,6 +355,7 @@ class Ui_MainWindow(object):
         self.label_30.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.play_pause_button = QPushButton(self.importVideo)
         self.play_pause_button.setObjectName(u"play_pause_button")
+        self.play_pause_button.setEnabled(False)
         self.play_pause_button.setGeometry(QRect(200, 240, 91, 31))
         self.play_pause_button.setFont(font3)
         self.MainTab.addTab(self.importVideo, "")
