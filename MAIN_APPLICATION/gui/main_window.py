@@ -18,7 +18,7 @@ from utils.camera import CameraFeed
 from utils.drawing_utils import DrawingUtils
 from gui import Ui_MainWindow
 from trackers import PoseDetection
-from utils import VideoProcessor, Tools
+from utils import VideoProcessor, Tools, VideoUtils
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
@@ -30,11 +30,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         self.drawing_utils = DrawingUtils()
         self.tools_utils = Tools()
+        self.video_utils = VideoUtils()
         
         
         self.createDatasetTab_index = 1
         self.fps_flider_value = 30
-        self.returned_frame = None
+        self.returned_frames_from_browsed_video = None
         
         self.hidden_tab = self.MainTab.widget(self.createDatasetTab_index)  # Index of the tab you want to hide
         self.hidden_tab_index = self.createDatasetTab_index  # Index of the tab you want to hide
@@ -58,17 +59,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                                   humanPoseConf=self.human_pose_conf)
         
         self.human_detect_results = None
-        
         self.video_processor = None
+        self.white_frames_preview = None
+        
         self.is_playing = False
         
         self.frame_processing_value = None
-        
         self.fps_loading_rate_slider.valueChanged.connect(self.update_frame_processing)
         
         self.import_video_button.clicked.connect(self.browse_video)
-        
         self.play_pause_button.clicked.connect(self.toggle_play_pause)
+        self.showDetectionsButton.clicked.connect(self.showDetectedKeypoints)
         
         self.video_interval = 1000 // self.fps_flider_value
         self.clock_interval = 1000  # 1 second interval for clock
@@ -77,6 +78,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.video_counter = 0
         self.clock_counter = 0
         self.toggle_record_label_counter = 0
+        self.toggle_import_indicator = 0
+        self.video_frame_counter = 0        
 
         
         #============ FOR CREATE DATASET TAB ============
@@ -85,23 +88,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setWindowFlag(Qt.WindowMaximizeButtonHint, False)
 
         self.camera_feed_instance = CameraFeed(self.camera_feed, self.white_frame_feed, self)
-        
         self.closeCamera.clicked.connect(self.camera_feed_instance.stop_camera)
-        
         self.openCamera.clicked.connect(self.start_camera)
-        
         self.browseButton.clicked.connect(self.browse_button_functions)
-        
         self.refresh_button.clicked.connect(lambda: self.scan_directory(self.directoryLineEdit.text()))
-        
         self.add_action_button.clicked.connect(self.add_folder)
-        
         self.delete_action_button.clicked.connect(self.delete_folder)
-        
         self.recording_button.clicked.connect(self.toggle_button)
-        
         self.refresh_action_list.clicked.connect(self.showActionsToTable)
-        
         self.populate_camera_combo_box()
 
         # Slider Value Change
@@ -124,20 +118,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.timer.start(10) 
         
     def update_all_with_timers(self):
-        self.video_counter += self.timer.interval()
+        
         self.clock_counter += self.timer.interval()
         self.toggle_record_label_counter += self.timer.interval()
         
-        if (self.video_counter >= self.video_interval) and self.is_playing:
-            self.update_frame(self.returned_frame)
-            self.video_counter = 0
+        if self.is_playing:
+            self.video_counter += self.timer.interval()
+            if (self.video_counter >= self.video_interval):
+                if self.video_frame_counter >= len(self.returned_frames_from_browsed_video):
+                    self.video_frame_counter = 0 #Resets the playing of video
+                
+                self.update_frame(self.returned_frames_from_browsed_video[self.video_frame_counter])
+                self.video_counter = 0
+                self.video_frame_counter += 1
 
         if self.clock_counter >= self.clock_interval:
             self.update_usage()
             self.update_time()
             self.clock_counter = 0
 
-        if self.toggle_record_label_counter >=- self.clock_interval:
+        if self.toggle_record_label_counter >=- self.toggle_record_label_counter:
             self.toggleLabelVisibility()
             self.toggle_record_label_counter = 0
         
@@ -335,18 +335,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def browse_video(self):
         directory, _ = QFileDialog.getOpenFileName(self, "Select Video File", "", "Video Files (*.mp4 *.avi *.mkv *.mov *.wmv)")
         if directory:
-            self.play_pause_button.setEnabled(True)
             self.videoDirectory.setText(f"{directory}")
             self.start_video_processing(directory)
 
     def start_video_processing(self, video_path):
         self.video_processor = VideoProcessor(video_path, resize_frames=True)
-        self.video_processor.frame_processed.connect(self.update_frame)
         self.video_processor.start()
+        self.video_processor.frame_processed.connect(self.update_frame_list)
+        self.video_processor.progress_update.connect(self.update_progress_bar)
 
+    def update_progress_bar(self,value):
+        self.importProgressBar.setValue(value)
+        if value == 100:
+            self.play_pause_button.setEnabled(True)
+        
+    def update_frame_list(self, frames):
+        self.returned_frames_from_browsed_video = None
+        self.returned_frames_from_browsed_video = frames
+    
     def update_frame(self, frame):
         if frame is not None and self.is_playing:
-            self.returned_frame = frame
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             height, width, channel = frame.shape
             bytes_per_line = 3 * width
@@ -354,6 +362,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             pixmap = QPixmap.fromImage(q_img).scaled(self.video_preview_label.size(), Qt.KeepAspectRatio)
             self.video_preview_label.setPixmap(pixmap)
 
+    def update_white_frame(self):
+        pass
+    
     def show_next_frame(self):
         if self.video_processor and self.is_playing:
             self.video_processor.frame_processed.connect(self.update_frame)
@@ -370,7 +381,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.is_playing = True
             self.play_pause_button.setText("Pause")
 
+    def showDetectedKeypoints(self):
+        self.white_frames_preview = []
+        for frame in self.returned_frames_from_browsed_video:
+            white_frame = self.video_utils.generate_white_frame()
+            self.white_frames_preview.append(white_frame)
+
     def closeEvent(self, event):
-        if self.video_processor:
-            self.video_processor.stop()
+
+        self.video_processor.stop()
         event.accept()
