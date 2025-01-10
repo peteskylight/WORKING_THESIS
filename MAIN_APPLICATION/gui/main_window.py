@@ -70,7 +70,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         self.play_pause_button.clicked.connect(self.toggle_play_pause)
         
-        self.video_interval = 1000 // self.fps_loading_rate_slider.value()
+        self.video_interval = 1000 // self.fps_flider_value
         self.clock_interval = 1000  # 1 second interval for clock
         self.toggle_record_label_interval = 750
 

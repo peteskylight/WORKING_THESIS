@@ -12,15 +12,17 @@ class VideoProcessor(QThread):
         self._running = True
 
     def run(self):
-        cap = cv2.VideoCapture(self.video_path)
         while self._running:
-            ret, frame = cap.read()
-            if not ret:
-                break
-            if self.resize_frames:
-                frame = cv2.resize(frame, (640, 384))
-            self.frame_processed.emit(frame)
-        cap.release()
+            cap = cv2.VideoCapture(self.video_path)
+            while cap.isOpened() and self._running:
+                ret, frame = cap.read()
+                if not ret:
+                    cap.set(cv2.CAP_PROP_POS_FRAMES, 0)  # Restart the video
+                    continue
+                if self.resize_frames:
+                    frame = cv2.resize(frame, (640, 384))
+                self.frame_processed.emit(frame)
+            cap.release()
 
     def stop(self):
         self._running = False
