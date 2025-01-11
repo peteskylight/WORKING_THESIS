@@ -1,1 +1,2 @@
 from trackers.pose_detection import PoseDetection
+from trackers.pose_detection import PoseDetectionThread

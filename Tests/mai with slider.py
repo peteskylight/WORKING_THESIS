@@ -78,6 +78,7 @@ class MainWindow(QMainWindow):
         process_every = self.frame_slider.value()
         self.video_processor = VideoProcessor(video_path, resize_frames=True, process_every=process_every)
         self.video_processor.frame_processed.connect(self.update_frame)
+        self.video_processor.pr
         self.video_processor.start()
 
     @Slot(object)

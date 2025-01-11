@@ -3,6 +3,8 @@ import cv2
 import numpy as np
 import sys
 import os
+
+from PySide6.QtCore import QThread, Signal
 sys.path.append('../')
 
 from ultralytics.utils.plotting import Annotator
@@ -54,4 +56,35 @@ class PoseDetection:
         
         return frame, normalized_keypoints, return_bbox
 
+class PoseDetectionThread(QThread):
+    processed_results = Signal(object)
+    human_detection_progress_update = Signal(int)
 
+    def __init__(self, video_path, humanDetectionModel, humanDetectConf, humanPoseModel, humanPoseConf):
+        super().__init__()
+        self.video_path = video_path
+        self.detection = PoseDetection(humanDetectionModel, humanDetectConf, humanPoseModel, humanPoseConf)
+        self._running = True
+
+    def run(self):
+        cap = cv2.VideoCapture(self.video_path)
+        total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        current_frame = 0
+        results_list = []
+        while self._running and cap.isOpened():
+            ret, frame = cap.read()
+            if not ret:
+                break
+            results = self.detection.getResults(frame=frame,
+                                                model=self.detection.human_detection_model,
+                                                confidenceRate=self.detection.human_detection_conf)
+            results_list.append(results)
+            current_frame += 1
+            progress = int((current_frame / total_frames) * 100)
+            self.progress_updated.emit(progress)
+        self.processed_results.emit(results)
+        cap.release()
+
+    def stop(self):
+        self._running = False
+        self.wait()

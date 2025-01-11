@@ -42,12 +42,14 @@ class VideoUtils:
 class VideoProcessor(QThread):
     frame_processed = Signal(object)
     progress_update = Signal(object)
+    generate_signal = Signal(object)
 
     def __init__(self, video_path, resize_frames):
         super().__init__()
         self.video_path = video_path
         self.resize_frames = resize_frames
         self._running = True
+        self.goSignal = False
 
     def run(self):
         cap = cv2.VideoCapture(self.video_path)
@@ -64,7 +66,9 @@ class VideoProcessor(QThread):
             current_frame += 1
             progress = int(current_frame/total_frames *100)
             self.progress_update.emit(progress)
+            self.goSignal = False
         self.frame_processed.emit(frames)
+        self.generate_signal.emit(not self.goSignal)
         cap.release()
         
 

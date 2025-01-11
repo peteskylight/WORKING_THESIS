@@ -19,6 +19,7 @@ from utils.drawing_utils import DrawingUtils
 from gui import Ui_MainWindow
 from trackers import PoseDetection
 from utils import VideoProcessor, Tools, VideoUtils
+from gui_commands import Analytics
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
@@ -28,9 +29,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         #==== Create INSTANCES =========
         
+        self.AnalyticsTab = Analytics(main_window=self)
+        
         self.drawing_utils = DrawingUtils()
         self.tools_utils = Tools()
         self.video_utils = VideoUtils()
+        
+        self.videoWidth = None
+        self.videoHeight = None
         
         
         self.createDatasetTab_index = 1
@@ -65,11 +71,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.is_playing = False
         
         self.frame_processing_value = None
-        self.fps_loading_rate_slider.valueChanged.connect(self.update_frame_processing)
+        self.fps_loading_rate_slider.valueChanged.connect(self.AnalyticsTab.update_frame_processing)
         
-        self.import_video_button.clicked.connect(self.browse_video)
-        self.play_pause_button.clicked.connect(self.toggle_play_pause)
-        self.showDetectionsButton.clicked.connect(self.showDetectedKeypoints)
+        self.import_video_button.clicked.connect(self.AnalyticsTab.browse_video)
+        self.play_pause_button.clicked.connect(self.AnalyticsTab.toggle_play_pause)
         
         self.video_interval = 1000 // self.fps_flider_value
         self.clock_interval = 1000  # 1 second interval for clock
@@ -128,7 +133,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 if self.video_frame_counter >= len(self.returned_frames_from_browsed_video):
                     self.video_frame_counter = 0 #Resets the playing of video
                 
-                self.update_frame(self.returned_frames_from_browsed_video[self.video_frame_counter])
+                self.AnalyticsTab.update_frame(self.returned_frames_from_browsed_video[self.video_frame_counter])
+                self.AnalyticsTab.update_white_frame(self.white_frames_preview[self.video_frame_counter])
                 self.video_counter = 0
                 self.video_frame_counter += 1
 
@@ -316,8 +322,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
     def updateSequenceLabel(self, value):
         self.sequence_label.setText(str(value))
-            
-
         
     def toggle_tab(self):
         # Toggle the visibility of the tab
@@ -332,62 +336,5 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.hidden_tab_index = -1
 
 
-    def browse_video(self):
-        directory, _ = QFileDialog.getOpenFileName(self, "Select Video File", "", "Video Files (*.mp4 *.avi *.mkv *.mov *.wmv)")
-        if directory:
-            self.videoDirectory.setText(f"{directory}")
-            self.start_video_processing(directory)
-
-    def start_video_processing(self, video_path):
-        self.video_processor = VideoProcessor(video_path, resize_frames=True)
-        self.video_processor.start()
-        self.video_processor.frame_processed.connect(self.update_frame_list)
-        self.video_processor.progress_update.connect(self.update_progress_bar)
-
-    def update_progress_bar(self,value):
-        self.importProgressBar.setValue(value)
-        if value == 100:
-            self.play_pause_button.setEnabled(True)
-        
-    def update_frame_list(self, frames):
-        self.returned_frames_from_browsed_video = None
-        self.returned_frames_from_browsed_video = frames
     
-    def update_frame(self, frame):
-        if frame is not None and self.is_playing:
-            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            height, width, channel = frame.shape
-            bytes_per_line = 3 * width
-            q_img = QImage(frame.data, width, height, bytes_per_line, QImage.Format_RGB888)
-            pixmap = QPixmap.fromImage(q_img).scaled(self.video_preview_label.size(), Qt.KeepAspectRatio)
-            self.video_preview_label.setPixmap(pixmap)
-
-    def update_white_frame(self):
-        pass
     
-    def show_next_frame(self):
-        if self.video_processor and self.is_playing:
-            self.video_processor.frame_processed.connect(self.update_frame)
-
-    def update_frame_processing(self):
-        fps = self.fps_loading_rate_slider.value()
-        self.fps_flider_value = fps
-
-    def toggle_play_pause(self):
-        if self.is_playing:
-            self.is_playing = False
-            self.play_pause_button.setText("Play")
-        else:
-            self.is_playing = True
-            self.play_pause_button.setText("Pause")
-
-    def showDetectedKeypoints(self):
-        self.white_frames_preview = []
-        for frame in self.returned_frames_from_browsed_video:
-            white_frame = self.video_utils.generate_white_frame()
-            self.white_frames_preview.append(white_frame)
-
-    def closeEvent(self, event):
-
-        self.video_processor.stop()
-        event.accept()
