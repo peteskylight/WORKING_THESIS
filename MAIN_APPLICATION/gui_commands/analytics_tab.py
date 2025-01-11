@@ -56,7 +56,7 @@ class Analytics:
                                                          width=640)
         self.white_frame_generator.start()
         self.white_frame_generator.progress_update.connect(self.update_import_progress_bar)
-        self.white_frame_generator.return_white_frames.connect(self.update_white_frame_create_progress)
+        self.white_frame_generator.return_white_frames.connect(self.update_white_frame_list)
         
     
     def update_import_progress_bar(self,value):
@@ -72,7 +72,7 @@ class Analytics:
         if value == 100:
             self.main_window.play_pause_button.setEnabled(True)        
     
-    def update_white_frame_create_progress(self, frames):
+    def update_white_frame_list(self, frames):
         self.main_window.white_frames_preview = frames
         self.drawBoundingBoxes()
         
@@ -139,9 +139,15 @@ class Analytics:
         
         self.draw_bbox = DrawingBoundingBoxesThread(results=self.detectionResults,
                                                     white_frames=self.main_window.white_frames_preview)
-        self.draw_bbox.frame_drawn_list.connect(self.update_white_frame_create_progress)
+        self.draw_bbox.frame_drawn_list.connect(self.update_white_frame_list_then_draw_keypoints)
         self.draw_bbox.start()
     
+    def update_white_frame_list_then_draw_keypoints(self, frames):
+        self.main_window.white_frames_preview = frames
+        
+    
+    def drawKeypoints(self):
+        pass
 
     def update_detection_results(self, results_list):
         self.detectionResults = results_list
