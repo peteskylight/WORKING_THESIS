@@ -15,7 +15,7 @@ class VideoUtils:
             if not ret:
                 break
             if resize_frames:
-                resized_frame = cv2.resize(frame, (640, 384))
+                resized_frame = cv2.resize(frame, (640, 360))
                 frames.append(resized_frame)
             else:
                 frames.append(frame)
@@ -43,30 +43,29 @@ class WhiteFrameGenerator(QThread):
     progress_update = Signal(object)
     return_white_frames = Signal(object)
     
-    def __init__(self, main_window, width, height):
+    def __init__(self, number_of_frames, width, height):
         super().__init__()
-        self.main_window = main_window
+        self.number_of_frames = number_of_frames
         self.videoWidth = width
         self.videoHeight = height
         self._running = True
-        
     def run(self):
-        self.main_window.status_import_label.setText("CREATING\nFRAMES")
-        self.main_window.white_frames_preview = []
         white_frames = []
         current_frame = 0
-        total_frames_length = len(self.main_window.returned_frames_from_browsed_video)
-        
-        for frame in self.main_window.returned_frames_from_browsed_video:
+        total_frames_length = self.number_of_frames
+        for frame in range(total_frames_length):
             white_frame = np.ones((self.videoHeight, self.videoWidth, 3), dtype=np.uint8) * 255 
-            
             white_frames.append(white_frame)
             current_frame += 1
             progress = int(current_frame/total_frames_length *100)
+            
             self.progress_update.emit(progress)
             
+            del white_frame
+            del progress
+            
         self.return_white_frames.emit(white_frames)
-    
+        del white_frames
     def stop(self):
         self._running = False
         self.wait()
@@ -89,6 +88,8 @@ class VideoProcessor(QThread):
         total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
         self.videoHeight = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
         self.videoWidth = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        shapes = [self.videoWidth, self.videoHeight]
+
         current_frame = 0
         frames = []
         while self._running:
@@ -96,9 +97,10 @@ class VideoProcessor(QThread):
             if not ret:
                 break
             if self.resize_frames:
-                frame = cv2.resize(frame, (640, 384))
+                frame = cv2.resize(frame, (640, 360))
             frames.append(frame)
             current_frame += 1
+            
             progress = int(current_frame/total_frames *100)
             self.progress_update.emit(progress)
             self.goSignal = False

@@ -69,17 +69,15 @@ class DrawingBoundingBoxesThread(QThread):
         total_frames = len(self.results)
         current_frame = 0
         frames = []
-        for result, white_frame in zip(self.results, self.white_frames_list):
-            if not self._running:
-                break
-
-            annotator = Annotator(white_frame)
-            for boxes in result:
-                # Generate a random color for each box
-                color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-                
-                #Draw in White Frames
-                self.drawing_utils.draw_bounding_box_import(frame=white_frame, box=boxes, color=color)
+        for detections, white_frame in zip(self.results, self.white_frames_list):
+            for result in detections:
+                boxes = result.boxes.xyxy
+                for box in boxes:
+                    # Generate a random color for each box
+                    color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+                    
+                    #Draw in White Frames
+                    self.drawing_utils.draw_bounding_box_import(frame=white_frame, box=box, color=color)
             
             frames.append(white_frame)
             
@@ -88,6 +86,8 @@ class DrawingBoundingBoxesThread(QThread):
             self.progress_updated.emit(progress)
             
         self.frame_drawn_list.emit(frames)
+        
+        del frames
         
     def stop(self):
         self._running = False

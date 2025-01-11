@@ -25,7 +25,7 @@ class PoseDetection:
         image.flags.writeable = False
         
         # Perform inference using the YOLO model
-        results = model(frame, conf = confidenceRate)
+        results = model(frame, conf = confidenceRate, classes=0, iou=0.5, agnostic_nms=True)
 
         # Recolor image back to BGR for rendering
         image.flags.writeable = True
@@ -67,9 +67,9 @@ class PoseDetectionThread(QThread):
         self.main_window = main_window
         
         self.video_frames = video_frames
-        self.human_detection_model = humanDetectionModel
+        self.human_detection_model = YOLO(humanDetectionModel)
         self.human_detection_confidence = humanDetectConf
-        self.human_pose_model = humanPoseModel
+        self.human_pose_model = YOLO(humanPoseModel)
         self.human_pose_confidence = humanPoseConf
         
         self.detection = PoseDetection(humanDetectionModel, humanDetectConf, humanPoseModel, humanPoseConf)
@@ -79,7 +79,8 @@ class PoseDetectionThread(QThread):
         total_frames = len(self.video_frames)
         current_frame = 0
         results_list = []
-        self.main_window.status_import_label.setText("[SCANNING\nHUMANS]")
+        
+        
         for frame in self.video_frames:
             results = self.detection.getResults(frame=frame,
                                                 model=self.human_detection_model,

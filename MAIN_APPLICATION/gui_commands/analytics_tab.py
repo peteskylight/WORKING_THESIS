@@ -25,6 +25,7 @@ class Analytics:
         self.isImportDone = False
         self.videoHeight = None
         self.videoWidth = None
+        self.number_of_frames = 0
         
         self.detection = PoseDetection(humanDetectionModel='yolov8n.pt',
                                             humanDetectConf=0.4,
@@ -39,18 +40,6 @@ class Analytics:
             self.main_window.videoDirectory.setText(f"{directory}")
             self.start_video_processing(directory)
             
-            # Get the height and width of the video
-            cap = cv2.VideoCapture(directory)
-            if cap.isOpened():
-                self.videoWidth = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-                self.videoHeight = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-                
-                self.main_window.videoWidth = self.videoWidth
-                self.main_window.videoHeight = self.videoHeight
-                cap.release()
-
-            
-            
 
     def start_video_processing(self, video_path):
         self.video_processor = VideoProcessor(video_path, resize_frames=True)
@@ -58,14 +47,13 @@ class Analytics:
         self.video_processor.frame_processed.connect(self.update_frame_list)
         self.video_processor.progress_update.connect(self.update_import_progress_bar)
         
-        
-        
+    
     def generate_white_frames(self):
         self.video_processor.stop()
-        
-        self.white_frame_generator = WhiteFrameGenerator(main_window=self.main_window,
-                                                         height=self.videoHeight,
-                                                         width=self.videoWidth)
+        self.main_window.status_import_label.setText("CREATING\nFRAMES")
+        self.white_frame_generator = WhiteFrameGenerator(number_of_frames=self.number_of_frames,
+                                                         height=360,
+                                                         width=640)
         self.white_frame_generator.start()
         self.white_frame_generator.progress_update.connect(self.update_import_progress_bar)
         self.white_frame_generator.return_white_frames.connect(self.update_white_frame_create_progress)
@@ -86,13 +74,15 @@ class Analytics:
     
     def update_white_frame_create_progress(self, frames):
         self.main_window.white_frames_preview = frames
-        self.white_frame_generator.stop()
-        self.detectResults()
+        self.drawBoundingBoxes()
+        
     
     def update_frame_list(self, frames):
         self.main_window.returned_frames_from_browsed_video = None
         self.main_window.returned_frames_from_browsed_video = frames
-        self.generate_white_frames()
+        self.number_of_frames = len(frames)
+        self.detectResults(frames)
+        
     
     def update_frame(self, frame):
         if frame is not None and self.main_window.is_playing:
@@ -130,28 +120,36 @@ class Analytics:
             self.main_window.play_pause_button.setText("PAUSE")
         
         
-    def detectResults(self):
-        video_path = self.main_window.videoDirectory.text()
-        if video_path is not None:
-            self.pose_detection_thread = PoseDetectionThread(
-                video_frames = self.main_window.returned_frames_from_browsed_video ,
-                main_window=self.main_window,
-                humanDetectionModel=self.human_detect_model,
-                humanDetectConf=0.5,
-                humanPoseModel = self.human_pose_model,
-                humanPoseConf=0.5
-            )
-            self.pose_detection_thread.human_detection_results.connect(self.update_detection_results)
-            self.pose_detection_thread.human_detection_progress_update.connect(self.update_import_progress_bar)
-            self.pose_detection_thread.start()
+    def detectResults(self,frames):
+        self.main_window.status_import_label.setText("[ SCANNING \nHUMANS]")
+        self.main_window.importProgressBar.setValue(0)
+        self.pose_detection_thread = PoseDetectionThread(
+            video_frames = frames,
+            main_window=self.main_window,
+            humanDetectionModel=self.human_detect_model,
+            humanDetectConf=0.5,
+            humanPoseModel = self.human_pose_model,
+            humanPoseConf=0.5
+        )
+        self.pose_detection_thread.human_detection_results.connect(self.update_detection_results)
+        self.pose_detection_thread.human_detection_progress_update.connect(self.update_import_progress_bar)
+        self.pose_detection_thread.start()
 
     def drawBoundingBoxes(self):
+        
         self.draw_bbox = DrawingBoundingBoxesThread(results=self.detectionResults,
                                                     white_frames=self.main_window.white_frames_preview)
+        self.draw_bbox.frame_drawn_list.connect(self.update_white_frame_create_progress)
+        self.draw_bbox.start()
     
+
     def update_detection_results(self, results_list):
         self.detectionResults = results_list
-        print(self.detectionResults[0])
+        print(results_list[0])
+        del results_list
+        
+        #gENERATE wHITE FRAMES
+        self.generate_white_frames()
     
     def closeEvent(self, event):
         self.video_processor.stop()
