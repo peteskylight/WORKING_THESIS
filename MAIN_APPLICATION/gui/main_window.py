@@ -66,7 +66,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         self.human_detect_results = None
         self.video_processor = None
-        self.white_frames_preview = None
+        self.white_frames_preview = []
+        self.human_detection_results = []
         
         self.is_playing = False
         

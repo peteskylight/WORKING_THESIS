@@ -56,34 +56,45 @@ class PoseDetection:
         
         return frame, normalized_keypoints, return_bbox
 
+
+
 class PoseDetectionThread(QThread):
-    processed_results = Signal(object)
+    human_detection_results = Signal(object)
     human_detection_progress_update = Signal(int)
 
-    def __init__(self, video_path, humanDetectionModel, humanDetectConf, humanPoseModel, humanPoseConf):
+    def __init__(self, video_frames,main_window, humanDetectionModel, humanDetectConf, humanPoseModel, humanPoseConf):
         super().__init__()
-        self.video_path = video_path
+        self.main_window = main_window
+        
+        self.video_frames = video_frames
+        self.human_detection_model = humanDetectionModel
+        self.human_detection_confidence = humanDetectConf
+        self.human_pose_model = humanPoseModel
+        self.human_pose_confidence = humanPoseConf
+        
         self.detection = PoseDetection(humanDetectionModel, humanDetectConf, humanPoseModel, humanPoseConf)
         self._running = True
 
     def run(self):
-        cap = cv2.VideoCapture(self.video_path)
-        total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        total_frames = len(self.video_frames)
         current_frame = 0
         results_list = []
-        while self._running and cap.isOpened():
-            ret, frame = cap.read()
-            if not ret:
-                break
+        self.main_window.status_import_label.setText("[SCANNING\nHUMANS]")
+        for frame in self.video_frames:
             results = self.detection.getResults(frame=frame,
-                                                model=self.detection.human_detection_model,
-                                                confidenceRate=self.detection.human_detection_conf)
+                                                model=self.human_detection_model,
+                                                confidenceRate=self.human_detection_confidence)
             results_list.append(results)
             current_frame += 1
             progress = int((current_frame / total_frames) * 100)
-            self.progress_updated.emit(progress)
-        self.processed_results.emit(results)
-        cap.release()
+            self.human_detection_progress_update.emit(progress)
+            
+            del results
+            del progress
+        
+        self.human_detection_results.emit(results_list)
+        
+        del results_list
 
     def stop(self):
         self._running = False

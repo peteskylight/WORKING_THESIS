@@ -6,7 +6,7 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBo
 from PySide6.QtCore import QRect, QCoreApplication, QMetaObject, QTimer, QTime, Qt, QDate
 from PySide6.QtGui import QScreen, QImage, QPixmap
 
-from utils import VideoProcessor, DrawingBoundingBoxesThread
+from utils import VideoProcessor, DrawingBoundingBoxesThread, WhiteFrameGenerator
 from trackers import PoseDetection, PoseDetectionThread
 
 #Main Analytics Tab Class
@@ -20,7 +20,8 @@ class Analytics:
         self.human_pose_model = "yolov8n-pose.pt"
         self.human_pose_conf = 0.4
         
-        self.detectionResults = None
+        
+        self.detectionResults = []
         self.isImportDone = False
         self.videoHeight = None
         self.videoWidth = None
@@ -56,19 +57,20 @@ class Analytics:
         self.video_processor.start()
         self.video_processor.frame_processed.connect(self.update_frame_list)
         self.video_processor.progress_update.connect(self.update_import_progress_bar)
-        self.video_processor.generate_signal.connect(self.goSignal)
         
-        # self.detectResults()
         
-    def goSignal(self, signal):
-        if signal:
-            self.main_window.white_frames_preview = []
-            for frame in self.main_window.returned_frames_from_browsed_video:
-                white_frame = self.main_window.video_utils.generate_white_frame(height = self.videoHeight,
-                                                                                width = self.videoWidth)
-                self.main_window.white_frames_preview.append(white_frame)
         
-
+    def generate_white_frames(self):
+        self.video_processor.stop()
+        
+        self.white_frame_generator = WhiteFrameGenerator(main_window=self.main_window,
+                                                         height=self.videoHeight,
+                                                         width=self.videoWidth)
+        self.white_frame_generator.start()
+        self.white_frame_generator.progress_update.connect(self.update_import_progress_bar)
+        self.white_frame_generator.return_white_frames.connect(self.update_white_frame_create_progress)
+        
+    
     def update_import_progress_bar(self,value):
         self.main_window.importProgressBar.setValue(value)
         if value == 100:
@@ -82,10 +84,15 @@ class Analytics:
         if value == 100:
             self.main_window.play_pause_button.setEnabled(True)        
     
+    def update_white_frame_create_progress(self, frames):
+        self.main_window.white_frames_preview = frames
+        self.white_frame_generator.stop()
+        self.detectResults()
     
     def update_frame_list(self, frames):
         self.main_window.returned_frames_from_browsed_video = None
         self.main_window.returned_frames_from_browsed_video = frames
+        self.generate_white_frames()
     
     def update_frame(self, frame):
         if frame is not None and self.main_window.is_playing:
@@ -127,13 +134,14 @@ class Analytics:
         video_path = self.main_window.videoDirectory.text()
         if video_path is not None:
             self.pose_detection_thread = PoseDetectionThread(
-                video_path=video_path,
+                video_frames = self.main_window.returned_frames_from_browsed_video ,
+                main_window=self.main_window,
                 humanDetectionModel=self.human_detect_model,
                 humanDetectConf=0.5,
                 humanPoseModel = self.human_pose_model,
                 humanPoseConf=0.5
             )
-            self.pose_detection_thread.processed_results.connect(self.update_detection_results)
+            self.pose_detection_thread.human_detection_results.connect(self.update_detection_results)
             self.pose_detection_thread.human_detection_progress_update.connect(self.update_import_progress_bar)
             self.pose_detection_thread.start()
 
@@ -143,7 +151,9 @@ class Analytics:
     
     def update_detection_results(self, results_list):
         self.detectionResults = results_list
+        print(self.detectionResults[0])
     
     def closeEvent(self, event):
         self.video_processor.stop()
+        self.white_frame_generator.stop()
         event.accept()
