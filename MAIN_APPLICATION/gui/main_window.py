@@ -53,6 +53,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         #============ FOR IMPORTING VIDEO TAB ===========
         
+        
+        
         #Create INSTANCES\
         self.human_detect_model = YOLO("yolov8n.pt")
         self.human_pose_model = YOLO("yolov8n-pose.pt")

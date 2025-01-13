@@ -112,7 +112,6 @@ class StudentTracker:
                 else:
                     print("One of the attributes is None:", box.id, box.xyxy, box.cls)
                     
-            pose_results.append(per_frame)
             
         return student_dict #TAKE NOTE
     

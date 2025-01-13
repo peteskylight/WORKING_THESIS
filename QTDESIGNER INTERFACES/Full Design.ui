@@ -961,6 +961,18 @@ Points</string>
          <italic>true</italic>
         </font>
        </property>
+       <property name="text">
+        <string>Import a video file to be analyzed.</string>
+       </property>
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+       <property name="placeholderText">
+        <string>Find a video file</string>
+       </property>
+       <property name="clearButtonEnabled">
+        <bool>false</bool>
+       </property>
       </widget>
       <widget class="QPushButton" name="import_video_button">
        <property name="geometry">
@@ -1114,8 +1126,8 @@ Points</string>
         </font>
        </property>
        <property name="text">
-        <string>[IMPORTING
-VIDEO]</string>
+        <string>[ IMPORT A 
+VIDEO ]</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignmentFlag::AlignCenter</set>

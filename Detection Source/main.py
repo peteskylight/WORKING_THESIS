@@ -41,7 +41,7 @@ def main():
                                                        read_from_stub=None,
                                                        stub_path=student_detections_results
                                                        )
-    
+     
     #===POSE ESTIMATION===
     student_pose_results = student_tracker.detect_keypoints(frames=video_frames,
                                                             student_dicts=student_detections)

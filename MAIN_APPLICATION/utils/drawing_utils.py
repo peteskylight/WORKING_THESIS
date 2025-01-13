@@ -17,11 +17,11 @@ class DrawingUtils:
         cv2.rectangle(frame, (x, y), (w, h), (0, 255, 0), 2)
         cv2.putText(frame, "Tester", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
-    def draw_bounding_box_import(self, frame, box, color):
+    def draw_bounding_box_import(self, frame, bbox, track_id):
         # Draw bounding box
-        x, y, w, h = int(box[0]), int(box[1]), int(box[2]), int(box[3])
-        cv2.rectangle(frame, (x, y), (w, h), (0, 255, 0), 2)
-        cv2.putText(frame, "Tester", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color , 2)
+        x1, y1, x2, y2 = bbox
+        cv2.putText(frame, f"Student ID: {track_id}", (int(bbox[0]), int(bbox[1] - 10)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
+        cv2.rectangle(frame, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 2)
     
     def drawPoseLandmarks(self, frame, keypoints):
         for keypoint in keypoints:
@@ -74,7 +74,7 @@ class DrawingKeyPointsThread(QThread):
         total_frames = len(self.white_frames)
         
         for white_frame in self.white_frames:
-            for keypoint in self.keypoints_listnts:
+            for keypoint in self.keypoints_list:
                 x = int(keypoint[0] * white_frame.shape[1])
                 y = int(keypoint[1] * white_frame.shape[0])
                 cv2.circle(white_frame, (x, y), radius=5, color=(0, 255, 0), thickness=-1)
@@ -120,17 +120,14 @@ class DrawingBoundingBoxesThread(QThread):
         current_frame = 0
         frames = []
         for detections, white_frame in zip(self.results, self.white_frames_list):
-            for result in detections:
-                boxes = result.boxes.xyxy
-                for box in boxes:
-                    # Generate a random color for each box
-                    color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-                    
-                    #Draw in White Frames
-                    self.drawing_utils.draw_bounding_box_import(frame=white_frame, box=box, color=color)
+            
+            for track_id, bbox in detections.items():
+                # Generate a random color for each box
+                color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+                #Draw in White Frames
+                self.drawing_utils.draw_bounding_box_import(frame=white_frame, bbox=bbox, track_id=track_id)
             
             frames.append(white_frame)
-            
             current_frame += 1
             progress = int((current_frame / total_frames) * 100)
             self.progress_updated.emit(progress)

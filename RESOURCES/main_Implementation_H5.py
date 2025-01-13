@@ -3,14 +3,13 @@ import argparse
 import numpy as np
 import os
 import torch
-
+ 
 from ultralytics import YOLO
 from ultralytics.utils.plotting import Annotator
 #from ultralytics.yolo.v8.detect.predict import Detection
 
 from tensorflow.keras.models import load_model
 
-from utils import CvFpsCalc #FOR FPS
 
 import torch #========================================> GPU IMPORTANT <========
 
@@ -97,7 +96,6 @@ def main():
     #PARAMETERS AREA
     cameraInput = 0
     camera = cv2.VideoCapture(cameraInput)
-    getFPS = CvFpsCalc(buffer_len=10)
 
     args = parse_arguments()
     frameWidth, frameHeight = args.webcam_resolution
@@ -108,7 +106,6 @@ def main():
 
     while camera.isOpened():
         # Read a frame from the camera
-        fps = getFPS.get()
 
         ret, frame = camera.read()
         
@@ -149,7 +146,7 @@ def main():
 
             drawBoundingBox(humanResults, img, recentAction)
 
-            cv2.putText(img, "FPS:" + str(fps), (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
+            cv2.putText(img, "FPS:", (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
                      1.0, (255,255,255), 4, cv2.LINE_AA)
         
             cv2.imshow('Test Frame', img)
