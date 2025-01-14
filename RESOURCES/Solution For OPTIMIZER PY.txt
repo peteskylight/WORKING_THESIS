@@ -1,0 +1,18 @@
+C:\Users\THESIS_WORKSPACE\Desktop\WORKING_THESIS\THESISVIRTUALENV\lib\site-packages\torch\optim\optimizer.py
+
+Open the optimizer.py file.
+
+Add the following import statement at the top of the file:
+
+from typing import TypeVar, Callable, Optional, Tuple
+
+
+Define a type variable T that represents the Optimizer class:
+
+T = TypeVar('T', bound='Optimizer')
+
+
+Modify the OptimizerPreHook and OptimizerPostHook type hints to use the type variable T:
+
+OptimizerPreHook: TypeAlias = Callable[[T, Args, Kwargs], Optional[Tuple[Args, Kwargs]]]  # type: ignore[misc]
+OptimizerPostHook: TypeAlias = Callable[[T, Args, Kwargs], None]  # type: ignore[misc]
