@@ -10,9 +10,9 @@ from utils import(VideoUtils,
 def main():
 
     #===INITIALIZATIONS===
-    student_tracker = StudentTracker(humanDetectionModel='yolov8n.pt',
+    student_tracker = StudentTracker(humanDetectionModel='yolov8m.pt',
                                      humanDetectConf=0.4,
-                                     humanPoseModel='yolov8n-pose.pt',
+                                     humanPoseModel='yolov8m-pose.pt',
                                      humanPoseConf=0.4
                                      )
 
@@ -45,7 +45,7 @@ def main():
     #===POSE ESTIMATION===
     student_pose_results = student_tracker.detect_keypoints(frames=video_frames,
                                                             student_dicts=student_detections)
-    
+     
     
     #Generate White Frames
     white_frames = []

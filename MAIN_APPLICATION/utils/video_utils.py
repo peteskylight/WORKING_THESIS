@@ -15,7 +15,7 @@ class VideoUtils:
             if not ret:
                 break
             if resize_frames:
-                resized_frame = cv2.resize(frame, (640, 384))
+                resized_frame = cv2.resize(frame, (1088, 608))
                 frames.append(resized_frame)
             else:
                 frames.append(frame)
@@ -97,7 +97,7 @@ class VideoProcessor(QThread):
             if not ret:
                 break
             if self.resize_frames:
-                frame = cv2.resize(frame, (640, 384))
+                frame = cv2.resize(frame, (1088, 608))
             frames.append(frame)
             current_frame += 1
             

@@ -114,8 +114,9 @@ class HumanDetectionThread(QThread):
                                                   conf = self.human_detection_confidence,
                                                   persist=True,
                                                   classes=0,
-                                                  iou=0.5,
-                                                  agnostic_nms=True)[0]
+                                                  iou=0.3,
+                                                  agnostic_nms=True,
+                                                  imgsz = (1088, 608))[0]
         
             id_name_dict = results.names
             
@@ -180,14 +181,23 @@ class PoseDetectionThread(QThread):
                 # Extract the bounding box coordinates
                 x1, y1, x2, y2 = map(int, bbox)
                 cropped_image = frame[y1:y2, x1:x2]
-                try:
-                    # Perform pose detection on the cropped image
-                    _, poseResults = self.human_pose_model(cropped_image, self.human_pose_confidence)
-                    keypoints_normalized = np.array(poseResults[0].keypoints.xyn.cpu().numpy()[0])
-                    keypoints_dict[track_id] = keypoints_normalized
-                    
-                except Exception as e:
-                    print(f"Error detecting keypoints for track ID {track_id}: {e}")
+            try:
+                print("OK")
+                result = self.human_pose_model(cropped_image, self.human_pose_confidence)
+                result_list = list(result)
+                if result_list:
+                    poseResults = result_list[0]
+                    if poseResults.keypoints:
+                        keypoints_normalized = np.array(poseResults[0].keypoints.xyn.cpu().numpy()[0])
+                        keypoints_dict[track_id] = keypoints_normalized
+                    else:
+                        keypoints_dict[track_id] = np.zeros((17, 3))
+                else:
+                    print("Zero results")
+                    keypoints_dict[track_id] = np.zeros((17, 3))
+            except Exception as e:
+                print("Zero results")
+                keypoints_dict[track_id] = np.zeros((17, 3))
             
             pose_results_list.append(keypoints_dict)
             
@@ -197,4 +207,8 @@ class PoseDetectionThread(QThread):
             
         
         self.pose_detection_results.emit(pose_results_list)
+        #print(pose_results_list)
         
+    def stop(self):
+        self._running = False
+        self.wait()
