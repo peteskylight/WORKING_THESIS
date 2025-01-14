@@ -189,7 +189,6 @@ class PoseDetectionThread(QThread):
                 except Exception as e:
                     print(f"Error detecting keypoints for track ID {track_id}: {e}")
             
-            
             pose_results_list.append(keypoints_dict)
             
             current_frame += 1
