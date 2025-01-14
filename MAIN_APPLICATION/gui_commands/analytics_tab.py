@@ -183,6 +183,7 @@ class Analytics:
     
     def update_pose_detection_results(self, pose_results):
         self.humanPoseDetectionResults = pose_results
+        print(len(pose_results))
         #gENERATE wHITE FRAMES
         self.generate_white_frames()
         
