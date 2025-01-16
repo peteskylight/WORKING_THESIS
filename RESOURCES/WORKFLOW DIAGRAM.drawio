@@ -1,0 +1,73 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0" version="25.0.3">
+  <diagram name="Page-1" id="DM4cedBiBckcKr0puUbF">
+    <mxGraphModel dx="1090" dy="586" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="Q9xCs_qFAoikC12M6Q10-3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="Q9xCs_qFAoikC12M6Q10-1" target="Q9xCs_qFAoikC12M6Q10-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Q9xCs_qFAoikC12M6Q10-1" value="Gathering of related literatures about observable student behaviors during examinations." style="rounded=0;whiteSpace=wrap;html=1;fontSize=14;align=center;" vertex="1" parent="1">
+          <mxGeometry x="40" y="80" width="160" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="Q9xCs_qFAoikC12M6Q10-5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="Q9xCs_qFAoikC12M6Q10-2" target="Q9xCs_qFAoikC12M6Q10-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Q9xCs_qFAoikC12M6Q10-2" value="Verify the gathered data&lt;div&gt;to a licensed&lt;/div&gt;&lt;div&gt;psychologist.&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=14;align=center;" vertex="1" parent="1">
+          <mxGeometry x="240" y="80" width="160" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="Q9xCs_qFAoikC12M6Q10-10" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="Q9xCs_qFAoikC12M6Q10-4" target="Q9xCs_qFAoikC12M6Q10-9">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Q9xCs_qFAoikC12M6Q10-4" value="Secure an ethical clearance for the study protocol." style="rounded=0;whiteSpace=wrap;html=1;fontSize=14;align=center;" vertex="1" parent="1">
+          <mxGeometry x="440" y="80" width="160" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="Q9xCs_qFAoikC12M6Q10-12" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="Q9xCs_qFAoikC12M6Q10-9" target="Q9xCs_qFAoikC12M6Q10-11">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Q9xCs_qFAoikC12M6Q10-9" value="Create a dataset based on the gathered and verified data." style="rounded=0;whiteSpace=wrap;html=1;fontSize=14;align=center;" vertex="1" parent="1">
+          <mxGeometry x="640" y="80" width="160" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="Q9xCs_qFAoikC12M6Q10-14" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="Q9xCs_qFAoikC12M6Q10-11" target="Q9xCs_qFAoikC12M6Q10-13">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Q9xCs_qFAoikC12M6Q10-11" value="Train an AI model (action recognition) based on the dataset created." style="rounded=0;whiteSpace=wrap;html=1;fontSize=14;align=center;" vertex="1" parent="1">
+          <mxGeometry x="640" y="220" width="160" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="Q9xCs_qFAoikC12M6Q10-16" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="Q9xCs_qFAoikC12M6Q10-13" target="Q9xCs_qFAoikC12M6Q10-15">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Q9xCs_qFAoikC12M6Q10-13" value="Develop an application that can visualize the detected behaviors." style="rounded=0;whiteSpace=wrap;html=1;fontSize=14;align=center;" vertex="1" parent="1">
+          <mxGeometry x="440" y="220" width="160" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="Q9xCs_qFAoikC12M6Q10-18" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="Q9xCs_qFAoikC12M6Q10-15" target="Q9xCs_qFAoikC12M6Q10-17">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Q9xCs_qFAoikC12M6Q10-15" value="Integrate the AI models to the developed software." style="rounded=0;whiteSpace=wrap;html=1;fontSize=14;align=center;" vertex="1" parent="1">
+          <mxGeometry x="240" y="220" width="160" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="Q9xCs_qFAoikC12M6Q10-20" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="Q9xCs_qFAoikC12M6Q10-17" target="Q9xCs_qFAoikC12M6Q10-19">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Q9xCs_qFAoikC12M6Q10-17" value="Record an examination footage from the chosen participants." style="rounded=0;whiteSpace=wrap;html=1;fontSize=14;align=center;" vertex="1" parent="1">
+          <mxGeometry x="35" y="220" width="170" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="Q9xCs_qFAoikC12M6Q10-22" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="Q9xCs_qFAoikC12M6Q10-19" target="Q9xCs_qFAoikC12M6Q10-21">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Q9xCs_qFAoikC12M6Q10-19" value="Import and analyze the video footage on the software." style="rounded=0;whiteSpace=wrap;html=1;fontSize=14;align=center;" vertex="1" parent="1">
+          <mxGeometry x="35" y="360" width="170" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="Q9xCs_qFAoikC12M6Q10-24" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="Q9xCs_qFAoikC12M6Q10-21" target="Q9xCs_qFAoikC12M6Q10-23">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Q9xCs_qFAoikC12M6Q10-21" value="Evaluate the system and model&#39;s performance." style="rounded=0;whiteSpace=wrap;html=1;fontSize=14;align=center;" vertex="1" parent="1">
+          <mxGeometry x="240" y="360" width="160" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="Q9xCs_qFAoikC12M6Q10-23" value="Draw recommendations and conclusions based from the findings and evaluations." style="rounded=0;whiteSpace=wrap;html=1;fontSize=14;align=center;" vertex="1" parent="1">
+          <mxGeometry x="435" y="360" width="165" height="100" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
