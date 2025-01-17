@@ -20,14 +20,14 @@ class Analytics:
     def __init__(self, main_window):
         self.main_window = main_window
         
-        self.human_detect_model = "yolov8x.pt"
+        self.human_detect_model = "yolov8n.pt"
         self.human_detect_conf = 0.5
-        self.human_pose_model = "yolov8x-pose.pt"
+        self.human_pose_model = "yolov8n-pose.pt"
         self.human_pose_conf = 0.5
         
         self.returned_frames = []
         self.humanDetectionResults = []
-        self.humanPoseDetectionResults = []
+        self.humanPoseDetectionResults = None
         self.isImportDone = False
         self.videoHeight = None
         self.videoWidth = None

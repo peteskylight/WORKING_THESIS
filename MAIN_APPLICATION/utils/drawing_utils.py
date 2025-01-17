@@ -74,10 +74,10 @@ class DrawingKeyPointsThread(QThread):
         current_frame = 0
         total_frames = len(self.white_frames)
         
-        for white_frame, keypoint, detection in zip(self.white_frames, self.keypoints_list, self.human_detections):
-            for track_id in detection:
-                if track_id in keypoint:
-                    keypoints = keypoint[track_id]
+        for white_frame, keypoints_dict, detection in zip(self.white_frames, self.keypoints_list, self.human_detections):
+            for track_id in keypoints_dict:
+                if track_id in detection:
+                    keypoints = keypoints_dict[track_id]
                     bbox = detection[track_id]
                     bbox_x, bbox_y, bbox_w, bbox_h = bbox
 
