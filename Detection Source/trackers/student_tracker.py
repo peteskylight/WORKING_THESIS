@@ -100,7 +100,7 @@ class StudentTracker:
                 #     #Track ID
                     
                 # except Exception as e:
-                #     print(e)
+                #     print(e) 
                     
                 if box.id is not None and box.xyxy is not None and box.cls is not None:
                     track_id = int(box.id.tolist()[0])

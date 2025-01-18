@@ -97,19 +97,14 @@ class HumanDetectionThread(QThread):
         self.human_detection_confidence = humanDetectConf
         self.human_pose_model = YOLO(humanPoseModel)
         self.human_pose_confidence = humanPoseConf
-        
+        self.student_detections_dicts = []
         self.detection = PoseDetection(humanDetectionModel, humanDetectConf, humanPoseModel, humanPoseConf)
         self._running = True
 
     def run(self):
         total_frames = len(self.video_frames)
         current_frame = 0
-        student_detections_dicts = []
-        
-        
         for frame in self.video_frames:
-            
-            
             results = self.human_detection_model.track(frame,
                                                   conf = self.human_detection_confidence,
                                                   persist=True,
@@ -117,11 +112,8 @@ class HumanDetectionThread(QThread):
                                                   iou=0.3,
                                                   agnostic_nms=True,
                                                   imgsz = (1088, 608))[0]
-        
             id_name_dict = results.names
-            
             student_dict = {}
-            
             for result in results:
                 boxes = result.boxes
                 for box in boxes:
@@ -140,14 +132,12 @@ class HumanDetectionThread(QThread):
                     else:
                         print("One of the attributes is None:", box.id, box.xyxy, box.cls)
             
-            student_detections_dicts.append(student_dict)
-                
+            self.student_detections_dicts.append(student_dict)
             current_frame += 1
             progress = int((current_frame / total_frames) * 100)
             self.human_detection_progress_update.emit(progress)
         
-        self.human_track_results.emit(student_detections_dicts)
-        
+        self.human_track_results.emit(self.student_detections_dicts)
 
     def stop(self):
         self._running = False
@@ -158,7 +148,7 @@ class PoseDetectionThread(QThread):
     pose_detection_results = Signal(object)
     pose_detection_progress_update = Signal(object)
     
-    def __init__(self,original_frames, human_detect_results, humanDetectionModel, humanDetectConf, humanPoseModel, humanPoseConf):
+    def __init__(self, original_frames, human_detect_results, humanDetectionModel, humanDetectConf, humanPoseModel, humanPoseConf):
         super().__init__()
         
         self.human_detection_model = YOLO(humanDetectionModel)
@@ -176,38 +166,30 @@ class PoseDetectionThread(QThread):
         pose_results_list = []
         
         for frame, detection in zip(self.original_frames, self.human_detect_results):
-            keypoints_dict = {}
+            keypoints_dict = {}  # Initialize here to store keypoints for all detections in the frame
             for track_id, bbox in detection.items():
                 # Extract the bounding box coordinates
                 x1, y1, x2, y2 = map(int, bbox)
                 cropped_image = frame[y1:y2, x1:x2]
-            try:
-                print("OK")
-                result = self.human_pose_model(cropped_image, self.human_pose_confidence)
-                result_list = list(result)
-                if result_list:
-                    poseResults = result_list[0]
-                    if poseResults.keypoints:
-                        keypoints_normalized = np.array(poseResults[0].keypoints.xyn.cpu().numpy()[0])
-                        keypoints_dict[track_id] = keypoints_normalized
-                    else:
-                        keypoints_dict[track_id] = np.zeros((17, 3))
-                else:
-                    print("Zero results")
-                    keypoints_dict[track_id] = np.zeros((17, 3))
-            except Exception as e:
-                print("Zero results")
-                keypoints_dict[track_id] = np.zeros((17, 3))
+ 
+                try:
+                    # Perform pose detection on the cropped image
+                    results = self.human_pose_model(cropped_image, self.human_pose_confidence)
+                    for result in results:
+                        if result.keypoints:
+                            keypoints_normalized = np.array(result.keypoints.xyn.cpu().numpy()[0])
+                            keypoints_dict[track_id] = keypoints_normalized
+                        else:
+                            print(f"Error processing track ID {track_id}: {e}")
+                except Exception as e:
+                    print(f"Error processing track ID {track_id}: {e}")
             
             pose_results_list.append(keypoints_dict)
-            
             current_frame += 1
             progress = int((current_frame / total_frames) * 100)
             self.pose_detection_progress_update.emit(progress)
-            
         
         self.pose_detection_results.emit(pose_results_list)
-        #print(pose_results_list)
         
     def stop(self):
         self._running = False
