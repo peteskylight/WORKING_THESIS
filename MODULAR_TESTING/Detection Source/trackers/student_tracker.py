@@ -137,7 +137,6 @@ class StudentTracker:
                     keypoints_dict[track_id] = keypoints_normalized
                 except Exception as e:
                     print(f"Error detecting keypoints for track ID {track_id}: {e}")
-
             keypoints_dicts.append(keypoints_dict)
 
         return keypoints_dicts
