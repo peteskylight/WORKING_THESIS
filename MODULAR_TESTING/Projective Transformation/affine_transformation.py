@@ -1,36 +1,26 @@
 import cv2
 import numpy as np
 from ultralytics import YOLO
-
 # Load the YOLO model
 model = YOLO('yolov8n.pt')
-
 # Load the image
-image = cv2.imread(r"C:\Users\peter\Desktop\WORKING THESIS FILES\RESOURCES\Examination Sample Images\1.jpg")
+image = cv2.imread(r"C:\Users\USER\Desktop\WORKING_THESIS\RESOURCES\Examination Sample Images\1.jpg")
 height, width, channels = image.shape
-
 # Scale down the image to 75%
 scale_percent = 75
 new_width = int(width * scale_percent / 100)
 new_height = int(height * scale_percent / 100)
 dim = (new_width, new_height)
 image = cv2.resize(image, dim, interpolation=cv2.INTER_AREA)
-
 # Perform detection
 results = model(image)
-
 # Create a white frame
 white_frame = np.ones_like(image) * 255
-
 # Define points for affine transformation
 pts1 = np.float32([[0, 0], [new_width, 0], [0, new_height]])
 pts2 = np.float32([[0, 0], [new_width, 0], [int(0.2 * new_width), new_height]])
-
 # Apply affine transformation to the white frame
 M = cv2.getAffineTransform(pts1, pts2)
-
-
-
 # Draw bounding boxes around detected persons and apply affine transformation to coordinates
 for idx, result in enumerate(results):
     boxes = result.boxes
@@ -53,10 +43,8 @@ for idx, result in enumerate(results):
             
             # Draw bounding box on the white frame with transformed coordinates
             cv2.rectangle(white_frame, (int(tx1), int(ty1)), (int(tx2), int(ty2)), color.tolist(), 2)
-
 # Combine the original image and the transformed white frame
 combined_image = np.hstack((image, white_frame))
-
 # Display the result
 cv2.imshow('Result', combined_image)
 cv2.waitKey(0)

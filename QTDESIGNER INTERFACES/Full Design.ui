@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1200</width>
-    <height>690</height>
+    <height>689</height>
    </rect>
   </property>
   <property name="font">
@@ -19,7 +19,7 @@
    <string>Pose Estimation Analytics</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QTabWidget" name="mainTab">
+   <widget class="QTabWidget" name="MainTab">
     <property name="enabled">
      <bool>true</bool>
     </property>
@@ -957,7 +957,7 @@ Points</string>
        </property>
        <property name="font">
         <font>
-         <pointsize>14</pointsize>
+         <pointsize>12</pointsize>
          <italic>true</italic>
         </font>
        </property>
@@ -1014,85 +1014,13 @@ Points</string>
         <string>Get Analytics</string>
        </property>
       </widget>
-      <widget class="QLabel" name="label_19">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>140</y>
-         <width>101</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>12</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>File name:</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_20">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>170</y>
-         <width>111</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>12</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Video Duration:</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_21">
-       <property name="geometry">
-        <rect>
-         <x>240</x>
-         <y>140</y>
-         <width>121</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>12</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>File Size:</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_22">
-       <property name="geometry">
-        <rect>
-         <x>240</x>
-         <y>170</y>
-         <width>141</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>12</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Frame Dimensions:</string>
-       </property>
-      </widget>
       <widget class="QProgressBar" name="importProgressBar">
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>70</y>
+         <y>80</y>
          <width>331</width>
-         <height>61</height>
+         <height>41</height>
         </rect>
        </property>
        <property name="font">
@@ -1128,6 +1056,82 @@ Points</string>
        <property name="text">
         <string>[ IMPORT A 
 VIDEO ]</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignmentFlag::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="centerOption">
+       <property name="geometry">
+        <rect>
+         <x>190</x>
+         <y>160</y>
+         <width>91</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>13</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Center</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="leftCornerOption">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>160</y>
+         <width>121</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>13</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Left Corner</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="rightCornerOption">
+       <property name="geometry">
+        <rect>
+         <x>330</x>
+         <y>160</y>
+         <width>131</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>13</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Right Corner</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_19">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>120</y>
+         <width>471</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>14</pointsize>
+         <italic>true</italic>
+        </font>
+       </property>
+       <property name="text">
+        <string>Video Orientation</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -1213,7 +1217,7 @@ VIDEO ]</string>
        </rect>
       </property>
       <property name="autoFillBackground">
-       <bool>true</bool>
+       <bool>false</bool>
       </property>
       <property name="text">
        <string>Show Bounding Boxes</string>
@@ -1229,7 +1233,7 @@ VIDEO ]</string>
        </rect>
       </property>
       <property name="autoFillBackground">
-       <bool>true</bool>
+       <bool>false</bool>
       </property>
       <property name="text">
        <string>Show Keypoints</string>
@@ -1240,6 +1244,163 @@ VIDEO ]</string>
      <attribute name="title">
       <string>Analytics</string>
      </attribute>
+     <widget class="QTableView" name="classroomViewTable">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>50</y>
+        <width>501</width>
+        <height>311</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton">
+      <property name="geometry">
+       <rect>
+        <x>330</x>
+        <y>370</y>
+        <width>191</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>16</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Refresh Heatmap</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_13">
+      <property name="geometry">
+       <rect>
+        <x>670</x>
+        <y>50</y>
+        <width>472</width>
+        <height>281</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>18</pointsize>
+        <italic>true</italic>
+       </font>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Shape::Panel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Shadow::Raised</enum>
+      </property>
+      <property name="lineWidth">
+       <number>2</number>
+      </property>
+      <property name="text">
+       <string>Analyze an Examination Footage First</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_14">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>10</y>
+        <width>501</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Segoe UI</family>
+        <pointsize>20</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>CLASSROOM HEATMAP</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_40">
+      <property name="geometry">
+       <rect>
+        <x>670</x>
+        <y>0</y>
+        <width>471</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Segoe UI</family>
+        <pointsize>20</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>EXAMINATION FOOTAGE PLAYBACK</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="radioButton">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>370</y>
+        <width>281</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Average Test Taking Time</string>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="radioButton_2">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>400</y>
+        <width>281</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Behavior Changes Frequency</string>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="comboBox">
+      <property name="geometry">
+       <rect>
+        <x>50</x>
+        <y>440</y>
+        <width>241</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+       </font>
+      </property>
+      <property name="currentText">
+       <string/>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="createDatasetTab">
      <attribute name="title">

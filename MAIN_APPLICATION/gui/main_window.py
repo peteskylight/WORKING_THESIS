@@ -4,7 +4,7 @@ import os
 import numpy as np
 import psutil
 import GPUtil
-from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QTableWidgetItem, QWidget
+from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QTableWidgetItem, QWidget, QButtonGroup
 from PySide6.QtCore import QRect, QCoreApplication, QMetaObject, QTimer, QTime, Qt, QDate
 from PySide6.QtGui import QScreen, QImage, QPixmap
 
@@ -60,6 +60,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         #============ FOR IMPORTING VIDEO TAB ===========
         
+        #Group the video orientation buttons
+
+        self.button_group = QButtonGroup(self)
+        self.button_group.addButton(self.leftCornerOption)
+        self.button_group.addButton(self.centerOption)
+        self.button_group.addButton(self.rightCornerOption)
         
         
         #Create INSTANCES\
