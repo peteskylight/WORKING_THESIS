@@ -39,13 +39,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.videoHeight = None
         
         
-        self.createDatasetTab_index = 1
+        
         self.fps_flider_value = 30
         self.returned_frames_from_browsed_video = None
         
+        self.analyticsTab_index = 1
+        self.createDatasetTab_index = 2
         self.hidden_tab = self.MainTab.widget(self.createDatasetTab_index)  # Index of the tab you want to hide
         self.hidden_tab_index = self.createDatasetTab_index  # Index of the tab you want to hide
         self.hidden_tab_title = self.MainTab.tabText(self.hidden_tab_index)
+        
+        self.hidden_tab_title = self.MainTab.tabText(self.analyticsTab_index) 
+        self.hidden_tab_index = self.analyticsTab_index
+        self.hidden_tab_title = self.MainTab.tabText(self.hidden_tab_index)
+        
         # Initially hide the tab
         self.MainTab.removeTab(self.hidden_tab_index)
         # Connect the QAction's triggered signal to the toggle_tab method

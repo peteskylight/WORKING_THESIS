@@ -14,7 +14,8 @@ from trackers import (PoseDetection,
                       HumanDetectionThread,
                       PoseDetectionThread)
 
-#Main Analytics Tab Class
+#Main Importing Tab Class
+#I misnamed the class hehe but this is the class for the importing the video and previewing the video
 
 class Analytics:
     def __init__(self, main_window):
