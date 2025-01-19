@@ -65,6 +65,7 @@ while cap.isOpened():
     M = cv2.getPerspectiveTransform(pts1, pts2)
 
     # Extract coordinates of detected persons with unique IDs
+    # Extract coordinates of detected persons with unique IDs
     person_coords = []
     person_ids = []
     for result in results:
@@ -72,8 +73,8 @@ while cap.isOpened():
         for box in boxes:
             if box.cls == 0:  # Class ID 0 is for 'person' in COCO dataset
                 x1, y1, x2, y2 = box.xyxy[0]
-                head_center = np.array([[(x1 + x2) / 2, y1]], dtype=np.float32)
-                person_coords.append(head_center[0])
+                bbox_center = np.array([[(x1 + x2) / 2, (y1 + y2) / 2]], dtype=np.float32)  # Center of the bounding box
+                person_coords.append(bbox_center[0])
                 person_ids.append(int(box.id))  # Ensure person_id is an integer
 
     # Apply perspective transformation to the detected persons
@@ -81,6 +82,9 @@ while cap.isOpened():
     for coord in person_coords:
         transformed_coord = cv2.perspectiveTransform(np.array([[coord]], dtype=np.float32), M)[0][0]
         transformed_coords.append(transformed_coord)
+
+    
+
 
     # Apply K-means clustering to group detected persons
     if len(transformed_coords) > 0:
@@ -115,6 +119,7 @@ while cap.isOpened():
                 assigned_cells.add(nearest_cell)
 
     # Plot each cluster in a cell of a table
+# Plot each cluster in a cell of a table
     for idx, coord in enumerate(transformed_coords):
         person_id = person_ids[idx]
         color = colors[person_id % num_colors]
@@ -123,10 +128,10 @@ while cap.isOpened():
         bottom_right = ((col + 1) * cell_width, (row + 1) * cell_height)
         cv2.rectangle(white_frame, top_left, bottom_right, (0, 255, 0), -1)
 
-        # Draw circles on the detected persons' heads with the same color
+        # Draw circles in the middle of the bounding box
         cv2.circle(frame, (int(person_coords[idx][0]), int(person_coords[idx][1])), 5, (0, 255, 0), -1)
 
-        # Draw text at the top of their head on the frame
+        # Draw text at the top of the bounding box on the frame
         text = f"Row: {row + 1}, Col: {col + 1}"
         cv2.putText(frame, text, (int(person_coords[idx][0]), int(person_coords[idx][1]) - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
