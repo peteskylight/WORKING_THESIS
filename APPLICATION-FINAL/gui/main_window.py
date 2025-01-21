@@ -19,7 +19,8 @@ from utils.drawing_utils import DrawingUtils
 from gui import Ui_MainWindow
 from trackers import PoseDetection
 from utils import VideoProcessor, Tools, VideoUtils
-from gui_commands import CenterVideo
+from gui_commands import (CenterVideo,
+                          FrontVideo)
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
@@ -30,6 +31,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #==== Create INSTANCES =========
         
         self.CenterVideo = CenterVideo(main_window=self)
+        self.FrontVideo = FrontVideo(main_window=self)
         
         self.drawing_utils = DrawingUtils()
         self.tools_utils = Tools()
@@ -40,6 +42,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.fps_flider_value = 30
         self.returned_frames_from_browsed_center_video = None
+        self.returned_frames_from_browsed_front_video = None
         
         self.centerTab_index = 1
         self.createDatasetTab_index = 2
@@ -80,7 +83,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         self.import_video_button_cernter.clicked.connect(self.CenterVideo.browse_video)
         self.play_pause_button_video_center.clicked.connect(self.CenterVideo.toggle_play_pause)
-        
+
+        self.import_video_button_front.clicked.connect(self.FrontVideo.browse_video)
+        self.play_pause_button_video_front.clicked.connect(self.FrontVideo.toggle_play_pause)
+
         self.video_interval = 1000 // self.fps_flider_value
         self.clock_interval = 1000  # 1 second interval for clock
         self.toggle_record_label_interval = 750
