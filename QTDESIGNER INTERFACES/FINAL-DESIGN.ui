@@ -62,7 +62,7 @@
      <attribute name="title">
       <string>Import Video</string>
      </attribute>
-     <widget class="QLabel" name="video_preview_label">
+     <widget class="QLabel" name="video_preview_label_center">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -283,7 +283,7 @@ Frequency</string>
        </widget>
       </widget>
      </widget>
-     <widget class="QLabel" name="video_keypoints_label">
+     <widget class="QLabel" name="video_preview_label_front">
       <property name="geometry">
        <rect>
         <x>490</x>
@@ -345,7 +345,7 @@ Frequency</string>
         <string>Center Video File Location:</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="videoDirectory">
+      <widget class="QLineEdit" name="videoDirectory_center">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -373,7 +373,7 @@ Frequency</string>
         <bool>false</bool>
        </property>
       </widget>
-      <widget class="QPushButton" name="import_video_button">
+      <widget class="QPushButton" name="import_video_button_cernter">
        <property name="geometry">
         <rect>
          <x>180</x>
@@ -413,7 +413,7 @@ Frequency</string>
         <string>Get Analytics</string>
        </property>
       </widget>
-      <widget class="QProgressBar" name="importProgressBar">
+      <widget class="QProgressBar" name="importProgressBar_center">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -437,7 +437,7 @@ Frequency</string>
         <bool>false</bool>
        </property>
       </widget>
-      <widget class="QLabel" name="status_import_label">
+      <widget class="QLabel" name="status_label_center">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -459,7 +459,7 @@ Frequency</string>
         <set>Qt::AlignmentFlag::AlignCenter</set>
        </property>
       </widget>
-      <widget class="QLineEdit" name="videoDirectory_2">
+      <widget class="QLineEdit" name="videoDirectory_front">
        <property name="geometry">
         <rect>
          <x>490</x>
@@ -487,7 +487,7 @@ Frequency</string>
         <bool>false</bool>
        </property>
       </widget>
-      <widget class="QProgressBar" name="importProgressBar_2">
+      <widget class="QProgressBar" name="importProgressBar_front">
        <property name="geometry">
         <rect>
          <x>490</x>
@@ -527,10 +527,10 @@ Frequency</string>
         </font>
        </property>
        <property name="text">
-        <string>Center Video File Location:</string>
+        <string>Front Video File Location:</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="import_video_button_2">
+      <widget class="QPushButton" name="import_video_button_front">
        <property name="geometry">
         <rect>
          <x>660</x>
@@ -552,7 +552,7 @@ Frequency</string>
         <string>Browse</string>
        </property>
       </widget>
-      <widget class="QLabel" name="status_import_label_2">
+      <widget class="QLabel" name="status_label_front">
        <property name="geometry">
         <rect>
          <x>490</x>
@@ -623,7 +623,7 @@ Frequency</string>
        <set>Qt::AlignmentFlag::AlignCenter</set>
       </property>
      </widget>
-     <widget class="QPushButton" name="play_pause_button_video_1">
+     <widget class="QPushButton" name="play_pause_button_video_center">
       <property name="enabled">
        <bool>false</bool>
       </property>
@@ -644,7 +644,7 @@ Frequency</string>
        <string>PLAY</string>
       </property>
      </widget>
-     <widget class="QCheckBox" name="showBoundingBoxChkBox">
+     <widget class="QCheckBox" name="keypointsOnlyChkBox_Center">
       <property name="geometry">
        <rect>
         <x>200</x>
@@ -660,7 +660,7 @@ Frequency</string>
        <string>Keypoints Only</string>
       </property>
      </widget>
-     <widget class="QCheckBox" name="showKeyPointsChkBox">
+     <widget class="QCheckBox" name="keypointsOnlyChkBox_front">
       <property name="geometry">
        <rect>
         <x>670</x>
@@ -676,7 +676,7 @@ Frequency</string>
        <string>Keypoints Only</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="play_pause_button_video_2">
+     <widget class="QPushButton" name="play_pause_button_video_front">
       <property name="enabled">
        <bool>false</bool>
       </property>
@@ -697,16 +697,16 @@ Frequency</string>
        <string>PLAY</string>
       </property>
      </widget>
-     <zorder>video_preview_label</zorder>
-     <zorder>video_keypoints_label</zorder>
+     <zorder>video_preview_label_center</zorder>
+     <zorder>video_preview_label_front</zorder>
      <zorder>frame_5</zorder>
      <zorder>label_29</zorder>
-     <zorder>play_pause_button_video_1</zorder>
-     <zorder>showBoundingBoxChkBox</zorder>
+     <zorder>keypointsOnlyChkBox_Center</zorder>
      <zorder>label_30</zorder>
-     <zorder>showKeyPointsChkBox</zorder>
-     <zorder>play_pause_button_video_2</zorder>
+     <zorder>keypointsOnlyChkBox_front</zorder>
+     <zorder>play_pause_button_video_front</zorder>
      <zorder>groupBox_2</zorder>
+     <zorder>play_pause_button_video_center</zorder>
     </widget>
     <widget class="QWidget" name="analyticsTab">
      <attribute name="title">
