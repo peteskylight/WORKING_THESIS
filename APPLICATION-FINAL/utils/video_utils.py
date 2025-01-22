@@ -54,7 +54,7 @@ class WhiteFrameGenerator(QThread):
         current_frame = 0
         total_frames_length = self.number_of_frames
         for frame in range(total_frames_length):
-            white_frame = np.ones((self.videoHeight, self.videoWidth, 3), dtype=np.uint8) * 255 
+            white_frame = np.ones((self.videoHeight, self.videoWidth, 3), dtype=np.uint8) * 0 
             white_frames.append(white_frame)
             current_frame += 1
             progress = int(current_frame/total_frames_length *100)

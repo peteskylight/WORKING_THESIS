@@ -74,11 +74,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         self.human_detect_results = None
         self.video_processor = None
-        self.white_frames_preview = []
+        self.center_white_frames_preview = []
+        self.front_white_frames_preview = []
+
         self.human_detection_results = []
         
-        self.is_playing = False
-        
+        self.is_center_video_playing = False
+        self.is_front_video_playing = False
+
         self.frame_processing_value = None
         
         self.import_video_button_cernter.clicked.connect(self.CenterVideo.browse_video)
@@ -87,15 +90,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.import_video_button_front.clicked.connect(self.FrontVideo.browse_video)
         self.play_pause_button_video_front.clicked.connect(self.FrontVideo.toggle_play_pause)
 
-        self.video_interval = 1000 // self.fps_flider_value
+        #Adjust this according to video but meh. This is just the default. Just check the specs of the cam. Default naman sya all the times
+        self.center_video_interval = 1000//30 #30 fps
+        self.front_video_interval = 1000//30 #30 fps
         self.clock_interval = 1000  # 1 second interval for clock
         self.toggle_record_label_interval = 750
 
-        self.video_counter = 0
+        self.center_video_counter = 0
+        self.front_video_counter = 0
+        
         self.clock_counter = 0
         self.toggle_record_label_counter = 0
         self.toggle_import_indicator = 0
-        self.video_frame_counter = 0        
+        self.center_video_frame_counter = 0        
+        self.front_video_frame_counter = 0    
 
         
         #============ FOR CREATE DATASET TAB ============
@@ -138,19 +146,33 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.clock_counter += self.timer.interval()
         self.toggle_record_label_counter += self.timer.interval()
         
-        if self.is_playing:
-            self.video_counter += self.timer.interval()
-            if (self.video_counter >= self.video_interval):
-                if self.video_frame_counter >= len(self.returned_frames_from_browsed_center_video):
-                    self.video_frame_counter = 0 #Resets the playing of video
+        if self.is_center_video_playing:
+            self.center_video_counter += self.timer.interval()
+            if (self.center_video_counter >= self.center_video_interval):
+                if self.center_video_frame_counter >= len(self.returned_frames_from_browsed_center_video):
+                    self.center_video_frame_counter = 0 #Resets the playing of video
                 
                 if self.keypointsOnlyChkBox_Center.isChecked():
-                    self.CenterVideo.update_white_frame(self.white_frames_preview[self.video_frame_counter])
+                    self.CenterVideo.update_white_frame(self.center_white_frames_preview[self.center_video_frame_counter])
                 else:
-                    self.CenterVideo.update_frame(self.returned_frames_from_browsed_center_video[self.video_frame_counter])
+                    self.CenterVideo.update_frame(self.returned_frames_from_browsed_center_video[self.center_video_frame_counter])
                 
-                self.video_counter = 0
-                self.video_frame_counter += 1
+                self.center_video_counter = 0
+                self.center_video_frame_counter += 1
+        
+        if self.is_front_video_playing:
+            self.front_video_counter += self.timer.interval()
+            if (self.front_video_counter >= self.front_video_interval):
+                if self.front_video_frame_counter >= len(self.returned_frames_from_browsed_front_video):
+                    self.front_video_frame_counter = 0 #Resets the playing of video
+                
+                if self.keypointsOnlyChkBox_front.isChecked():
+                    self.FrontVideo.update_white_frame(self.front_white_frames_preview[self.front_video_frame_counter])
+                else:
+                    self.FrontVideo.update_frame(self.returned_frames_from_browsed_front_video[self.front_video_frame_counter])
+                
+                self.front_video_counter = 0
+                self.front_video_frame_counter += 1
 
         if self.clock_counter >= self.clock_interval:
             self.update_usage()

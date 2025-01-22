@@ -111,20 +111,20 @@ class CenterVideo:
         self.white_frame_generator.return_white_frames.connect(self.update_white_frame_list)
     
     def update_white_frame_list(self, frames):
-        self.main_window.white_frames_preview = frames
+        self.main_window.center_white_frames_preview = frames
         self.drawBoundingBoxes()
     
 
     def drawBoundingBoxes(self):
         self.main_window.status_label_center.setText("[ DRAWING BOXES ]")
         self.draw_bbox = DrawingBoundingBoxesThread(results=self.humanDetectionResults,
-                                                    white_frames=self.main_window.white_frames_preview)
+                                                    white_frames=self.main_window.center_white_frames_preview)
         self.draw_bbox.frame_drawn_list.connect(self.update_white_frame_list_then_draw_keypoints)
         self.draw_bbox.progress_updated.connect(self.update_progress_bar)
         self.draw_bbox.start()
     
     def update_white_frame_list_then_draw_keypoints(self, frames):
-        self.main_window.white_frames_preview = frames
+        self.main_window.center_white_frames_preview = frames
         self.main_window.status_label_center.setText("[ DRAWING KEYPOINTS ]")
         self.draw_keypoints = DrawingKeyPointsThread(white_frames=frames,
                                                       keypoints_list=self.humanPoseDetectionResults,
@@ -136,7 +136,7 @@ class CenterVideo:
     
     def update_white_frame_last(self, frames):
         self.main_window.status_label_center.setText("[ VIDEO IS READY! ]")
-        self.main_window.white_frames_preview = frames
+        self.main_window.center_white_frames_preview = frames
         self.main_window.play_pause_button_video_center.setEnabled(True)   
     
     def closeEvent(self, event):
@@ -148,7 +148,7 @@ class CenterVideo:
     #=== FOR UPDATING FRAMES:
 
     def update_frame(self, frame):
-        if frame is not None and self.main_window.is_playing:
+        if frame is not None and self.main_window.is_center_video_playing:
             # Convert the frame from BGR to RGB
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             
@@ -162,7 +162,7 @@ class CenterVideo:
             self.main_window.video_preview_label_center.setPixmap(scaled_pixmap)
 
     def update_white_frame(self, white_frame):
-        if white_frame is not None and self.main_window.is_playing:
+        if white_frame is not None and self.main_window.is_center_video_playing:
             
             height, width, channel = white_frame.shape
             bytes_per_line = 3 * width
@@ -174,7 +174,7 @@ class CenterVideo:
             self.main_window.video_preview_label_center.setPixmap(scaled_pixmap)
     
     def show_next_frame(self):
-        if self.video_processor and self.main_window.is_playing:
+        if self.video_processor and self.main_window.is_center_video_playing:
             self.video_processor.frame_processed.connect(self.main_window.update_frame)
 
     def update_frame_processing(self):
@@ -182,9 +182,9 @@ class CenterVideo:
         self.main_window.fps_flider_value = fps
 
     def toggle_play_pause(self):
-        if self.main_window.is_playing:
-            self.main_window.is_playing = False
+        if self.main_window.is_center_video_playing:
+            self.main_window.is_center_video_playing = False
             self.main_window.play_pause_button_video_center.setText("PLAY")
         else:
-            self.main_window.is_playing = True
+            self.main_window.is_center_video_playing = True
             self.main_window.play_pause_button_video_center.setText("PAUSE")
