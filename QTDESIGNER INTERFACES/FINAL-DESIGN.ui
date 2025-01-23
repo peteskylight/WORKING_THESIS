@@ -505,7 +505,7 @@ Frequency</string>
         </font>
        </property>
        <property name="autoFillBackground">
-        <bool>true</bool>
+        <bool>false</bool>
        </property>
        <property name="value">
         <number>0</number>
@@ -731,8 +731,8 @@ Frequency</string>
      <widget class="QPushButton" name="pushButton">
       <property name="geometry">
        <rect>
-        <x>30</x>
-        <y>510</y>
+        <x>20</x>
+        <y>500</y>
         <width>191</width>
         <height>41</height>
        </rect>
@@ -746,7 +746,7 @@ Frequency</string>
        <string>Refresh Heatmap</string>
       </property>
      </widget>
-     <widget class="QLabel" name="label_13">
+     <widget class="QLabel" name="center_video_preview_label">
       <property name="geometry">
        <rect>
         <x>670</x>
@@ -771,7 +771,7 @@ Frequency</string>
        <number>2</number>
       </property>
       <property name="text">
-       <string>Analyze an Examination Footage First</string>
+       <string>Import an Examination Footage First</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -780,9 +780,9 @@ Frequency</string>
      <widget class="QLabel" name="label_14">
       <property name="geometry">
        <rect>
-        <x>30</x>
+        <x>10</x>
         <y>10</y>
-        <width>501</width>
+        <width>651</width>
         <height>41</height>
        </rect>
       </property>
@@ -802,9 +802,9 @@ Frequency</string>
      <widget class="QLabel" name="label_40">
       <property name="geometry">
        <rect>
-        <x>630</x>
+        <x>670</x>
         <y>0</y>
-        <width>471</width>
+        <width>511</width>
         <height>51</height>
        </rect>
       </property>
@@ -825,7 +825,7 @@ Frequency</string>
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>430</y>
+        <y>420</y>
         <width>281</width>
         <height>41</height>
        </rect>
@@ -843,7 +843,7 @@ Frequency</string>
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>460</y>
+        <y>450</y>
         <width>281</width>
         <height>41</height>
        </rect>
@@ -860,9 +860,9 @@ Frequency</string>
      <widget class="QComboBox" name="comboBox">
       <property name="geometry">
        <rect>
-        <x>370</x>
-        <y>460</y>
-        <width>281</width>
+        <x>340</x>
+        <y>450</y>
+        <width>321</width>
         <height>41</height>
        </rect>
       </property>
@@ -875,7 +875,7 @@ Frequency</string>
        <string/>
       </property>
      </widget>
-     <widget class="QLabel" name="label_19">
+     <widget class="QLabel" name="front_video_preview_label">
       <property name="geometry">
        <rect>
         <x>670</x>
@@ -900,7 +900,7 @@ Frequency</string>
        <number>2</number>
       </property>
       <property name="text">
-       <string>Analyze an Examination Footage First</string>
+       <string>Import an Examination Footage First</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignmentFlag::AlignCenter</set>

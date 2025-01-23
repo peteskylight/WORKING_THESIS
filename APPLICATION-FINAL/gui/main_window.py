@@ -46,7 +46,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.returned_frames_from_browsed_center_video = None
         self.returned_frames_from_browsed_front_video = None
         
-        self.centerTab_index = 1
+        self.analyticsTab_index = 1
         self.createDatasetTab_index = 2
         self.hidden_tab = self.MainTab.widget(self.createDatasetTab_index)  # Index of the tab you want to hide
         self.hidden_tab_index = self.createDatasetTab_index  # Index of the tab you want to hide
@@ -55,8 +55,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Initially hide the tab
         self.MainTab.removeTab(self.hidden_tab_index)
         
-        self.hidden_tab_title = self.MainTab.tabText(self.centerTab_index) 
-        self.hidden_tab_index = self.centerTab_index
+        self.hidden_tab_title = self.MainTab.tabText(self.analyticsTab_index) 
+        self.hidden_tab_index = self.analyticsTab_index
         self.hidden_tab_title = self.MainTab.tabText(self.hidden_tab_index)
 
         # Initially hide the tab
