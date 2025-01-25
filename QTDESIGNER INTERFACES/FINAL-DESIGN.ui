@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1200</width>
-    <height>689</height>
+    <width>1208</width>
+    <height>694</height>
    </rect>
   </property>
   <property name="font">
@@ -47,7 +47,7 @@
      <enum>QTabWidget::TabShape::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <property name="iconSize">
      <size>
@@ -377,7 +377,7 @@ Frequency</string>
        <property name="geometry">
         <rect>
          <x>180</x>
-         <y>130</y>
+         <y>140</y>
          <width>101</width>
          <height>41</height>
         </rect>
@@ -2613,7 +2613,7 @@ border-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0,
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1200</width>
+     <width>1208</width>
      <height>33</height>
     </rect>
    </property>
@@ -2640,6 +2640,8 @@ border-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0,
     <property name="title">
      <string>View</string>
     </property>
+    <addaction name="actionView_Home"/>
+    <addaction name="actionView_Tutorial"/>
     <addaction name="actionviewCreateDataset"/>
    </widget>
    <addaction name="menuARMIS"/>
@@ -2674,6 +2676,16 @@ border-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0,
   <action name="actionviewCreateDataset">
    <property name="text">
     <string>View Create Dataset Tab</string>
+   </property>
+  </action>
+  <action name="actionView_Home">
+   <property name="text">
+    <string>View Home</string>
+   </property>
+  </action>
+  <action name="actionView_Tutorial">
+   <property name="text">
+    <string>View Tutorial</string>
    </property>
   </action>
  </widget>
