@@ -5,7 +5,7 @@ class ExistenceTracker:
     def __init__(self, main_window, tracked_humans):
         self.main_window = main_window
         self.tracked_humans = tracked_humans
-        
+
         self.total_durations = {}
 
     
@@ -17,7 +17,7 @@ class ExistenceTracker:
         fps = cap.get(cv2.CAP_PROP_FPS)
 
         total_durations = {}
-        for human_id, frames in tracked_humans.items():
+        for human_id, frames in self.tracked_humans.items():
             if frames['start_frame'] is not None and frames['end_frame'] is not None:
                 duration_frames = frames['end_frame'] - frames['start_frame'] + 1
                 duration_seconds = duration_frames / fps
