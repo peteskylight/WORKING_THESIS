@@ -48,19 +48,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         self.analyticsTab_index = 1
         self.createDatasetTab_index = 2
-        self.hidden_tab = self.MainTab.widget(self.createDatasetTab_index)  # Index of the tab you want to hide
-        self.hidden_tab_index = self.createDatasetTab_index  # Index of the tab you want to hide
-        self.hidden_tab_title = self.MainTab.tabText(self.hidden_tab_index)
+        self.createDataset_tab = self.MainTab.widget(self.createDatasetTab_index)  # Index of the tab you want to hide
+        self.createDataset_tab_index = self.createDatasetTab_index  # Index of the tab you want to hide
+        self.createDataset_tab_title = self.MainTab.tabText(self.createDataset_tab_index)
 
         # Initially hide the tab
-        self.MainTab.removeTab(self.hidden_tab_index)
+        self.MainTab.removeTab(self.createDataset_tab_index)
         
-        self.hidden_tab_title = self.MainTab.tabText(self.analyticsTab_index) 
-        self.hidden_tab_index = self.analyticsTab_index
-        self.hidden_tab_title = self.MainTab.tabText(self.hidden_tab_index)
+        self.analytics_tab_title = self.MainTab.tabText(self.analyticsTab_index) 
+        self.analytics_tab_index = self.analyticsTab_index
+        self.analytics_tab_title = self.MainTab.tabText(self.analytics_tab_index)
 
         # Initially hide the tab
-        self.MainTab.removeTab(self.hidden_tab_index)
+        self.MainTab.removeTab(self.analytics_tab_index)
         
         
 
@@ -119,8 +119,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #Disable Maximize Button
         self.setWindowFlag(Qt.WindowMaximizeButtonHint, False)
 
-        self.camera_feed_instance = CameraFeed(self.camera_feed, self.white_frame_feed, self)
-        self.closeCamera.clicked.connect(self.camera_feed_instance.stop_camera)
+        self.closeCamera.clicked.connect(self.CreateDataset.stop_camera)
         self.openCamera.clicked.connect(self.CreateDataset.start_camera)
         self.browseButton.clicked.connect(self.browse_button_functions)
         self.refresh_button.clicked.connect(lambda: self.CreateDataset.scan_directory(self.directoryLineEdit.text()))
@@ -187,7 +186,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.CreateDataset.update_time()
             self.clock_counter = 0
 
-        if self.toggle_record_label_counter >=- self.toggle_record_label_counter:
+        if self.toggle_record_label_counter >= self.toggle_record_label_interval:
             self.toggleLabelVisibility()
             self.toggle_record_label_counter = 0
         
@@ -238,15 +237,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
     def toggle_tab(self):
         # Toggle the visibility of the tab
-        if self.hidden_tab_index == -1 or not self.MainTab.isTabVisible(self.hidden_tab_index):
+        if self.createDataset_tab_index == -1 or not self.MainTab.isTabVisible(self.createDataset_tab_index):
             # Add the tab back
-            self.MainTab.addTab(self.hidden_tab, self.hidden_tab_title)
-            self.hidden_tab_index = self.MainTab.indexOf(self.hidden_tab)
-            self.MainTab.setCurrentIndex(self.hidden_tab_index)
+            self.MainTab.addTab(self.createDataset_tab, self.createDataset_tab_title)
+            self.createDataset_tab_index = self.MainTab.indexOf(self.createDataset_tab)
+            self.MainTab.setCurrentIndex(self.createDataset_tab_index)
         else:
             # Remove the tab
-            self.MainTab.removeTab(self.hidden_tab_index)
-            self.hidden_tab_index = -1
+            self.MainTab.removeTab(self.createDataset_tab_index)
+            self.createDataset_tab_index = -1
 
     def toggle_button(self):
         if self.recording_button.text() == "START\nRECORDING":

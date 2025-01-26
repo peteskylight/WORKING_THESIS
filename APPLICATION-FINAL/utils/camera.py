@@ -159,7 +159,6 @@ class CameraFeed:
         else:
             self.countdown_timer.stop()  # Stop the countdown timer when countdown reaches 0
             
-            
 
     def stop_camera(self):
         self.timer.stop()
@@ -168,13 +167,13 @@ class CameraFeed:
             self.cap.release()
             
         # Clear the labels and set the text
-        self.label.clear()
-        self.label.setText("Camera stopped. No feed available.")
-        self.label.setAlignment(Qt.AlignCenter)
+        self.main_window.camera_feed.clear()
+        self.main_window.camera_feed.setText("Camera stopped. No feed available.")
+        self.main_window.camera_feed.setAlignment(Qt.AlignCenter)
         
-        self.white_frame_label.clear()
-        self.white_frame_label.setText("White frame stopped. No feed available.")
-        self.white_frame_label.setAlignment(Qt.AlignCenter)
+        self.main_window.white_frame_feed.clear()
+        self.main_window.white_frame_feed.setText("White frame stopped. No feed available.")
+        self.main_window.white_frame_feed.setAlignment(Qt.AlignCenter)
 
     
     def record_and_save_keypoints(self, normalized_keypoints, frame_num):

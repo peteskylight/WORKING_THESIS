@@ -19,6 +19,9 @@ class CreateDataset:
     def start_camera(self):
         selected_index = self.main_window.cameraComboBox.currentIndex()
         self.camera_feed_instance.start_camera(selected_index)
+    
+    def stop_camera(self):
+        self.camera_feed_instance.stop_camera()
 
     def list_available_cameras(self):
             graph = FilterGraph()
