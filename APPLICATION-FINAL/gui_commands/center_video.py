@@ -39,6 +39,10 @@ class CenterVideo:
 
     #When browse for center video is clicked
     def browse_video(self):
+        self.main_window.play_pause_button_video_center.setText("PLAY")
+        self.main_window.play_pause_button_video_center.setEnabled(False)
+        self.human_detect_conf = (int(self.main_window.center_video_human_conf_slider.value())/100)
+        self.human_pose_conf = (int(self.main_window.center_video_keypoint_conf_slider.value())/100)
         directory, _ = QFileDialog.getOpenFileName(self.main_window, "Select Video File", "", "Video Files (*.mp4 *.avi *.mkv *.mov *.wmv)")
         if directory:
             self.main_window.videoDirectory_center.setText(f"{directory}")

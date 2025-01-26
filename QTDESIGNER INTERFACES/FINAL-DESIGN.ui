@@ -47,7 +47,7 @@
      <enum>QTabWidget::TabShape::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <property name="iconSize">
      <size>
@@ -67,8 +67,8 @@
        <rect>
         <x>10</x>
         <y>10</y>
-        <width>471</width>
-        <height>281</height>
+        <width>481</width>
+        <height>301</height>
        </rect>
       </property>
       <property name="font">
@@ -93,10 +93,10 @@
      <widget class="QGroupBox" name="groupBox_2">
       <property name="geometry">
        <rect>
-        <x>970</x>
+        <x>1000</x>
         <y>0</y>
-        <width>221</width>
-        <height>551</height>
+        <width>251</width>
+        <height>591</height>
        </rect>
       </property>
       <property name="font">
@@ -107,89 +107,13 @@
       <property name="title">
        <string>Analytics Options</string>
       </property>
-      <widget class="QFrame" name="frame_6">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>290</y>
-         <width>201</width>
-         <height>251</height>
-        </rect>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::Shape::Box</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Shadow::Sunken</enum>
-       </property>
-       <widget class="QLabel" name="label_20">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>0</y>
-          <width>201</width>
-          <height>61</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>16</pointsize>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>Other
-Visualizations</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignmentFlag::AlignCenter</set>
-        </property>
-       </widget>
-       <widget class="QCheckBox" name="behavior_count_link_list_chkbox">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>70</y>
-          <width>181</width>
-          <height>51</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>12</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Behavior Count
-Frequency [Linked List]</string>
-        </property>
-       </widget>
-       <widget class="QCheckBox" name="event_timeline_chkbox">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>120</y>
-          <width>131</width>
-          <height>31</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>12</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Event Timeline</string>
-        </property>
-       </widget>
-      </widget>
       <widget class="QFrame" name="frame_7">
        <property name="geometry">
         <rect>
          <x>10</x>
          <y>30</y>
-         <width>201</width>
-         <height>251</height>
+         <width>231</width>
+         <height>331</height>
         </rect>
        </property>
        <property name="frameShape">
@@ -206,7 +130,7 @@ Frequency [Linked List]</string>
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>201</width>
+          <width>231</width>
           <height>61</height>
          </rect>
         </property>
@@ -228,9 +152,9 @@ Heatmap View</string>
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>120</y>
-          <width>181</width>
-          <height>51</height>
+          <y>90</y>
+          <width>221</width>
+          <height>31</height>
          </rect>
         </property>
         <property name="font">
@@ -239,8 +163,7 @@ Heatmap View</string>
          </font>
         </property>
         <property name="text">
-         <string>Behavior Change
-Frequency</string>
+         <string>Behavior Change Frequency</string>
         </property>
        </widget>
        <widget class="QCheckBox" name="tesk_taking_time_chkbox">
@@ -248,7 +171,25 @@ Frequency</string>
          <rect>
           <x>10</x>
           <y>70</y>
-          <width>181</width>
+          <width>211</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Test-Taking Time Duration</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="behavior_count_freq_chkbox">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>110</y>
+          <width>211</width>
           <height>41</height>
          </rect>
         </property>
@@ -258,16 +199,38 @@ Frequency</string>
          </font>
         </property>
         <property name="text">
-         <string>Test-Taking Time
-Duration</string>
+         <string>Behavior Count Frequency</string>
         </property>
        </widget>
-       <widget class="QCheckBox" name="behavior_count_freq_chkbox">
+       <widget class="QLabel" name="label_20">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>160</y>
+          <width>231</width>
+          <height>61</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>16</pointsize>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Other
+Visualizations</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignmentFlag::AlignCenter</set>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="behavior_count_link_list_chkbox">
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>170</y>
-          <width>151</width>
+          <y>230</y>
+          <width>181</width>
           <height>51</height>
          </rect>
         </property>
@@ -278,18 +241,56 @@ Duration</string>
         </property>
         <property name="text">
          <string>Behavior Count
-Frequency</string>
+Frequency [Linked List]</string>
         </property>
        </widget>
+       <widget class="QCheckBox" name="event_timeline_chkbox">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>280</y>
+          <width>131</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Event Timeline</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QPushButton" name="analyze_video_button">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>400</y>
+         <width>231</width>
+         <height>151</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>28</pointsize>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Analyze
+Footages</string>
+       </property>
       </widget>
      </widget>
      <widget class="QLabel" name="video_preview_label_front">
       <property name="geometry">
        <rect>
-        <x>490</x>
+        <x>510</x>
         <y>10</y>
-        <width>471</width>
-        <height>281</height>
+        <width>481</width>
+        <height>301</height>
        </rect>
       </property>
       <property name="font">
@@ -315,9 +316,9 @@ Frequency</string>
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>300</y>
-        <width>951</width>
-        <height>251</height>
+        <y>320</y>
+        <width>981</width>
+        <height>271</height>
        </rect>
       </property>
       <property name="frameShape">
@@ -363,6 +364,9 @@ Frequency</string>
        <property name="text">
         <string>Import a video file to be analyzed.</string>
        </property>
+       <property name="alignment">
+        <set>Qt::AlignmentFlag::AlignCenter</set>
+       </property>
        <property name="readOnly">
         <bool>true</bool>
        </property>
@@ -376,15 +380,15 @@ Frequency</string>
       <widget class="QPushButton" name="import_video_button_cernter">
        <property name="geometry">
         <rect>
-         <x>180</x>
-         <y>140</y>
-         <width>101</width>
-         <height>51</height>
+         <x>330</x>
+         <y>180</y>
+         <width>141</width>
+         <height>81</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>16</pointsize>
+         <pointsize>18</pointsize>
          <bold>false</bold>
         </font>
        </property>
@@ -395,29 +399,11 @@ Frequency</string>
         <string>Browse</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="analyze_video_button">
-       <property name="geometry">
-        <rect>
-         <x>380</x>
-         <y>190</y>
-         <width>201</width>
-         <height>51</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>16</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Analyze Footages</string>
-       </property>
-      </widget>
       <widget class="QProgressBar" name="importProgressBar_center">
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>110</y>
+         <y>100</y>
          <width>461</width>
          <height>51</height>
         </rect>
@@ -427,6 +413,9 @@ Frequency</string>
          <pointsize>12</pointsize>
         </font>
        </property>
+       <property name="layoutDirection">
+        <enum>Qt::LayoutDirection::LeftToRight</enum>
+       </property>
        <property name="autoFillBackground">
         <bool>false</bool>
        </property>
@@ -434,7 +423,7 @@ Frequency</string>
         <number>0</number>
        </property>
        <property name="alignment">
-        <set>Qt::AlignmentFlag::AlignBottom|Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing</set>
+        <set>Qt::AlignmentFlag::AlignBottom|Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft</set>
        </property>
        <property name="invertedAppearance">
         <bool>false</bool>
@@ -444,7 +433,7 @@ Frequency</string>
        <property name="geometry">
         <rect>
          <x>20</x>
-         <y>140</y>
+         <y>130</y>
          <width>451</width>
          <height>21</height>
         </rect>
@@ -459,7 +448,7 @@ Frequency</string>
         <string>[ IMPORT A VIDEO ]</string>
        </property>
        <property name="alignment">
-        <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+        <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
        </property>
       </widget>
       <widget class="QLineEdit" name="videoDirectory_front">
@@ -480,6 +469,9 @@ Frequency</string>
        <property name="text">
         <string>Import a video file to be analyzed.</string>
        </property>
+       <property name="alignment">
+        <set>Qt::AlignmentFlag::AlignCenter</set>
+       </property>
        <property name="readOnly">
         <bool>true</bool>
        </property>
@@ -494,7 +486,7 @@ Frequency</string>
        <property name="geometry">
         <rect>
          <x>490</x>
-         <y>110</y>
+         <y>100</y>
          <width>451</width>
          <height>51</height>
         </rect>
@@ -511,7 +503,7 @@ Frequency</string>
         <number>0</number>
        </property>
        <property name="alignment">
-        <set>Qt::AlignmentFlag::AlignBottom|Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing</set>
+        <set>Qt::AlignmentFlag::AlignBottom|Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft</set>
        </property>
        <property name="invertedAppearance">
         <bool>false</bool>
@@ -539,15 +531,15 @@ Frequency</string>
       <widget class="QPushButton" name="import_video_button_front">
        <property name="geometry">
         <rect>
-         <x>670</x>
-         <y>190</y>
-         <width>101</width>
-         <height>51</height>
+         <x>800</x>
+         <y>180</y>
+         <width>141</width>
+         <height>81</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>16</pointsize>
+         <pointsize>18</pointsize>
          <bold>false</bold>
         </font>
        </property>
@@ -562,7 +554,7 @@ Frequency</string>
        <property name="geometry">
         <rect>
          <x>500</x>
-         <y>140</y>
+         <y>130</y>
          <width>441</width>
          <height>21</height>
         </rect>
@@ -577,22 +569,22 @@ Frequency</string>
         <string>[ IMPORT A VIDEO ]</string>
        </property>
        <property name="alignment">
-        <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+        <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
        </property>
       </widget>
       <widget class="QLabel" name="somelabelforprogrss">
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>80</y>
+         <y>70</y>
          <width>451</width>
-         <height>21</height>
+         <height>31</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>14</pointsize>
-         <italic>false</italic>
+         <pointsize>12</pointsize>
+         <italic>true</italic>
          <bold>false</bold>
         </font>
        </property>
@@ -600,27 +592,219 @@ Frequency</string>
         <string>CENTER VIDEO PROGRESS BAR</string>
        </property>
        <property name="alignment">
-        <set>Qt::AlignmentFlag::AlignCenter</set>
+        <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
        </property>
       </widget>
       <widget class="QLabel" name="somelabelforprogrss_2">
        <property name="geometry">
         <rect>
          <x>490</x>
-         <y>80</y>
+         <y>70</y>
          <width>451</width>
-         <height>21</height>
+         <height>31</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>14</pointsize>
-         <italic>false</italic>
+         <pointsize>12</pointsize>
+         <italic>true</italic>
          <bold>false</bold>
         </font>
        </property>
        <property name="text">
         <string>FRONT VIDEO PROGRESS BAR</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+       </property>
+      </widget>
+      <widget class="QSlider" name="center_video_keypoint_conf_slider">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>240</y>
+         <width>261</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="maximum">
+        <number>100</number>
+       </property>
+       <property name="singleStep">
+        <number>5</number>
+       </property>
+       <property name="value">
+        <number>40</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Orientation::Horizontal</enum>
+       </property>
+       <property name="tickInterval">
+        <number>5</number>
+       </property>
+      </widget>
+      <widget class="QSlider" name="center_video_human_conf_slider">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>190</y>
+         <width>261</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="maximum">
+        <number>100</number>
+       </property>
+       <property name="singleStep">
+        <number>5</number>
+       </property>
+       <property name="value">
+        <number>40</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Orientation::Horizontal</enum>
+       </property>
+       <property name="tickInterval">
+        <number>5</number>
+       </property>
+      </widget>
+      <widget class="QSlider" name="front_video_human_conf_slider">
+       <property name="geometry">
+        <rect>
+         <x>490</x>
+         <y>190</y>
+         <width>251</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="maximum">
+        <number>100</number>
+       </property>
+       <property name="singleStep">
+        <number>5</number>
+       </property>
+       <property name="value">
+        <number>40</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Orientation::Horizontal</enum>
+       </property>
+       <property name="tickInterval">
+        <number>5</number>
+       </property>
+      </widget>
+      <widget class="QSlider" name="front_video_keypoint_conf_slider">
+       <property name="geometry">
+        <rect>
+         <x>490</x>
+         <y>240</y>
+         <width>251</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="maximum">
+        <number>100</number>
+       </property>
+       <property name="singleStep">
+        <number>5</number>
+       </property>
+       <property name="value">
+        <number>40</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Orientation::Horizontal</enum>
+       </property>
+       <property name="tickInterval">
+        <number>5</number>
+       </property>
+      </widget>
+      <widget class="QLabel" name="somelabelforprogrss_3">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>160</y>
+         <width>251</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+         <italic>true</italic>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Human Detection Confidence</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignmentFlag::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QLabel" name="somelabelforprogrss_4">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>210</y>
+         <width>251</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+         <italic>true</italic>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Keypoints Detection Confidence</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignmentFlag::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QLabel" name="somelabelforprogrss_5">
+       <property name="geometry">
+        <rect>
+         <x>490</x>
+         <y>210</y>
+         <width>251</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+         <italic>true</italic>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Keypoints Detection Confidence</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignmentFlag::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QLabel" name="somelabelforprogrss_6">
+       <property name="geometry">
+        <rect>
+         <x>490</x>
+         <y>160</y>
+         <width>251</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+         <italic>true</italic>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Human Detection Confidence</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -630,9 +814,9 @@ Frequency</string>
      <widget class="QLabel" name="label_29">
       <property name="geometry">
        <rect>
-        <x>20</x>
-        <y>20</y>
-        <width>171</width>
+        <x>10</x>
+        <y>10</y>
+        <width>191</width>
         <height>21</height>
        </rect>
       </property>
@@ -654,9 +838,9 @@ Frequency</string>
      <widget class="QLabel" name="label_30">
       <property name="geometry">
        <rect>
-        <x>500</x>
-        <y>20</y>
-        <width>171</width>
+        <x>510</x>
+        <y>10</y>
+        <width>191</width>
         <height>21</height>
        </rect>
       </property>
@@ -681,8 +865,8 @@ Frequency</string>
       </property>
       <property name="geometry">
        <rect>
-        <x>400</x>
-        <y>250</y>
+        <x>410</x>
+        <y>270</y>
         <width>71</width>
         <height>31</height>
        </rect>
@@ -700,7 +884,7 @@ Frequency</string>
       <property name="geometry">
        <rect>
         <x>200</x>
-        <y>20</y>
+        <y>10</y>
         <width>141</width>
         <height>20</height>
        </rect>
@@ -715,14 +899,14 @@ Frequency</string>
      <widget class="QCheckBox" name="keypointsOnlyChkBox_front">
       <property name="geometry">
        <rect>
-        <x>680</x>
-        <y>20</y>
+        <x>700</x>
+        <y>10</y>
         <width>131</width>
         <height>20</height>
        </rect>
       </property>
       <property name="autoFillBackground">
-       <bool>false</bool>
+       <bool>true</bool>
       </property>
       <property name="text">
        <string>Keypoints Only</string>
@@ -734,8 +918,8 @@ Frequency</string>
       </property>
       <property name="geometry">
        <rect>
-        <x>880</x>
-        <y>250</y>
+        <x>910</x>
+        <y>270</y>
         <width>71</width>
         <height>31</height>
        </rect>
@@ -764,16 +948,6 @@ Frequency</string>
      <attribute name="title">
       <string>Analytics</string>
      </attribute>
-     <widget class="QTableView" name="classroomViewTable">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>50</y>
-        <width>691</width>
-        <height>421</height>
-       </rect>
-      </property>
-     </widget>
      <widget class="QPushButton" name="pushButton">
       <property name="geometry">
        <rect>
@@ -928,6 +1102,7 @@ Frequency</string>
       <property name="font">
        <font>
         <pointsize>12</pointsize>
+        <italic>true</italic>
        </font>
       </property>
       <property name="text">
@@ -949,6 +1124,7 @@ Frequency</string>
       <property name="font">
        <font>
         <pointsize>12</pointsize>
+        <italic>true</italic>
        </font>
       </property>
       <property name="text">
@@ -958,7 +1134,7 @@ Frequency</string>
        <set>Qt::AlignmentFlag::AlignCenter</set>
       </property>
      </widget>
-     <widget class="QSlider" name="horizontalSlider">
+     <widget class="QSlider" name="video_seek_slider">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -992,16 +1168,95 @@ Frequency</string>
        <set>Qt::AlignmentFlag::AlignCenter</set>
       </property>
      </widget>
-     <widget class="QGraphicsView" name="graphicsView">
+     <widget class="QGraphicsView" name="graphicsView_events_timeline">
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>520</y>
+        <y>510</y>
         <width>971</width>
-        <height>71</height>
+        <height>81</height>
        </rect>
       </property>
      </widget>
+     <widget class="QPushButton" name="play_pause_button_analytics">
+      <property name="geometry">
+       <rect>
+        <x>990</x>
+        <y>520</y>
+        <width>121</width>
+        <height>71</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>18</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>PLAY</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="see_full_data_button">
+      <property name="geometry">
+       <rect>
+        <x>1120</x>
+        <y>520</y>
+        <width>141</width>
+        <height>71</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>16</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>SEE FULL
+DATA</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="heatmap_present_label">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>50</y>
+        <width>681</width>
+        <height>401</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>16</pointsize>
+        <italic>true</italic>
+       </font>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Shape::WinPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Shadow::Raised</enum>
+      </property>
+      <property name="text">
+       <string>Heatmap Visualization will be presented here.</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignCenter</set>
+      </property>
+     </widget>
+     <zorder>video_seek_slider</zorder>
+     <zorder>pushButton</zorder>
+     <zorder>center_video_preview_label</zorder>
+     <zorder>label_14</zorder>
+     <zorder>label_40</zorder>
+     <zorder>comboBox</zorder>
+     <zorder>front_video_preview_label</zorder>
+     <zorder>label_13</zorder>
+     <zorder>label_19</zorder>
+     <zorder>label_21</zorder>
+     <zorder>graphicsView_events_timeline</zorder>
+     <zorder>play_pause_button_analytics</zorder>
+     <zorder>see_full_data_button</zorder>
+     <zorder>heatmap_present_label</zorder>
     </widget>
     <widget class="QWidget" name="createDatasetTab">
      <attribute name="title">
@@ -1164,8 +1419,8 @@ Frequency</string>
       <widget class="QCheckBox" name="darkMode_whiteframe">
        <property name="geometry">
         <rect>
-         <x>460</x>
-         <y>280</y>
+         <x>470</x>
+         <y>310</y>
          <width>141</width>
          <height>31</height>
         </rect>
@@ -1186,8 +1441,8 @@ Frequency</string>
       <widget class="QCheckBox" name="show_whiteframe_boundingbox">
        <property name="geometry">
         <rect>
-         <x>460</x>
-         <y>310</y>
+         <x>470</x>
+         <y>340</y>
          <width>221</width>
          <height>31</height>
         </rect>
@@ -1208,8 +1463,8 @@ Frequency</string>
       <widget class="QCheckBox" name="showCameraLandmarksChkBox">
        <property name="geometry">
         <rect>
-         <x>10</x>
-         <y>280</y>
+         <x>20</x>
+         <y>310</y>
          <width>221</width>
          <height>31</height>
         </rect>
@@ -1230,8 +1485,8 @@ Frequency</string>
       <widget class="QCheckBox" name="showCameraBoundingBoxChkBox">
        <property name="geometry">
         <rect>
-         <x>10</x>
-         <y>310</y>
+         <x>20</x>
+         <y>340</y>
          <width>191</width>
          <height>31</height>
         </rect>
@@ -1252,8 +1507,8 @@ Frequency</string>
       <widget class="QLabel" name="label">
        <property name="geometry">
         <rect>
-         <x>120</x>
-         <y>250</y>
+         <x>130</x>
+         <y>280</y>
          <width>211</width>
          <height>31</height>
         </rect>
@@ -1274,8 +1529,8 @@ Frequency</string>
       <widget class="QLabel" name="label_2">
        <property name="geometry">
         <rect>
-         <x>560</x>
-         <y>250</y>
+         <x>570</x>
+         <y>280</y>
          <width>231</width>
          <height>31</height>
         </rect>
@@ -1296,8 +1551,8 @@ Frequency</string>
       <widget class="QCheckBox" name="show_skeleton_camera">
        <property name="geometry">
         <rect>
-         <x>270</x>
-         <y>280</y>
+         <x>280</x>
+         <y>310</y>
          <width>171</width>
          <height>31</height>
         </rect>
@@ -1318,8 +1573,8 @@ Frequency</string>
       <widget class="QCheckBox" name="show_skeleton_white_frame">
        <property name="geometry">
         <rect>
-         <x>720</x>
-         <y>280</y>
+         <x>730</x>
+         <y>310</y>
          <width>171</width>
          <height>31</height>
         </rect>
@@ -1341,8 +1596,8 @@ Frequency</string>
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>350</y>
-         <width>891</width>
+         <y>380</y>
+         <width>941</width>
          <height>111</height>
         </rect>
        </property>
@@ -1880,9 +2135,9 @@ RECORDING</string>
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>455</y>
-         <width>891</width>
-         <height>31</height>
+         <y>490</y>
+         <width>941</width>
+         <height>21</height>
         </rect>
        </property>
        <property name="orientation">
@@ -2564,20 +2819,20 @@ border-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0,
       <x>910</x>
       <y>10</y>
       <width>351</width>
-      <height>91</height>
+      <height>61</height>
      </rect>
     </property>
     <property name="font">
      <font>
       <family>Gabriola</family>
-      <pointsize>60</pointsize>
+      <pointsize>50</pointsize>
      </font>
     </property>
     <property name="text">
      <string>LearnScope</string>
     </property>
     <property name="alignment">
-     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTop|Qt::AlignmentFlag::AlignTrailing</set>
+     <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
     </property>
    </widget>
    <widget class="QLCDNumber" name="timeLCD">
@@ -2696,6 +2951,28 @@ border-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0,
       <height>51</height>
      </rect>
     </property>
+    <property name="frameShadow">
+     <enum>QFrame::Shadow::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>1</number>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Orientation::Vertical</enum>
+    </property>
+   </widget>
+   <widget class="Line" name="line_3">
+    <property name="geometry">
+     <rect>
+      <x>1240</x>
+      <y>10</y>
+      <width>41</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Shadow::Raised</enum>
+    </property>
     <property name="lineWidth">
      <number>1</number>
     </property>
@@ -2711,6 +2988,7 @@ border-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0,
    <zorder>date_label</zorder>
    <zorder>day_label</zorder>
    <zorder>line_2</zorder>
+   <zorder>line_3</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

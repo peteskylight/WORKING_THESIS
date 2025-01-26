@@ -48,6 +48,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         self.analyticsTab_index = 1
         self.createDatasetTab_index = 2
+
         self.createDataset_tab = self.MainTab.widget(self.createDatasetTab_index)  # Index of the tab you want to hide
         self.createDataset_tab_index = self.createDatasetTab_index  # Index of the tab you want to hide
         self.createDataset_tab_title = self.MainTab.tabText(self.createDataset_tab_index)
@@ -55,17 +56,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Initially hide the tab
         self.MainTab.removeTab(self.createDataset_tab_index)
         
-        self.analytics_tab_title = self.MainTab.tabText(self.analyticsTab_index) 
+        self.analytics_tab = self.MainTab.widget(self.analyticsTab_index) 
         self.analytics_tab_index = self.analyticsTab_index
         self.analytics_tab_title = self.MainTab.tabText(self.analytics_tab_index)
 
         # Initially hide the tab
         self.MainTab.removeTab(self.analytics_tab_index)
         
-        
-
-        # Connect the QAction's triggered signal to the toggle_tab method
-        self.actionviewCreateDataset.triggered.connect(self.toggle_tab)
+        # Connect the QAction's triggered signal to the toggle_createDataset_tab method
+        self.actionviewCreateDataset.triggered.connect(self.toggle_createDataset_tab)
 
         #============ FOR IMPORTING VIDEO TAB ===========
         
@@ -82,8 +81,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         self.human_detect_results = None
         self.video_processor = None
-        self.center_white_frames_preview = []
-        self.front_white_frames_preview = []
+        self.center_white_frames_preview = None
+        self.front_white_frames_preview = None
 
         self.human_detection_results = []
         
@@ -97,6 +96,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.import_video_button_front.clicked.connect(self.FrontVideo.browse_video)
         self.play_pause_button_video_front.clicked.connect(self.FrontVideo.toggle_play_pause)
+
+        #=====GET FOOTAGE ANALYTICS
+
+        self.analyze_video_button.clicked.connect(self.switch_to_analytics_tab)
+
 
         #Adjust this according to video but meh. This is just the default. Just check the specs of the cam. Default naman sya all the times
         self.center_video_interval = 1000//30 #30 fps
@@ -235,7 +239,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def updateSequenceLabel(self, value):
         self.sequence_label.setText(str(value))
         
-    def toggle_tab(self):
+    def toggle_createDataset_tab(self):
         # Toggle the visibility of the tab
         if self.createDataset_tab_index == -1 or not self.MainTab.isTabVisible(self.createDataset_tab_index):
             # Add the tab back
@@ -246,6 +250,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # Remove the tab
             self.MainTab.removeTab(self.createDataset_tab_index)
             self.createDataset_tab_index = -1
+    
+    def toggle_analytics_tab(self):
+        # Toggle the visibility of the tab
+        if self.analytics_tab_index == -1 or not self.MainTab.isTabVisible(self.analytics_tab_index):
+            # Add the tab back
+            self.MainTab.addTab(self.analytics_tab, self.analytics_tab_title)
+            self.analytics_tab_index = self.MainTab.indexOf(self.analytics_tab)
+            self.MainTab.setCurrentIndex(self.analytics_tab_index)
+        else:
+            # Remove the tab
+            self.MainTab.removeTab(self.analytics_tab_index)
+            self.analytics_tab_index = -1
 
     def toggle_button(self):
         if self.recording_button.text() == "START\nRECORDING":
@@ -272,3 +288,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 }
             """)
             self.status_label.setText("NOT RECORDING")
+    
+    
+    #template for warning message boxes:
+    def show_warning_message(self, status_title, message):
+        # Create and show a warning message box
+        msg_box = QMessageBox()
+        msg_box.setIcon(QMessageBox.Warning)
+        msg_box.setWindowTitle(status_title)
+        msg_box.setText(message)
+        msg_box.setStandardButtons(QMessageBox.Ok)
+        msg_box.exec()
+
+    #Switch to analytics tab
+    def switch_to_analytics_tab(self):
+        if (self.returned_frames_from_browsed_center_video and self.returned_frames_from_browsed_front_video) is not None:
+            self.toggle_analytics_tab()
+            self.MainTab.setCurrentIndex(1)
+        else:
+            self.show_warning_message(status_title="Error!",
+                                      message= "Please import a complete set of footages.")
