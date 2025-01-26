@@ -47,14 +47,14 @@ class CreateDataset:
         self.main_window.timeLCD.display(current_time.toString("hh:mm:ss"))
     
     def open_file_explorer(self):
-        directory = QFileDialog.getExistingDirectory(self, "Select Directory")
+        directory = QFileDialog.getExistingDirectory(self.main_window, "Select Directory")
         if directory:
             self.main_window.directoryLineEdit.setText(directory)
             self.scan_directory(directory)
 
 
     def scan_directory(self, directory):
-        self.action_comboBox.clear()
+        self.main_window.action_comboBox.clear()
         for folder_name in os.listdir(directory):
             folder_path = os.path.join(directory, folder_name)
             if os.path.isdir(folder_path):
@@ -106,31 +106,7 @@ class CreateDataset:
             except Exception as e:
                 QMessageBox.critical(self, "Error", f"An error occurred: {e}")
     
-    def toggle_button(self):
-        if self.main_window.recording_button.text() == "START\nRECORDING":
-            self.main_window.recording_button.setText("STOP\nRECORDING")
-            self.main_window.recording_button.setStyleSheet("""
-                QPushButton {
-                    background-color: rgb(170, 0, 0);
-                    border-radius: 15px; /* Adjust the radius as needed */
-                    color: black; /* Set the text color */
-                    border: 1px solid black; /* Optional: Add a border */
-                }
-            """)
-            self.main_window.status_label.setText("RECORDING")
-            self.main_window.startBlinking()
-            
-        else:
-            self.main_window.recording_button.setText("START\nRECORDING")
-            self.main_window.recording_button.setStyleSheet("""
-                QPushButton {
-                    background-color: rgb(170, 255, 127);
-                    border-radius: 15px; /* Adjust the radius as needed */
-                    color: black; /* Set the text color */
-                    border: 1px solid black; /* Optional: Add a border */
-                }
-            """)
-            self.main_window.status_label.setText("NOT RECORDING")
+
     
 
     def showActionsToTable(self):

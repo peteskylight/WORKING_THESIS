@@ -126,7 +126,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.refresh_button.clicked.connect(lambda: self.CreateDataset.scan_directory(self.directoryLineEdit.text()))
         self.add_action_button.clicked.connect(self.CreateDataset.add_folder)
         self.delete_action_button.clicked.connect(self.CreateDataset.delete_folder)
-        self.recording_button.clicked.connect(self.CreateDataset.toggle_button)
+        self.recording_button.clicked.connect(self.toggle_button)
         self.refresh_action_list.clicked.connect(self.CreateDataset.showActionsToTable)
         self.CreateDataset.populate_camera_combo_box()
 
@@ -247,3 +247,29 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # Remove the tab
             self.MainTab.removeTab(self.hidden_tab_index)
             self.hidden_tab_index = -1
+
+    def toggle_button(self):
+        if self.recording_button.text() == "START\nRECORDING":
+            self.recording_button.setText("STOP\nRECORDING")
+            self.recording_button.setStyleSheet("""
+                QPushButton {
+                    background-color: rgb(170, 0, 0);
+                    border-radius: 15px; /* Adjust the radius as needed */
+                    color: black; /* Set the text color */
+                    border: 1px solid black; /* Optional: Add a border */
+                }
+            """)
+            self.status_label.setText("RECORDING")
+            self.startBlinking()
+            
+        else:
+            self.recording_button.setText("START\nRECORDING")
+            self.recording_button.setStyleSheet("""
+                QPushButton {
+                    background-color: rgb(170, 255, 127);
+                    border-radius: 15px; /* Adjust the radius as needed */
+                    color: black; /* Set the text color */
+                    border: 1px solid black; /* Optional: Add a border */
+                }
+            """)
+            self.status_label.setText("NOT RECORDING")

@@ -8,13 +8,13 @@ from ultralytics import YOLO
 from ultralytics.utils.plotting import Annotator
 #from ultralytics.yolo.v8.detect.predict import Detection
 
-from tensorflow.keras.models import load_model
+#from tensorflow.keras.models import load_model
 
 
 import torch #========================================> GPU IMPORTANT <========
 
 
-class ActionDetectionThread:
+class ActionDetection:
     def __init__(self):
         pass
 
