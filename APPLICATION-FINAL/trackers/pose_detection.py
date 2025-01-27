@@ -88,9 +88,12 @@ class HumanDetectionThread(QThread):
     human_track_results = Signal(object)
     human_detection_progress_update = Signal(int)
 
-    def __init__(self, video_frames,main_window, humanDetectionModel, humanDetectConf, humanPoseModel, humanPoseConf):
+    def __init__(self, video_frames,main_window, humanDetectionModel, humanDetectConf, humanPoseModel, humanPoseConf, crop_start_y, crop_height):
         super().__init__()
         self.main_window = main_window
+
+        self.crop_start_y = crop_start_y
+        self.crop_height = crop_height
         
         self.video_frames = video_frames
         self.human_detection_model = YOLO(humanDetectionModel)
@@ -105,39 +108,43 @@ class HumanDetectionThread(QThread):
         total_frames = len(self.video_frames)
         current_frame = 0
         for frame in self.video_frames:
-            results = self.human_detection_model.track(frame,
-                                                  conf = self.human_detection_confidence,
-                                                  persist=True,
-                                                  classes=0,
-                                                  iou=0.3,
-                                                  agnostic_nms=True,
-                                                  imgsz = (1088, 608))[0]
+            # Crop the frame depending on the parameter set
+            crop_height = self.crop_height
+            start_y = self.crop_start_y
+            cropped_frame = frame[start_y:start_y + crop_height, :]
+
+            results = self.human_detection_model.track(cropped_frame,
+                                                    conf=self.human_detection_confidence,
+                                                    persist=True,
+                                                    classes=0,
+                                                    iou=0.3,
+                                                    agnostic_nms=True)[0]
             id_name_dict = results.names
             student_dict = {}
             for result in results:
                 boxes = result.boxes
                 for box in boxes:
-                    #Get the image per person
-                    b = box.xyxy[0]
-                    c = box.cls
-                    cropped_image = frame[int(b[1]):int(b[3]), int(b[0]):int(b[2])]
-                    
                     if box.id is not None and box.xyxy is not None and box.cls is not None:
                         track_id = int(box.id.tolist()[0])
                         track_result = box.xyxy.tolist()[0]
+                        # Adjust the bounding box coordinates to be relative to the original frame
+                        track_result[1] += start_y
+                        track_result[3] += start_y
                         object_cls_id = box.cls.tolist()[0]
                         object_cls_name = id_name_dict.get(object_cls_id, "unknown")
                         if object_cls_name == "person":
                             student_dict[track_id] = track_result
                     else:
                         print("One of the attributes is None:", box.id, box.xyxy, box.cls)
-            
+
             self.student_detections_dicts.append(student_dict)
             current_frame += 1
             progress = int((current_frame / total_frames) * 100)
             self.human_detection_progress_update.emit(progress)
-        
+
         self.human_track_results.emit(self.student_detections_dicts)
+
+
 
     def stop(self):
         self._running = False

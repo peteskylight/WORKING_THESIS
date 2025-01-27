@@ -6,15 +6,9 @@ import psutil
 import GPUtil
 from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QTableWidgetItem, QWidget, QButtonGroup
 from PySide6.QtCore import QRect, QCoreApplication, QMetaObject, QTimer, QTime, Qt, QDate
-from PySide6.QtGui import QScreen, QImage, QPixmap
-
-from PySide6.QtMultimediaWidgets import QVideoWidget
-
-from pygrabber.dshow_graph import FilterGraph
 
 from ultralytics import YOLO
 
-from utils.camera import CameraFeed
 from utils.drawing_utils import DrawingUtils
 from gui import Ui_MainWindow
 from trackers import PoseDetection

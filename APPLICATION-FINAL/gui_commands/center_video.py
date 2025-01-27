@@ -74,7 +74,9 @@ class CenterVideo:
             humanDetectionModel=self.human_detect_model,
             humanDetectConf=self.human_detect_conf,
             humanPoseModel = self.human_pose_model,
-            humanPoseConf=self.human_pose_conf
+            humanPoseConf=self.human_pose_conf,
+            crop_start_y=0,
+            crop_height=681
         )
         self.human_detection_thread.human_track_results.connect(self.update_detection_results)
         self.human_detection_thread.human_detection_progress_update.connect(self.update_progress_bar)

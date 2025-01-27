@@ -21,6 +21,7 @@ class FrontVideo:
         self.human_detect_conf = 0.5
         self.human_pose_model = "yolov8n-pose.pt"
         self.human_pose_conf = 0.5
+        self.iou_value = 0.3
 
         self.returned_frames = []
         self.humanDetectionResults = []
@@ -74,7 +75,9 @@ class FrontVideo:
             humanDetectionModel=self.human_detect_model,
             humanDetectConf=self.human_detect_conf,
             humanPoseModel = self.human_pose_model,
-            humanPoseConf=self.human_pose_conf
+            humanPoseConf=self.human_pose_conf,
+            crop_start_y=500,
+            crop_height=580
         )
         self.human_detection_thread.human_track_results.connect(self.update_detection_results)
         self.human_detection_thread.human_detection_progress_update.connect(self.update_progress_bar)
