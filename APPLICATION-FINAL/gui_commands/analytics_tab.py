@@ -9,7 +9,7 @@ class AnalyticsTab:
         self.main_window = main_window
         pass
 
-    def update_frame(self, frame):
+    def update_frame_for_front_video_label(self, frame):
         if frame is not None and self.main_window.is_center_video_playing:
             # Convert the frame from BGR to RGB
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -32,5 +32,5 @@ class AnalyticsTab:
 
             # Set the QImage to the QLabel with aspect ratio maintained and white spaces
             pixmap = QPixmap.fromImage(q_img)
-            scaled_pixmap = pixmap.scaled(self.main_window.center_video_preview_label.size(), Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
-            self.main_window.center_video_preview_label.setPixmap(scaled_pixmap)
+            scaled_pixmap = pixmap.scaled(self.main_window.front_video_preview_label.size(), Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
+            self.main_window.front_video_preview_label.setPixmap(scaled_pixmap)

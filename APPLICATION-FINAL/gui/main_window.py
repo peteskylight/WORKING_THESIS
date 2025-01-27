@@ -39,6 +39,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.fps_flider_value = 30
         self.returned_frames_from_browsed_center_video = None
         self.returned_frames_from_browsed_front_video = None
+
+        self.cropped_frame_for_front_video_analytics_preview = None
+        self.cropped_frame_for_center_video_analytics_preview = None
         
         self.analyticsTab_index = 1
         self.createDatasetTab_index = 2

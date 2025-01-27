@@ -61,6 +61,10 @@ class CenterVideo:
         self.returned_frames = frames
         self.number_of_frames = len(frames)
         self.detectResults(frames)
+
+    def update_video_frames_list_only(self, frames):
+        self.main_window.returned_frames_from_browsed_center_video = frames
+        self.returned_frames = frames
     
     def update_progress_bar(self,value):
         self.main_window.importProgressBar_center.setValue(value)
@@ -127,10 +131,11 @@ class CenterVideo:
     def update_white_frame_list_then_draw_keypoints(self, frames):
         self.main_window.center_white_frames_preview = frames
         self.main_window.status_label_center.setText("[ DRAWING KEYPOINTS ]")
-        self.draw_keypoints = DrawingKeyPointsThread(white_frames=frames,
+        self.draw_keypoints = DrawingKeyPointsThread(video_frames=self.returned_frames,
+                                                    white_frames=frames,
                                                       keypoints_list=self.humanPoseDetectionResults,
                                                       human_detections=self.humanDetectionResults)
-        
+        self.draw_keypoints.video_frame_drawn.connect(self.update_video_frames_list_only)
         self.draw_keypoints.frame_drawn_list.connect(self.update_white_frame_last)
         self.draw_keypoints.progress_updated.connect(self.update_progress_bar)
         self.draw_keypoints.start()
@@ -152,7 +157,7 @@ class CenterVideo:
     def update_frame(self, frame):
         if frame is not None and self.main_window.is_center_video_playing:
             # Convert the frame from BGR to RGB
-            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            #frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             
             height, width, channel = frame.shape
             bytes_per_line = 3 * width

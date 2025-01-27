@@ -54,13 +54,15 @@ class DrawingUtils:
 
 class DrawingKeyPointsThread(QThread):
     frame_drawn_list = Signal(object)
+    video_frame_drawn = Signal(object)
     progress_updated = Signal(int)
     
-    def __init__(self, white_frames, human_detections, keypoints_list):
+    def __init__(self, white_frames, video_frames, human_detections, keypoints_list):
         super().__init__()
         
         self.human_detections = human_detections
         self.white_frames = white_frames
+        self.video_frames = video_frames
         self.keypoints_list = keypoints_list
         
         self.skeleton_pairs = [
@@ -71,10 +73,11 @@ class DrawingKeyPointsThread(QThread):
     
     def run(self):
         white_frames_list = []
+        video_frames_list = []
         current_frame = 0
         total_frames = len(self.white_frames)
         
-        for white_frame, keypoints_dict, detection in zip(self.white_frames, self.keypoints_list, self.human_detections):
+        for video_frame, white_frame, keypoints_dict, detection in zip(self.video_frames, self.white_frames, self.keypoints_list, self.human_detections):
             for track_id in keypoints_dict:
                 if track_id in detection:
                     keypoints = keypoints_dict[track_id]
@@ -82,11 +85,14 @@ class DrawingKeyPointsThread(QThread):
                     bbox_x, bbox_y, bbox_w, bbox_h = bbox
 
                     cropped_frame = white_frame[int(bbox_y):int(bbox_h), int(bbox_x):int(bbox_w)]
+                    video_cropped_frame = video_frame[int(bbox_y):int(bbox_h), int(bbox_x):int(bbox_w)]
 
                     for keypoint in keypoints:
                         x = int(keypoint[0] * cropped_frame.shape[1])
                         y = int(keypoint[1] * cropped_frame.shape[0])
                         cv2.circle(cropped_frame, (x, y), radius=2, color=(0, 255, 0), thickness=-1)
+                        cv2.circle(video_cropped_frame, (x, y), radius=2, color=(0, 255, 0), thickness=-1)
+
                     # Draw skeleton
                     for pair in self.skeleton_pairs:
                         if pair[0] < len(keypoints) and pair[1] < len(keypoints):
@@ -102,6 +108,7 @@ class DrawingKeyPointsThread(QThread):
                                 
                                 if 0.1 <= x1 < cropped_frame.shape[1] and 0.1 <= y1 < cropped_frame.shape[0] and 0.1 <= x2 < cropped_frame.shape[1] and 0.1 <= y2 < cropped_frame.shape[0]:
                                     cv2.line(cropped_frame, (x1, y1), (x2, y2), color=(0, 255, 0), thickness=1)
+                                    cv2.line(video_cropped_frame, (x1, y1), (x2, y2), color=(0, 255, 0), thickness=1)
                             else:
                                 print(f"Invalid keypoints for track ID {track_id}: pt1={pt1}, pt2={pt2}")
                         else:
@@ -110,13 +117,16 @@ class DrawingKeyPointsThread(QThread):
                     # Place the cropped frame back into the original frame
 
                     white_frame[int(bbox_y):int(bbox_h), int(bbox_x):int(bbox_w)] = cropped_frame
+                    video_frame[int(bbox_y):int(bbox_h), int(bbox_x):int(bbox_w)] = video_cropped_frame
 
             white_frames_list.append(white_frame)
+            video_frames_list.append(video_frame)
             current_frame += 1
             progress = int((current_frame / total_frames) * 100)
             self.progress_updated.emit(progress)
         
-        self.frame_drawn_list.emit(white_frames_list)        
+        self.frame_drawn_list.emit(white_frames_list)
+        self.video_frame_drawn.emit(video_frames_list)
         
     def stop(self):
         self._running = False
