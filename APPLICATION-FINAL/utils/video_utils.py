@@ -74,7 +74,7 @@ class VideoProcessor(QThread):
     frame_processed = Signal(object)
     progress_update = Signal(object)
 
-    def __init__(self, video_path, resize_frames):
+    def __init__(self, video_path, resize_frames = False):
         super().__init__()
         self.video_path = video_path
         self.resize_frames = resize_frames

@@ -70,15 +70,11 @@ class FrontVideo:
         self.main_window.status_label_front.setText("[ SCANNING HUMANS ]")
         self.main_window.importProgressBar_front.setValue(0)
         self.human_detection_thread = HumanDetectionThread(
-            video_frames = frames,
-            main_window=self.main_window,
-            humanDetectionModel=self.human_detect_model,
-            humanDetectConf=self.human_detect_conf,
-            humanPoseModel = self.human_pose_model,
-            humanPoseConf=self.human_pose_conf,
-            crop_start_y=500,
-            crop_height=580
-        )
+                                                            video_frames = frames,
+                                                            isFront=True,
+                                                            humanDetectionModel=self.human_detect_model,
+                                                            humanDetectConf=self.human_detect_conf,
+                                                        )
         self.human_detection_thread.human_track_results.connect(self.update_detection_results)
         self.human_detection_thread.human_detection_progress_update.connect(self.update_progress_bar)
         self.human_detection_thread.start()

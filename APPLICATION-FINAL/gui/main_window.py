@@ -85,7 +85,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.frame_processing_value = None
         
-        self.import_video_button_cernter.clicked.connect(self.CenterVideo.browse_video)
+        self.import_video_button_center.clicked.connect(self.CenterVideo.browse_video)
         self.play_pause_button_video_center.clicked.connect(self.CenterVideo.toggle_play_pause)
 
         self.import_video_button_front.clicked.connect(self.FrontVideo.browse_video)

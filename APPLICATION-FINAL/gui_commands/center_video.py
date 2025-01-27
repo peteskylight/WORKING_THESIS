@@ -69,15 +69,11 @@ class CenterVideo:
         self.main_window.status_label_center.setText("[ SCANNING HUMANS ]")
         self.main_window.importProgressBar_center.setValue(0)
         self.human_detection_thread = HumanDetectionThread(
-            video_frames = frames,
-            main_window=self.main_window,
-            humanDetectionModel=self.human_detect_model,
-            humanDetectConf=self.human_detect_conf,
-            humanPoseModel = self.human_pose_model,
-            humanPoseConf=self.human_pose_conf,
-            crop_start_y=0,
-            crop_height=681
-        )
+                                                            video_frames = frames,
+                                                            isFront=False,
+                                                            humanDetectionModel=self.human_detect_model,
+                                                            humanDetectConf=self.human_detect_conf,
+                                                        )
         self.human_detection_thread.human_track_results.connect(self.update_detection_results)
         self.human_detection_thread.human_detection_progress_update.connect(self.update_progress_bar)
         self.human_detection_thread.start()
@@ -94,7 +90,6 @@ class CenterVideo:
                                                          humanDetectConf=self.human_detect_conf,
                                                          humanPoseModel=self.human_pose_model,
                                                          humanPoseConf=self.human_pose_conf
-                                                         
                                                          )
         self.pose_detection_thread.pose_detection_results.connect(self.update_pose_detection_results)
         self.pose_detection_thread.pose_detection_progress_update.connect(self.update_progress_bar)  
@@ -148,6 +143,7 @@ class CenterVideo:
     def closeEvent(self, event):
         self.video_processor.stop()
         self.white_frame_generator.stop()
+        self.human_detection_thread.stop()
         event.accept()
     
 

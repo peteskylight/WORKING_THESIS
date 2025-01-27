@@ -86,70 +86,91 @@ class PoseDetection:
 
 class HumanDetectionThread(QThread):
     human_track_results = Signal(object)
-    human_detection_progress_update = Signal(int)
+    human_detection_progress_update = Signal(object)
 
-    def __init__(self, video_frames,main_window, humanDetectionModel, humanDetectConf, humanPoseModel, humanPoseConf, crop_start_y, crop_height):
+    def __init__(self, video_frames, isFront=True, humanDetectionModel='yolov8n.pt', humanDetectConf=0.5):
         super().__init__()
-        self.main_window = main_window
-
-        self.crop_start_y = crop_start_y
-        self.crop_height = crop_height
-        
-        self.video_frames = video_frames
+        self.video_frames = video_frames  # List of frames to process
+        self.isFront = isFront
         self.human_detection_model = YOLO(humanDetectionModel)
         self.human_detection_confidence = humanDetectConf
-        self.human_pose_model = YOLO(humanPoseModel)
-        self.human_pose_confidence = humanPoseConf
         self.student_detections_dicts = []
-        self.detection = PoseDetection(humanDetectionModel, humanDetectConf, humanPoseModel, humanPoseConf)
         self._running = True
+
+    def create_roi_mask(self, frame, row_height):
+        height, width, _ = frame.shape
+        mask = np.zeros((height, width), dtype=np.uint8)
+        roi = (0, row_height, width, height)  # Bottom to middle
+        cv2.rectangle(mask, (roi[0], roi[1]), (roi[2], roi[3]), 255, -1)
+        cv2.line(img=frame, pt1=(0, row_height), pt2=(frame.shape[1], row_height),color = (0,255,0), thickness=2)
+        return mask
 
     def run(self):
         total_frames = len(self.video_frames)
         current_frame = 0
-        for frame in self.video_frames:
-            # Crop the frame depending on the parameter set
-            crop_height = self.crop_height
-            start_y = self.crop_start_y
-            cropped_frame = frame[start_y:start_y + crop_height, :]
+        id_name_dict = None
+        student_dict = None
+        results = None
 
-            results = self.human_detection_model.track(cropped_frame,
-                                                    conf=self.human_detection_confidence,
-                                                    persist=True,
-                                                    classes=0,
-                                                    iou=0.3,
-                                                    agnostic_nms=True)[0]
-            id_name_dict = results.names
-            student_dict = {}
+        for frame in self.video_frames:
+
+            if not self._running:
+                break
+
+            height, width, _ = frame.shape
+            initial_row_height = int(height * (4 / 6))  # Bottom 4 rows (adjust as needed)
+
+            if self.isFront:
+                roi_mask = self.create_roi_mask(frame, initial_row_height)
+                masked_frame = cv2.bitwise_and(frame, frame, mask=roi_mask)
+                results = self.human_detection_model.track(masked_frame,
+                                                  conf = self.human_detection_confidence,
+                                                  persist=True,
+                                                  classes=0,
+                                                  iou=0.3,
+                                                  agnostic_nms=True)[0]
+                id_name_dict = results.names
+                student_dict = {}
+            else:
+                results = self.human_detection_model.track(frame,
+                                                  conf = self.human_detection_confidence,
+                                                  persist=True,
+                                                  classes=0,
+                                                  iou=0.3,
+                                                  agnostic_nms=True)[0]
+                id_name_dict = results.names
+                student_dict = {}
+
+            output_frame = frame.copy()
+
             for result in results:
                 boxes = result.boxes
                 for box in boxes:
+                    #Get the image per person
+                    b = box.xyxy[0]
+                    c = box.cls
+                    cropped_image = frame[int(b[1]):int(b[3]), int(b[0]):int(b[2])]
+                    
                     if box.id is not None and box.xyxy is not None and box.cls is not None:
                         track_id = int(box.id.tolist()[0])
                         track_result = box.xyxy.tolist()[0]
-                        # Adjust the bounding box coordinates to be relative to the original frame
-                        track_result[1] += start_y
-                        track_result[3] += start_y
                         object_cls_id = box.cls.tolist()[0]
                         object_cls_name = id_name_dict.get(object_cls_id, "unknown")
                         if object_cls_name == "person":
                             student_dict[track_id] = track_result
                     else:
                         print("One of the attributes is None:", box.id, box.xyxy, box.cls)
-
+            
             self.student_detections_dicts.append(student_dict)
             current_frame += 1
             progress = int((current_frame / total_frames) * 100)
             self.human_detection_progress_update.emit(progress)
-
+        
         self.human_track_results.emit(self.student_detections_dicts)
-
-
 
     def stop(self):
         self._running = False
         self.wait()
-
 
 class PoseDetectionThread(QThread):
     pose_detection_results = Signal(object)

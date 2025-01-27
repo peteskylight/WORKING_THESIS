@@ -47,7 +47,7 @@
      <enum>QTabWidget::TabShape::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <property name="iconSize">
      <size>
@@ -62,34 +62,6 @@
      <attribute name="title">
       <string>Import Video</string>
      </attribute>
-     <widget class="QLabel" name="video_preview_label_center">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>10</y>
-        <width>481</width>
-        <height>301</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>16</pointsize>
-        <italic>true</italic>
-       </font>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::Shape::WinPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Shadow::Raised</enum>
-      </property>
-      <property name="text">
-       <string>Import a video to see preview</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignmentFlag::AlignCenter</set>
-      </property>
-     </widget>
      <widget class="QGroupBox" name="groupBox_2">
       <property name="geometry">
        <rect>
@@ -267,9 +239,9 @@ Frequency [Linked List]</string>
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>400</y>
+         <y>450</y>
          <width>231</width>
-         <height>151</height>
+         <height>131</height>
         </rect>
        </property>
        <property name="font">
@@ -283,11 +255,27 @@ Frequency [Linked List]</string>
 Footages</string>
        </property>
       </widget>
+      <widget class="QProgressBar" name="analyze_progressBar">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>400</y>
+         <width>231</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="value">
+        <number>24</number>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignmentFlag::AlignCenter</set>
+       </property>
+      </widget>
      </widget>
      <widget class="QLabel" name="video_preview_label_front">
       <property name="geometry">
        <rect>
-        <x>510</x>
+        <x>10</x>
         <y>10</y>
         <width>481</width>
         <height>301</height>
@@ -343,13 +331,13 @@ Footages</string>
         </font>
        </property>
        <property name="text">
-        <string>Center Video File Location:</string>
+        <string>Front Video File Location:</string>
        </property>
       </widget>
       <widget class="QLineEdit" name="videoDirectory_center">
        <property name="geometry">
         <rect>
-         <x>10</x>
+         <x>490</x>
          <y>40</y>
          <width>461</width>
          <height>31</height>
@@ -377,7 +365,7 @@ Footages</string>
         <bool>false</bool>
        </property>
       </widget>
-      <widget class="QPushButton" name="import_video_button_cernter">
+      <widget class="QPushButton" name="import_video_button_front">
        <property name="geometry">
         <rect>
          <x>330</x>
@@ -399,13 +387,13 @@ Footages</string>
         <string>Browse</string>
        </property>
       </widget>
-      <widget class="QProgressBar" name="importProgressBar_center">
+      <widget class="QProgressBar" name="importProgressBar_front">
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>100</y>
+         <y>110</y>
          <width>461</width>
-         <height>51</height>
+         <height>41</height>
         </rect>
        </property>
        <property name="font">
@@ -423,13 +411,13 @@ Footages</string>
         <number>0</number>
        </property>
        <property name="alignment">
-        <set>Qt::AlignmentFlag::AlignBottom|Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft</set>
+        <set>Qt::AlignmentFlag::AlignCenter</set>
        </property>
        <property name="invertedAppearance">
         <bool>false</bool>
        </property>
       </widget>
-      <widget class="QLabel" name="status_label_center">
+      <widget class="QLabel" name="status_label_front">
        <property name="geometry">
         <rect>
          <x>20</x>
@@ -454,7 +442,7 @@ Footages</string>
       <widget class="QLineEdit" name="videoDirectory_front">
        <property name="geometry">
         <rect>
-         <x>490</x>
+         <x>10</x>
          <y>40</y>
          <width>451</width>
          <height>31</height>
@@ -482,13 +470,13 @@ Footages</string>
         <bool>false</bool>
        </property>
       </widget>
-      <widget class="QProgressBar" name="importProgressBar_front">
+      <widget class="QProgressBar" name="importProgressBar_center">
        <property name="geometry">
         <rect>
          <x>490</x>
-         <y>100</y>
+         <y>110</y>
          <width>451</width>
-         <height>51</height>
+         <height>41</height>
         </rect>
        </property>
        <property name="font">
@@ -503,7 +491,7 @@ Footages</string>
         <number>0</number>
        </property>
        <property name="alignment">
-        <set>Qt::AlignmentFlag::AlignBottom|Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft</set>
+        <set>Qt::AlignmentFlag::AlignCenter</set>
        </property>
        <property name="invertedAppearance">
         <bool>false</bool>
@@ -525,10 +513,10 @@ Footages</string>
         </font>
        </property>
        <property name="text">
-        <string>Front Video File Location:</string>
+        <string>Center Video File Location:</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="import_video_button_front">
+      <widget class="QPushButton" name="import_video_button_center">
        <property name="geometry">
         <rect>
          <x>800</x>
@@ -550,7 +538,7 @@ Footages</string>
         <string>Browse</string>
        </property>
       </widget>
-      <widget class="QLabel" name="status_label_front">
+      <widget class="QLabel" name="status_label_center">
        <property name="geometry">
         <rect>
          <x>500</x>
@@ -576,7 +564,7 @@ Footages</string>
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>70</y>
+         <y>80</y>
          <width>451</width>
          <height>31</height>
         </rect>
@@ -589,7 +577,7 @@ Footages</string>
         </font>
        </property>
        <property name="text">
-        <string>CENTER VIDEO PROGRESS BAR</string>
+        <string>Front Video Progress Bar</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
@@ -599,7 +587,7 @@ Footages</string>
        <property name="geometry">
         <rect>
          <x>490</x>
-         <y>70</y>
+         <y>80</y>
          <width>451</width>
          <height>31</height>
         </rect>
@@ -612,13 +600,13 @@ Footages</string>
         </font>
        </property>
        <property name="text">
-        <string>FRONT VIDEO PROGRESS BAR</string>
+        <string>Center Video Progress Bar</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
        </property>
       </widget>
-      <widget class="QSlider" name="center_video_keypoint_conf_slider">
+      <widget class="QSlider" name="front_video_keypoint_conf_slider">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -643,7 +631,7 @@ Footages</string>
         <number>5</number>
        </property>
       </widget>
-      <widget class="QSlider" name="center_video_human_conf_slider">
+      <widget class="QSlider" name="front_video_human_conf_slider">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -668,7 +656,7 @@ Footages</string>
         <number>5</number>
        </property>
       </widget>
-      <widget class="QSlider" name="front_video_human_conf_slider">
+      <widget class="QSlider" name="center_video_human_conf_slider">
        <property name="geometry">
         <rect>
          <x>490</x>
@@ -693,7 +681,7 @@ Footages</string>
         <number>5</number>
        </property>
       </widget>
-      <widget class="QSlider" name="front_video_keypoint_conf_slider">
+      <widget class="QSlider" name="center_video_keypoint_conf_slider">
        <property name="geometry">
         <rect>
          <x>490</x>
@@ -814,7 +802,7 @@ Footages</string>
      <widget class="QLabel" name="label_29">
       <property name="geometry">
        <rect>
-        <x>10</x>
+        <x>510</x>
         <y>10</y>
         <width>191</width>
         <height>21</height>
@@ -838,7 +826,7 @@ Footages</string>
      <widget class="QLabel" name="label_30">
       <property name="geometry">
        <rect>
-        <x>510</x>
+        <x>10</x>
         <y>10</y>
         <width>191</width>
         <height>21</height>
@@ -865,7 +853,7 @@ Footages</string>
       </property>
       <property name="geometry">
        <rect>
-        <x>410</x>
+        <x>910</x>
         <y>270</y>
         <width>71</width>
         <height>31</height>
@@ -883,7 +871,7 @@ Footages</string>
      <widget class="QCheckBox" name="keypointsOnlyChkBox_Center">
       <property name="geometry">
        <rect>
-        <x>200</x>
+        <x>700</x>
         <y>10</y>
         <width>141</width>
         <height>20</height>
@@ -899,14 +887,14 @@ Footages</string>
      <widget class="QCheckBox" name="keypointsOnlyChkBox_front">
       <property name="geometry">
        <rect>
-        <x>700</x>
+        <x>200</x>
         <y>10</y>
         <width>131</width>
         <height>20</height>
        </rect>
       </property>
       <property name="autoFillBackground">
-       <bool>true</bool>
+       <bool>false</bool>
       </property>
       <property name="text">
        <string>Keypoints Only</string>
@@ -918,7 +906,7 @@ Footages</string>
       </property>
       <property name="geometry">
        <rect>
-        <x>910</x>
+        <x>410</x>
         <y>270</y>
         <width>71</width>
         <height>31</height>
@@ -931,6 +919,34 @@ Footages</string>
       </property>
       <property name="text">
        <string>PLAY</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="video_preview_label_center">
+      <property name="geometry">
+       <rect>
+        <x>510</x>
+        <y>10</y>
+        <width>481</width>
+        <height>301</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>16</pointsize>
+        <italic>true</italic>
+       </font>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Shape::WinPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Shadow::Raised</enum>
+      </property>
+      <property name="text">
+       <string>Import a video to see preview</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignCenter</set>
       </property>
      </widget>
      <zorder>video_preview_label_center</zorder>
@@ -972,7 +988,7 @@ Footages</string>
         <x>710</x>
         <y>50</y>
         <width>551</width>
-        <height>181</height>
+        <height>191</height>
        </rect>
       </property>
       <property name="font">
@@ -1063,9 +1079,9 @@ Footages</string>
       <property name="geometry">
        <rect>
         <x>710</x>
-        <y>270</y>
+        <y>250</y>
         <width>551</width>
-        <height>181</height>
+        <height>191</height>
        </rect>
       </property>
       <property name="font">
@@ -1094,8 +1110,8 @@ Footages</string>
       <property name="geometry">
        <rect>
         <x>710</x>
-        <y>230</y>
-        <width>551</width>
+        <y>50</y>
+        <width>191</width>
         <height>31</height>
        </rect>
       </property>
@@ -1116,9 +1132,9 @@ Footages</string>
       <property name="geometry">
        <rect>
         <x>710</x>
-        <y>450</y>
-        <width>551</width>
-        <height>21</height>
+        <y>250</y>
+        <width>181</width>
+        <height>31</height>
        </rect>
       </property>
       <property name="font">
@@ -1126,6 +1142,9 @@ Footages</string>
         <pointsize>12</pointsize>
         <italic>true</italic>
        </font>
+      </property>
+      <property name="autoFillBackground">
+       <bool>true</bool>
       </property>
       <property name="text">
        <string>Front Video Placement</string>
@@ -1137,9 +1156,9 @@ Footages</string>
      <widget class="QSlider" name="video_seek_slider">
       <property name="geometry">
        <rect>
-        <x>10</x>
-        <y>480</y>
-        <width>971</width>
+        <x>20</x>
+        <y>550</y>
+        <width>961</width>
         <height>31</height>
        </rect>
       </property>
@@ -1150,15 +1169,16 @@ Footages</string>
      <widget class="QLabel" name="label_21">
       <property name="geometry">
        <rect>
-        <x>980</x>
-        <y>480</y>
-        <width>281</width>
-        <height>21</height>
+        <x>20</x>
+        <y>570</y>
+        <width>961</width>
+        <height>31</height>
        </rect>
       </property>
       <property name="font">
        <font>
         <pointsize>12</pointsize>
+        <italic>true</italic>
        </font>
       </property>
       <property name="text">
@@ -1171,10 +1191,10 @@ Footages</string>
      <widget class="QGraphicsView" name="graphicsView_events_timeline">
       <property name="geometry">
        <rect>
-        <x>10</x>
-        <y>510</y>
-        <width>971</width>
-        <height>81</height>
+        <x>20</x>
+        <y>450</y>
+        <width>961</width>
+        <height>91</height>
        </rect>
       </property>
      </widget>
@@ -1182,14 +1202,14 @@ Footages</string>
       <property name="geometry">
        <rect>
         <x>990</x>
-        <y>520</y>
-        <width>121</width>
-        <height>71</height>
+        <y>450</y>
+        <width>271</width>
+        <height>61</height>
        </rect>
       </property>
       <property name="font">
        <font>
-        <pointsize>18</pointsize>
+        <pointsize>22</pointsize>
        </font>
       </property>
       <property name="text">
@@ -1199,20 +1219,19 @@ Footages</string>
      <widget class="QPushButton" name="see_full_data_button">
       <property name="geometry">
        <rect>
-        <x>1120</x>
+        <x>990</x>
         <y>520</y>
-        <width>141</width>
+        <width>271</width>
         <height>71</height>
        </rect>
       </property>
       <property name="font">
        <font>
-        <pointsize>16</pointsize>
+        <pointsize>22</pointsize>
        </font>
       </property>
       <property name="text">
-       <string>SEE FULL
-DATA</string>
+       <string>SEE FULL DATA</string>
       </property>
      </widget>
      <widget class="QLabel" name="heatmap_present_label">
@@ -1221,7 +1240,7 @@ DATA</string>
         <x>20</x>
         <y>50</y>
         <width>681</width>
-        <height>401</height>
+        <height>391</height>
        </rect>
       </property>
       <property name="font">
@@ -1251,12 +1270,12 @@ DATA</string>
      <zorder>comboBox</zorder>
      <zorder>front_video_preview_label</zorder>
      <zorder>label_13</zorder>
-     <zorder>label_19</zorder>
      <zorder>label_21</zorder>
      <zorder>graphicsView_events_timeline</zorder>
      <zorder>play_pause_button_analytics</zorder>
      <zorder>see_full_data_button</zorder>
      <zorder>heatmap_present_label</zorder>
+     <zorder>label_19</zorder>
     </widget>
     <widget class="QWidget" name="createDatasetTab">
      <attribute name="title">
