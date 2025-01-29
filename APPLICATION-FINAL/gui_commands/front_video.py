@@ -10,16 +10,18 @@ from utils import (VideoProcessor,
                    DrawingKeyPointsThread)
 from trackers import (PoseDetection,
                       HumanDetectionThread,
-                      PoseDetectionThread)
+                      PoseDetectionThread,
+                    ActionDetection)
 
 class FrontVideo:
     def __init__(self, main_window):
         self.main_window = main_window
 
+        self.ActionDetection = ActionDetection()
         
-        self.human_detect_model = "yolov8l.pt"
+        self.human_detect_model = "yolov8n.pt"
         self.human_detect_conf = 0.5
-        self.human_pose_model = "yolov8l-pose.pt"
+        self.human_pose_model = "yolov8n-pose.pt"
         self.human_pose_conf = 0.5
         self.iou_value = 0.3
 
@@ -63,12 +65,16 @@ class FrontVideo:
         self.number_of_frames = len(frames)
         self.detectResults(frames)
     
+    def identify_action(self):
+        frames = self.ActionDetection.process_video(video_keypoints=self.humanPoseDetectionResults,
+                                             video_frames=self.returned_frames,
+                                                detections=self.humanDetectionResults)
+        
+        self.update_video_frames_list_only(frames)
+
     def update_video_frames_list_only(self, frames):
-        self.main_window.returned_frames_from_browsed_front_video = frames
+        self.main_window.returned_frames_from_browsed_front_video = frames 
         self.returned_frames = frames
-        print(self.humanPoseDetectionResults[0])
-        print(self.humanPoseDetectionResults[1])
-        print(self.humanPoseDetectionResults[2])
     
     def update_progress_bar(self,value):
         self.main_window.importProgressBar_front.setValue(value)
@@ -140,7 +146,7 @@ class FrontVideo:
                                                      white_frames=frames,
                                                       keypoints_list=self.humanPoseDetectionResults,
                                                       human_detections=self.humanDetectionResults)
-        self.draw_keypoints.video_frame_drawn.connect(self.update_video_frames_list_only)
+        self.draw_keypoints.video_frame_drawn.connect(self.identify_action)
         self.draw_keypoints.frame_drawn_list.connect(self.update_white_frame_last)
         self.draw_keypoints.progress_updated.connect(self.update_progress_bar)
         self.draw_keypoints.start()
@@ -199,3 +205,5 @@ class FrontVideo:
         else:
             self.main_window.is_front_video_playing = True
             self.main_window.play_pause_button_video_front.setText("PAUSE")
+
+    
