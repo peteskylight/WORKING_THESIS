@@ -90,8 +90,8 @@ class DrawingKeyPointsThread(QThread):
                     for keypoint in keypoints:
                         x = int(keypoint[0] * cropped_frame.shape[1])
                         y = int(keypoint[1] * cropped_frame.shape[0])
-                        cv2.circle(cropped_frame, (x, y), radius=2, color=(0, 255, 0), thickness=-1)
-                        cv2.circle(video_cropped_frame, (x, y), radius=2, color=(0, 255, 0), thickness=-1)
+                        cv2.circle(cropped_frame, (x, y), radius=4, color=(0, 255, 0), thickness=-1)
+                        cv2.circle(video_cropped_frame, (x, y), radius=4, color=(0, 255, 0), thickness=-1)
 
                     # Draw skeleton
                     for pair in self.skeleton_pairs:
@@ -107,8 +107,8 @@ class DrawingKeyPointsThread(QThread):
                                 y2 = int(pt2[1] * cropped_frame.shape[0])
                                 
                                 if 0.1 <= x1 < cropped_frame.shape[1] and 0.1 <= y1 < cropped_frame.shape[0] and 0.1 <= x2 < cropped_frame.shape[1] and 0.1 <= y2 < cropped_frame.shape[0]:
-                                    cv2.line(cropped_frame, (x1, y1), (x2, y2), color=(0, 255, 0), thickness=1)
-                                    cv2.line(video_cropped_frame, (x1, y1), (x2, y2), color=(0, 255, 0), thickness=1)
+                                    cv2.line(cropped_frame, (x1, y1), (x2, y2), color=(0, 255, 0), thickness=2)
+                                    cv2.line(video_cropped_frame, (x1, y1), (x2, y2), color=(0, 255, 0), thickness=2)
                             else:
                                 print(f"Invalid keypoints for track ID {track_id}: pt1={pt1}, pt2={pt2}")
                         else:

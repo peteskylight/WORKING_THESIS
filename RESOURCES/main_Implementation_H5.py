@@ -68,21 +68,22 @@ def main():
     #YOLO AREA
 
     #=====================================================> UNCOMMENT THIS FOR GPU <=====
-    #torch.cuda.set_device(0) 
-    #humanDetectorModel = YOLO('yolov8n.pt', task='detect').to('cuda')
-    #humanPoseDetectorModel = YOLO('yolov8n-pose.pt', task='detect').to('cuda')
+    torch.cuda.set_device(0) 
+    humanDetectorModel = YOLO('yolov8n.pt', task='detect').to('cuda')
+    humanPoseDetectorModel = YOLO('yolov8n-pose.pt', task='detect').to('cuda')
+
     #PATH
     modelPath = 'yolov8n.pt'
-    humanDetectorModel = YOLO(modelPath) #COMMENT THIS AND (V)THIS(V) when GPU
-    #humanDetectorModel = torch.hub.load('ultralytics/yolov8', 'custom', path='best.pt', trust_repo='check')
-    humanPoseDetectorModel = YOLO('yolov8n-pose.pt')# <==========THIS
-    #=> ^^^COMMENT THESE TWO FOR GPU ^^^ <=
+    # humanDetectorModel = YOLO(modelPath) #COMMENT THIS AND (V)THIS(V) when GPU
+    # #humanDetectorModel = torch.hub.load('ultralytics/yolov8', 'custom', path='best.pt', trust_repo='check')
+    # humanPoseDetectorModel = YOLO('yolov8n-pose.pt')# <==========THIS
+    # #=> ^^^COMMENT THESE TWO FOR GPU ^^^ <=
     #====================================================================================
     humanDetectorModel.classes = [0] #Limit to human detection
     humanPoseDetectorModel.classes = [0] #Limit to juman detection
 
     #TENSORFLOW AREA
-    model = "actions weight.h5"
+    model = r"C:\Users\Bennett\Documents\WORKING_THESIS\RESOURCES\history.h5"
     actionModel = load_model(model)
 
     actionsList = np.array(['Looking Down', 'Looking Forward', 'Looking Left', 'Looking Right', 'Looking Up']) 
@@ -95,6 +96,7 @@ def main():
     
     #PARAMETERS AREA
     cameraInput = 0
+
     camera = cv2.VideoCapture(cameraInput)
 
     args = parse_arguments()
@@ -154,7 +156,6 @@ def main():
         
         if cv2.waitKey(10) == 27:
             break
-
 
 if __name__ == "__main__":
     main()
