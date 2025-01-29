@@ -15,7 +15,8 @@ from trackers import PoseDetection
 from utils import VideoProcessor, Tools, VideoUtils
 from gui_commands import (CenterVideo,
                           FrontVideo,
-                          CreateDataset)
+                          CreateDataset,
+                          AnalyticsTab)
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
@@ -28,6 +29,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.CenterVideo = CenterVideo(main_window=self)
         self.FrontVideo = FrontVideo(main_window=self)
         self.CreateDataset = CreateDataset(main_window=self)
+        self.AnalyticsTab = AnalyticsTab(main_window=self)
         
         self.drawing_utils = DrawingUtils()
         self.tools_utils = Tools()
@@ -95,24 +97,31 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.play_pause_button_video_front.clicked.connect(self.FrontVideo.toggle_play_pause)
 
         #=====GET FOOTAGE ANALYTICS
-
+        self.are_videos_ready = False
         self.analyze_video_button.clicked.connect(self.switch_to_analytics_tab)
 
 
         #Adjust this according to video but meh. This is just the default. Just check the specs of the cam. Default naman sya all the times
         self.center_video_interval = 1000//30 #30 fps
         self.front_video_interval = 1000//30 #30 fps
+
         self.clock_interval = 1000  # 1 second interval for clock
         self.toggle_record_label_interval = 750
 
         self.center_video_counter = 0
         self.front_video_counter = 0
+        self.cropped_center_video_counter = 0
+        self.cropped_front_video_counter = 0
+
         
         self.clock_counter = 0
         self.toggle_record_label_counter = 0
         self.toggle_import_indicator = 0
         self.center_video_frame_counter = 0        
-        self.front_video_frame_counter = 0    
+        self.front_video_frame_counter = 0
+
+        self.cropped_center_video_frame_counter = 0
+        self.cropped_front_video_frame_counter = 0
 
         
         #============ FOR CREATE DATASET TAB ============
@@ -181,6 +190,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 
                 self.front_video_counter = 0
                 self.front_video_frame_counter += 1
+        
+        #For cropped analytics
+        if self.are_videos_ready:
+            self.cropped_front_video_counter += self.timer.interval()
+            if (self.cropped_front_video_counter >= self.center_video_interval):
+                #if the counter for center video frame exceeds or is equal to the length of the frame list,
+                #it resets the videod
+                if self.cropped_front_video_frame_counter >= len(self.returned_frames_from_browsed_front_video):
+                    self.cropped_front_video_frame_counter = 0 #it resets here haha
+                
+                #Insert here the code for updating frame for each video
+                #the 2 videos must have same 
+                self.AnalyticsTab.update_frame_for_front_video_label(self.returned_frames_from_browsed_front_video[self.cropped_front_video_frame_counter],
+                                                                    starting_y=860)
+                
+                self.cropped_front_video_counter = 0 #reset the interval haha
+                self.cropped_front_video_frame_counter += 1 #increment to proceed to next frame lol
+
 
         if self.clock_counter >= self.clock_interval:
             self.CreateDataset.update_usage()
@@ -302,6 +329,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if (self.returned_frames_from_browsed_center_video and self.returned_frames_from_browsed_front_video) is not None:
             self.toggle_analytics_tab()
             self.MainTab.setCurrentIndex(1)
+            self.are_videos_ready = True
+            self.play_pause_button_analytics.setEnabled(True)
+            self.play_pause_button_analytics.setText("PAUSE")
         else:
             self.show_warning_message(status_title="Error!",
                                       message= "Please import a complete set of footages.")

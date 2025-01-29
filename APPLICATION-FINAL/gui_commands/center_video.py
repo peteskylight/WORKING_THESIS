@@ -54,7 +54,7 @@ class CenterVideo:
         self.video_processor.start()
         self.video_processor.frame_processed.connect(self.update_frame_list)
         self.video_processor.progress_update.connect(self.update_progress_bar)
-    
+     
     def update_frame_list(self, frames):
         self.main_window.returned_frames_from_browsed_center_video = None
         self.main_window.returned_frames_from_browsed_center_video = frames

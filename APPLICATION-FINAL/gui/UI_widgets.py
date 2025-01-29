@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'FINAL-DESIGNPFXxWI.ui'
+## Form generated from reading UI file 'FINAL-DESIGNPvyKUH.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.8.1
 ##
@@ -327,7 +327,7 @@ class Ui_MainWindow(object):
         self.pushButton.setFont(font2)
         self.center_video_preview_label = QLabel(self.analyticsTab)
         self.center_video_preview_label.setObjectName(u"center_video_preview_label")
-        self.center_video_preview_label.setGeometry(QRect(710, 50, 551, 191))
+        self.center_video_preview_label.setGeometry(QRect(710, 50, 551, 201))
         font10 = QFont()
         font10.setPointSize(18)
         font10.setItalic(True)
@@ -385,6 +385,7 @@ class Ui_MainWindow(object):
         self.graphicsView_events_timeline.setGeometry(QRect(20, 450, 961, 91))
         self.play_pause_button_analytics = QPushButton(self.analyticsTab)
         self.play_pause_button_analytics.setObjectName(u"play_pause_button_analytics")
+        self.play_pause_button_analytics.setEnabled(False)
         self.play_pause_button_analytics.setGeometry(QRect(990, 450, 271, 61))
         font12 = QFont()
         font12.setPointSize(22)
@@ -986,7 +987,7 @@ class Ui_MainWindow(object):
         self.label_13.setText(QCoreApplication.translate("MainWindow", u"Center Video Placement", None))
         self.label_19.setText(QCoreApplication.translate("MainWindow", u"Front Video Placement", None))
         self.label_21.setText(QCoreApplication.translate("MainWindow", u"Video Seek", None))
-        self.play_pause_button_analytics.setText(QCoreApplication.translate("MainWindow", u"PLAY", None))
+        self.play_pause_button_analytics.setText(QCoreApplication.translate("MainWindow", u"PAUSE", None))
         self.see_full_data_button.setText(QCoreApplication.translate("MainWindow", u"SEE FULL DATA", None))
         self.heatmap_present_label.setText(QCoreApplication.translate("MainWindow", u"Heatmap Visualization will be presented here.", None))
         self.MainTab.setTabText(self.MainTab.indexOf(self.analyticsTab), QCoreApplication.translate("MainWindow", u"Analytics", None))
