@@ -66,6 +66,9 @@ class FrontVideo:
     def update_video_frames_list_only(self, frames):
         self.main_window.returned_frames_from_browsed_front_video = frames
         self.returned_frames = frames
+        print(self.humanPoseDetectionResults[0])
+        print(self.humanPoseDetectionResults[1])
+        print(self.humanPoseDetectionResults[2])
     
     def update_progress_bar(self,value):
         self.main_window.importProgressBar_front.setValue(value)
