@@ -98,6 +98,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         #=====GET FOOTAGE ANALYTICS
         self.are_videos_ready = False
+        self.whole_classroom_height = 1080
+        self.front_starting_y = 750
+        self.center_starting_y = 100
+
         self.analyze_video_button.clicked.connect(self.switch_to_analytics_tab)
 
 
@@ -199,14 +203,30 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 #it resets the videod
                 if self.cropped_front_video_frame_counter >= len(self.returned_frames_from_browsed_front_video):
                     self.cropped_front_video_frame_counter = 0 #it resets here haha
+                    self.cropped_center_video_frame_counter = 0 #it resets here haha
                 
                 #Insert here the code for updating frame for each video
                 #the 2 videos must have same 
+
+                #For front view
                 self.AnalyticsTab.update_frame_for_front_video_label(self.returned_frames_from_browsed_front_video[self.cropped_front_video_frame_counter],
-                                                                    starting_y=860)
+                                                                    starting_y= self.front_starting_y,
+                                                                    whole_classroom_height=self.whole_classroom_height
+                                                                    )
                 
+                #For center view
+                self.AnalyticsTab.update_frame_for_center_video_label(self.returned_frames_from_browsed_center_video[self.cropped_center_video_frame_counter],
+                                                                    center_starting_y=self.center_starting_y,
+                                                                    front_starting_y=self.front_starting_y,
+                                                                    )
+
                 self.cropped_front_video_counter = 0 #reset the interval haha
+                self.cropped_center_video_counter = 0
+
                 self.cropped_front_video_frame_counter += 1 #increment to proceed to next frame lol
+                self.cropped_center_video_frame_counter += 1 #increment to proceed to next frame lol
+                
+
 
 
         if self.clock_counter >= self.clock_interval:

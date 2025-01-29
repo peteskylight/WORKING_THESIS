@@ -17,9 +17,9 @@ class FrontVideo:
         self.main_window = main_window
 
         
-        self.human_detect_model = "yolov8n.pt"
+        self.human_detect_model = "yolov8l.pt"
         self.human_detect_conf = 0.5
-        self.human_pose_model = "yolov8n-pose.pt"
+        self.human_pose_model = "yolov8l-pose.pt"
         self.human_pose_conf = 0.5
         self.iou_value = 0.3
 
@@ -51,7 +51,7 @@ class FrontVideo:
     
     def start_video_processing(self, video_path):
         self.main_window.status_label_front.setText("[ GETTING FRAMES ]")
-        self.video_processor = VideoProcessor(video_path, resize_frames=True)
+        self.video_processor = VideoProcessor(video_path, resize_frames=False)
         self.video_processor.start()
         self.video_processor.frame_processed.connect(self.update_frame_list)
         self.video_processor.progress_update.connect(self.update_progress_bar)
@@ -111,8 +111,8 @@ class FrontVideo:
         self.video_processor.stop()
         self.main_window.status_label_front.setText("[ CREATING FRAMES ]")
         self.white_frame_generator = WhiteFrameGenerator(number_of_frames=self.number_of_frames,
-                                                         height=608,
-                                                         width=1088)
+                                                         height=1080,
+                                                         width=1920)
         self.white_frame_generator.start()
         self.white_frame_generator.progress_update.connect(self.update_progress_bar)
         self.white_frame_generator.return_white_frames.connect(self.update_white_frame_list)
