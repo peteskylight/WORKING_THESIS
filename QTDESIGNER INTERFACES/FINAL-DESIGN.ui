@@ -47,7 +47,7 @@
      <enum>QTabWidget::TabShape::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <property name="iconSize">
      <size>
@@ -239,27 +239,26 @@ Frequency [Linked List]</string>
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>450</y>
+         <y>530</y>
          <width>231</width>
-         <height>131</height>
+         <height>51</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>28</pointsize>
+         <pointsize>20</pointsize>
          <bold>false</bold>
         </font>
        </property>
        <property name="text">
-        <string>Analyze
-Footages</string>
+        <string>Analyze Footages</string>
        </property>
       </widget>
       <widget class="QProgressBar" name="analyze_progressBar">
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>400</y>
+         <y>490</y>
          <width>231</width>
          <height>31</height>
         </rect>
@@ -269,6 +268,25 @@ Footages</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignmentFlag::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="analyze_video_button_2">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>370</y>
+         <width>231</width>
+         <height>51</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>20</pointsize>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Record Session</string>
        </property>
       </widget>
      </widget>
@@ -1199,6 +1217,9 @@ Footages</string>
       </property>
      </widget>
      <widget class="QPushButton" name="play_pause_button_analytics">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>990</x>
@@ -1213,7 +1234,7 @@ Footages</string>
        </font>
       </property>
       <property name="text">
-       <string>PLAY</string>
+       <string>PAUSE</string>
       </property>
      </widget>
      <widget class="QPushButton" name="see_full_data_button">
