@@ -12,7 +12,7 @@ from ultralytics import YOLO
 from utils.drawing_utils import DrawingUtils
 from gui import Ui_MainWindow
 from trackers import PoseDetection
-from utils import VideoProcessor, Tools, VideoUtils
+from utils import Tools, VideoUtils
 from gui_commands import (CenterVideo,
                           FrontVideo,
                           CreateDataset,
@@ -41,6 +41,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.fps_flider_value = 30
         self.returned_frames_from_browsed_center_video = None
         self.returned_frames_from_browsed_front_video = None
+
+        
 
         self.cropped_frame_for_front_video_analytics_preview = None
         self.cropped_frame_for_center_video_analytics_preview = None
@@ -78,13 +80,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                                   humanPoseModel="yolov8n-pose.pt",
                                                   humanPoseConf=self.human_pose_conf)
         
-        self.human_detect_results = None
-        self.video_processor = None
+        self.human_detect_results_front = None
+        self.human_detect_results_center = None
+        self.human_pose_results_front = None
+        self.human_pose_results_center = None
+        
+        self.action_results_list_front = None
+        self.action_results_list_center = None
+
         self.center_white_frames_preview = None
         self.front_white_frames_preview = None
 
-        self.human_detection_results = []
-        
         self.is_center_video_playing = False
         self.is_front_video_playing = False
 
@@ -167,33 +173,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.clock_counter += self.timer.interval()
         self.toggle_record_label_counter += self.timer.interval()
         
-        if self.is_center_video_playing:
-            self.center_video_counter += self.timer.interval()
-            if (self.center_video_counter >= self.center_video_interval):
-                if self.center_video_frame_counter >= len(self.returned_frames_from_browsed_center_video):
-                    self.center_video_frame_counter = 0 #Resets the playing of video
-                
-                if self.keypointsOnlyChkBox_Center.isChecked():
-                    self.CenterVideo.update_white_frame(self.center_white_frames_preview[self.center_video_frame_counter])
-                else:
-                    self.CenterVideo.update_frame(self.returned_frames_from_browsed_center_video[self.center_video_frame_counter])
-                
-                self.center_video_counter = 0
-                self.center_video_frame_counter += 1
         
-        if self.is_front_video_playing:
-            self.front_video_counter += self.timer.interval()
-            if (self.front_video_counter >= self.front_video_interval):
-                if self.front_video_frame_counter >= len(self.returned_frames_from_browsed_front_video):
-                    self.front_video_frame_counter = 0 #Resets the playing of video
-                
-                if self.keypointsOnlyChkBox_front.isChecked():
-                    self.FrontVideo.update_white_frame(self.front_white_frames_preview[self.front_video_frame_counter])
-                else:
-                    self.FrontVideo.update_frame(self.returned_frames_from_browsed_front_video[self.front_video_frame_counter])
-                
-                self.front_video_counter = 0
-                self.front_video_frame_counter += 1
         
         #For cropped analytics
         if self.are_videos_ready:
@@ -355,3 +335,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             self.show_warning_message(status_title="Error!",
                                       message= "Please import a complete set of footages.")
+    
+
+    

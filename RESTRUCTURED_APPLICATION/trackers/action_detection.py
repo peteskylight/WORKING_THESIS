@@ -9,6 +9,8 @@ from PySide6.QtCore import QThread, Signal
  
 from ultralytics import YOLO
 from ultralytics.utils.plotting import Annotator
+
+
 #from ultralytics.yolo.v8.detect.predict import Detections
 
 from tensorflow.keras.models import load_model
@@ -18,8 +20,6 @@ import torch #========================================> GPU IMPORTANT <========
 
 
 class ActionDetectionThread(QThread):
-    processed_frames_list = Signal(object)
-    processed_black_frames_list = Signal(object)
     detected_actions_list = Signal(object)
     progress_update = Signal(int)
 
@@ -30,6 +30,8 @@ class ActionDetectionThread(QThread):
         self.black_frames = black_frames
         self.video_frames = video_frames
         self.detections = detections
+
+        self.detected_actions = []
 
         self.action_recognition_model = load_model("RESOURCES/action_recognition_model.h5")
         self.temp_sequence = []
@@ -64,7 +66,6 @@ class ActionDetectionThread(QThread):
             
             #cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
             cv2.putText(frame, action_text, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-            cv2.putText(black_frames, action_text, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
         
         return frame, black_frames
 
@@ -86,12 +87,10 @@ class ActionDetectionThread(QThread):
         return predictions
     
     def run(self):
-
+        
         """
         Process video frames and return a list of frames with bounding boxes and action labels.
         """
-        processed_frames = []
-        processed_black_frames = []
         frame_count = len(self.video_keypoints) - 1
 
         for frame_idx, frame_keypoints in enumerate(self.video_keypoints):
@@ -106,20 +105,14 @@ class ActionDetectionThread(QThread):
             
             # Predict actions once we have enough frames
             action_predictions = self.predict_actions(self.person_keypoints)
-            
-            # Draw action labels on the frame
-            frame = self.video_frames[frame_idx]
-            black_frame = self.black_frames[frame_idx]
-            frame, black_frame = self.draw_action_text(frame, black_frame, self.detections[frame_idx], action_predictions)
+
+            self.detected_actions.append(action_predictions)
             
             progress = int((frame_idx / frame_count) * 100)
             self.progress_update.emit(progress)
-            processed_frames.append(frame)
-            processed_black_frames.append(black_frame)
-        
+            
 
-        self.processed_frames_list.emit(processed_frames)
-        self.processed_black_frames_list.emit(processed_black_frames)
+        self.detected_actions_list.emit(self.detected_actions)
 
     def stop(self):
         self._running = False

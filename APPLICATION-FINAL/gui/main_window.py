@@ -198,6 +198,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #For cropped analytics
         if self.are_videos_ready:
             self.cropped_front_video_counter += self.timer.interval()
+            #To save some memory, stop the videos.
+            self.is_center_video_playing = False
+            self.is_front_video_playing = False
+            
             if (self.cropped_front_video_counter >= self.center_video_interval):
                 #if the counter for center video frame exceeds or is equal to the length of the frame list,
                 #it resets the videod

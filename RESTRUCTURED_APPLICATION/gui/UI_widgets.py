@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'FINAL-DESIGNPvyKUH.ui'
+## Form generated from reading UI file 'FINAL-DESIGNeDXSVY.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.8.1
 ##
@@ -111,16 +111,20 @@ class Ui_MainWindow(object):
         self.event_timeline_chkbox.setFont(font2)
         self.analyze_video_button = QPushButton(self.groupBox_2)
         self.analyze_video_button.setObjectName(u"analyze_video_button")
-        self.analyze_video_button.setGeometry(QRect(10, 450, 231, 131))
+        self.analyze_video_button.setGeometry(QRect(10, 530, 231, 51))
         font4 = QFont()
-        font4.setPointSize(28)
+        font4.setPointSize(20)
         font4.setBold(False)
         self.analyze_video_button.setFont(font4)
         self.analyze_progressBar = QProgressBar(self.groupBox_2)
         self.analyze_progressBar.setObjectName(u"analyze_progressBar")
-        self.analyze_progressBar.setGeometry(QRect(10, 400, 231, 31))
+        self.analyze_progressBar.setGeometry(QRect(10, 490, 231, 31))
         self.analyze_progressBar.setValue(24)
         self.analyze_progressBar.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.analyze_video_button_2 = QPushButton(self.groupBox_2)
+        self.analyze_video_button_2.setObjectName(u"analyze_video_button_2")
+        self.analyze_video_button_2.setGeometry(QRect(10, 370, 231, 51))
+        self.analyze_video_button_2.setFont(font4)
         self.video_preview_label_front = QLabel(self.importVideo)
         self.video_preview_label_front.setObjectName(u"video_preview_label_front")
         self.video_preview_label_front.setGeometry(QRect(10, 10, 481, 301))
@@ -165,13 +169,13 @@ class Ui_MainWindow(object):
         self.importProgressBar_front.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
         self.importProgressBar_front.setAutoFillBackground(False)
         self.importProgressBar_front.setValue(0)
-        self.importProgressBar_front.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.importProgressBar_front.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
         self.importProgressBar_front.setInvertedAppearance(False)
         self.status_label_front = QLabel(self.frame_5)
         self.status_label_front.setObjectName(u"status_label_front")
-        self.status_label_front.setGeometry(QRect(20, 130, 451, 21))
+        self.status_label_front.setGeometry(QRect(10, 110, 461, 41))
         self.status_label_front.setFont(font6)
-        self.status_label_front.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.status_label_front.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.videoDirectory_front = QLineEdit(self.frame_5)
         self.videoDirectory_front.setObjectName(u"videoDirectory_front")
         self.videoDirectory_front.setGeometry(QRect(10, 40, 451, 31))
@@ -185,7 +189,7 @@ class Ui_MainWindow(object):
         self.importProgressBar_center.setFont(font2)
         self.importProgressBar_center.setAutoFillBackground(False)
         self.importProgressBar_center.setValue(0)
-        self.importProgressBar_center.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.importProgressBar_center.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
         self.importProgressBar_center.setInvertedAppearance(False)
         self.label_17 = QLabel(self.frame_5)
         self.label_17.setObjectName(u"label_17")
@@ -198,9 +202,9 @@ class Ui_MainWindow(object):
         self.import_video_button_center.setAutoFillBackground(False)
         self.status_label_center = QLabel(self.frame_5)
         self.status_label_center.setObjectName(u"status_label_center")
-        self.status_label_center.setGeometry(QRect(500, 130, 441, 21))
+        self.status_label_center.setGeometry(QRect(500, 110, 441, 41))
         self.status_label_center.setFont(font6)
-        self.status_label_center.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.status_label_center.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.somelabelforprogrss = QLabel(self.frame_5)
         self.somelabelforprogrss.setObjectName(u"somelabelforprogrss")
         self.somelabelforprogrss.setGeometry(QRect(10, 80, 451, 31))
@@ -924,7 +928,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.MainTab.setCurrentIndex(1)
+        self.MainTab.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -951,8 +955,8 @@ class Ui_MainWindow(object):
         self.behavior_count_link_list_chkbox.setText(QCoreApplication.translate("MainWindow", u"Behavior Count\n"
 "Frequency [Linked List]", None))
         self.event_timeline_chkbox.setText(QCoreApplication.translate("MainWindow", u"Event Timeline", None))
-        self.analyze_video_button.setText(QCoreApplication.translate("MainWindow", u"Analyze\n"
-"Footages", None))
+        self.analyze_video_button.setText(QCoreApplication.translate("MainWindow", u"Analyze Footages", None))
+        self.analyze_video_button_2.setText(QCoreApplication.translate("MainWindow", u"Record Session", None))
         self.video_preview_label_front.setText(QCoreApplication.translate("MainWindow", u"Import a video to see preview", None))
         self.label_15.setText(QCoreApplication.translate("MainWindow", u"Front Video File Location:", None))
         self.videoDirectory_center.setText(QCoreApplication.translate("MainWindow", u"Import a video file to be analyzed.", None))

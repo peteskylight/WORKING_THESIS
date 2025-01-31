@@ -1,16 +1,13 @@
 import cv2
 
-from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QTableWidgetItem, QWidget
-from PySide6.QtCore import QRect, QCoreApplication, QMetaObject, QTimer, QTime, Qt, QDate
-from PySide6.QtGui import QScreen, QImage, QPixmap
+from PySide6.QtWidgets import QFileDialog
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QImage, QPixmap
 
-from utils import (VideoProcessor,
-                   WhiteFrameGenerator,
-                   DrawingBoundingBoxesThread,
-                   DrawingKeyPointsThread)
+
+
+from utils import (VideoProcessorThread, VideoPlayerThread)
 from trackers import (PoseDetection,
-                      HumanDetectionThread,
-                      PoseDetectionThread,
                     ActionDetectionThread)
 
 class FrontVideo:
@@ -25,11 +22,17 @@ class FrontVideo:
 
         self.returned_frames = []
         self.humanDetectionResults = []
+        self.action_results_list = []
+
         self.humanPoseDetectionResults = None
         self.isImportDone = False
         self.videoHeight = None
         self.videoWidth = None
         self.number_of_frames = 0
+
+        self.video_player_thread = None
+
+        self.directory = None
     
         self.detection = PoseDetection(humanDetectionModel=self.human_detect_model,
                                                     humanDetectConf= self.human_detect_conf,
@@ -44,137 +47,63 @@ class FrontVideo:
         self.main_window.play_pause_button_video_front.setEnabled(False)
         self.human_detect_conf = (int(self.main_window.front_video_human_conf_slider.value())/100)
         self.human_pose_conf = (int(self.main_window.front_video_keypoint_conf_slider.value())/100)
-        directory, _ = QFileDialog.getOpenFileName(self.main_window, "Select Video File", "", "Video Files (*.mp4 *.avi *.mkv *.mov *.wmv)")
-        if directory:
-            self.main_window.videoDirectory_front.setText(f"{directory}")
-            self.start_video_processing(directory)
+        self.directory, _ = QFileDialog.getOpenFileName(self.main_window, "Select Video File", "", "Video Files (*.mp4 *.avi *.mkv *.mov *.wmv)")
+        if self.directory:
+            self.main_window.videoDirectory_front.setText(f"{self.directory}")
+            self.start_video_processing(self.directory)
     
     def start_video_processing(self, video_path):
-        self.main_window.status_label_front.setText("[ GETTING FRAMES ]")
-        self.video_processor = VideoProcessor(video_path, resize_frames=False)
-        self.video_processor.start()
-        self.video_processor.frame_processed.connect(self.update_frame_list)
+        self.main_window.status_label_front.setText("[ PROCESSING VIDEO... PLEASE WAIT ]")
+
+        self.video_processor = VideoProcessorThread(video_path, resize_frames=False,
+                                                    isFront=True,
+                                                    human_detection_model=self.human_detect_model,
+                                                    human_detection_confidence=self.human_detect_conf,
+                                                    human_pose_model=self.human_pose_model,
+                                                    human_pose_confidence=self.human_pose_conf,
+                                                    main_window=self.main_window)
+        
+        self.video_processor.human_detect_results.connect(self.update_detection_results)
+        self.video_processor.human_pose_results.connect(self.update_pose_detection_results)
         self.video_processor.progress_update.connect(self.update_progress_bar)
+
+        #Start the operation
+        self.video_processor.start()
+        
+    def update_detection_results(self, results_list):
+        self.humanDetectionResults = results_list
+        self.main_window.human_detect_results_front = results_list
+
+        print("HUMAN DETECT RESULTS:", len(results_list))
     
-    def update_frame_list(self, frames):
-        self.main_window.returned_frames_from_browsed_front_video = None
-        self.main_window.returned_frames_from_browsed_front_video = frames
-        self.returned_frames = frames
-        self.number_of_frames = len(frames)
-        self.detectResults(frames)
+    def update_pose_detection_results(self, pose_results):
+        self.humanPoseDetectionResults = pose_results
+        self.main_window.human_pose_results_front = pose_results
+        self.identify_actions()
+
+        print("POSE RESULTS:", len(pose_results))
     
-    def identify_action(self):
+    def identify_actions(self):
         self.main_window.status_label_front.setText("[ IDENTIFYING ACTIONS...]")
+
         self.action_detection_thread = ActionDetectionThread(video_keypoints=self.humanPoseDetectionResults,
                                                             black_frames=self.main_window.front_white_frames_preview,
                                                             video_frames=self.returned_frames,
                                                             detections=self.humanDetectionResults)
         
-        self.action_detection_thread.processed_frames_list.connect(self.update_returned_frames_from_browsed_video)
-        self.action_detection_thread.processed_black_frames_list.connect(self.update_white_frame_last) 
+        self.action_detection_thread.detected_actions_list.connect(self.update_action_results)
         self.action_detection_thread.progress_update.connect(self.update_progress_bar)  
         self.action_detection_thread.start()
 
-    def update_returned_frames_from_browsed_video(self, frames): #THIS IS THE LAST FUNCTION TO BE CALLED IN THE PROCESS
-        self.main_window.returned_frames_from_browsed_front_video = frames 
-        self.returned_frames = frames
-       # self.main_window.status_label_front.setText("[ VIDEO IS READY!]")
+    def update_action_results(self, actions):
+        self.action_results_list = actions
+        self.main_window.action_results_list_front = actions
+        self.main_window.status_label_front.setText("[ ACTIONS IDENTIFICATION, DONE! ]")
+        self.main_window.play_pause_button_video_front.setEnabled(True)
     
     def update_progress_bar(self,value):
         self.main_window.importProgressBar_front.setValue(value)
 
-    def detectResults(self,frames):
-        self.main_window.status_label_front.setText("[ PREPARING DETECTION... PLEASE WAIT ]")
-        self.main_window.importProgressBar_front.setValue(0)
-        self.human_detection_thread = HumanDetectionThread(
-                                                            video_frames = frames,
-                                                            isFront=True,
-                                                            humanDetectionModel=self.human_detect_model,
-                                                            humanDetectConf=self.human_detect_conf,
-                                                        )
-        self.human_detection_thread.human_track_results.connect(self.update_detection_results)
-        self.human_detection_thread.human_detection_progress_update.connect(self.update_progress_bar)
-        self.human_detection_thread.start()
-        self.main_window.status_label_front.setText("[ DETECTING HUMANS ]")
-
-    def update_detection_results(self, results_list):
-        self.humanDetectionResults = results_list
-        self.detect_keypoints(results_list)
-    
-    def detect_keypoints(self, humanDetectedResults):
-        self.main_window.status_label_front.setText("[ DETECTING KEYPOINTS ]")
-        self.pose_detection_thread = PoseDetectionThread(original_frames=self.returned_frames,
-                                                         human_detect_results=humanDetectedResults,
-                                                         humanDetectionModel=self.human_detect_model,
-                                                         humanDetectConf=self.human_detect_conf,
-                                                         humanPoseModel=self.human_pose_model,
-                                                         humanPoseConf=self.human_pose_conf
-                                                         
-                                                         )
-        self.pose_detection_thread.pose_detection_results.connect(self.update_pose_detection_results)
-        self.pose_detection_thread.pose_detection_progress_update.connect(self.update_progress_bar)  
-        self.pose_detection_thread.start()
-    
-    def update_pose_detection_results(self, pose_results):
-        self.humanPoseDetectionResults = pose_results
-        #print(len(pose_results))
-        #gENERATE wHITE FRAMES
-        self.generate_white_frames()
-
-    def generate_white_frames(self):
-        self.video_processor.stop()
-        self.main_window.status_label_front.setText("[ CREATING FRAMES ]")
-        self.white_frame_generator = WhiteFrameGenerator(number_of_frames=self.number_of_frames,
-                                                         height=1080,
-                                                         width=1920)
-        self.white_frame_generator.start()
-        self.white_frame_generator.progress_update.connect(self.update_progress_bar)
-        self.white_frame_generator.return_white_frames.connect(self.update_white_frame_list)
-    
-    def update_white_frame_list(self, frames):
-        self.main_window.front_white_frames_preview = frames
-        self.drawBoundingBoxes()
-    
-    def update_white_frame_list_then_identify_action(self, frames):
-        self.main_window.front_white_frames_preview = frames
-        self.identify_action()
-        
-    
-
-    def drawBoundingBoxes(self):
-        self.main_window.status_label_front.setText("[ DRAWING BOXES ]")
-        self.draw_bbox = DrawingBoundingBoxesThread(results=self.humanDetectionResults,
-                                                    white_frames=self.main_window.front_white_frames_preview)
-        self.draw_bbox.frame_drawn_list.connect(self.update_white_frame_list_then_draw_keypoints)
-        self.draw_bbox.progress_updated.connect(self.update_progress_bar)
-        self.draw_bbox.start()
-    
-    def update_white_frame_list_then_draw_keypoints(self, frames):
-        self.main_window.front_white_frames_preview = frames
-        self.main_window.status_label_front.setText("[ DRAWING KEYPOINTS ]")
-        self.draw_keypoints = DrawingKeyPointsThread(video_frames=self.returned_frames,
-                                                     white_frames=frames,
-                                                      keypoints_list=self.humanPoseDetectionResults,
-                                                      human_detections=self.humanDetectionResults)
-        self.draw_keypoints.video_frame_drawn.connect(self.update_returned_frames_from_browsed_video)
-        self.draw_keypoints.frame_drawn_list.connect(self.update_white_frame_list_then_identify_action)
-        self.draw_keypoints.progress_updated.connect(self.update_progress_bar)
-        self.draw_keypoints.start()
-    
-    def update_white_frame_last(self, frames):
-        self.main_window.status_label_front.setText("[ VIDEO IS READY! ]")
-        self.main_window.front_white_frames_preview = frames
-
-        self.main_window.play_pause_button_video_front.setEnabled(True) 
-
-        #Stop all Threads Running in order to save memory
-        self.human_detection_thread.stop()
-        self.pose_detection_thread.stop()
-        self.white_frame_generator.stop()
-        self.draw_bbox.stop()
-        self.draw_keypoints.stop()
-        self.action_detection_thread.stop()  
-    
     def closeEvent(self, event):
         self.video_processor.stop()
         self.white_frame_generator.stop()
@@ -217,12 +146,43 @@ class FrontVideo:
         fps = self.main_window.fps_loading_rate_slider.value()
         self.main_window.fps_flider_value = fps
 
+
     def toggle_play_pause(self):
-        if self.main_window.is_front_video_playing:
-            self.main_window.is_front_video_playing = False
+        """Start, pause, or resume video playback."""
+        if self.video_player_thread is None or not self.video_player_thread.isRunning():
+            self.video_player_thread = VideoPlayerThread(video_path=self.directory,
+                                                        main_window=self.main_window,
+                                                        is_Front=True,
+                                                        target_frame_index=0)
+            self.video_player_thread.frame_signal.connect(self.update_frame)
+            self.video_player_thread.start()
             self.main_window.play_pause_button_video_front.setText("PLAY")
         else:
-            self.main_window.is_front_video_playing = True
+            self.video_player_thread.pause(not self.video_player_thread.paused) 
             self.main_window.play_pause_button_video_front.setText("PAUSE")
 
-    
+    def pause(self, status):
+        """Pause or resume the video playback."""
+        self.paused = status
+
+
+    def start_video(self):
+        if self.video_player_thread is None or not self.video_player_thread.isRunning():
+            self.video_player_thread = VideoPlayerThread(self.directory)
+            self.video_player_thread.frame_signal.connect(self.update_frame)
+            self.video_player_thread.finished.connect(self.cleanup_thread)
+            self.video_player_thread.start()
+
+    def update_frame(self, qimg):
+        pixmap = QPixmap.fromImage(qimg)
+        scaled_pixmap = pixmap.scaled(self.main_window.video_preview_label_front.size(), Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
+        self.main_window.video_preview_label_front.setPixmap(scaled_pixmap)
+
+    def stop_video(self):
+        if self.video_player_thread and self.video_player_thread.isRunning():
+            self.video_player_thread.stop()
+
+    def cleanup_thread(self):
+        """Called when the thread finishes to release memory."""
+        self.video_player_thread.deleteLater()
+        self.video_player_thread = None

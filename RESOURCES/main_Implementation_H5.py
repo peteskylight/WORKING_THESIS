@@ -113,7 +113,7 @@ def main():
         
         if not ret:
             break
-        
+         
         img, humanResults = detectResults(frame, humanDetectorModel, 0.7)
 
         for result in humanResults:

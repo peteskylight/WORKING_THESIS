@@ -2,6 +2,11 @@ import cv2
 from PySide6.QtCore import QThread, Signal
 import numpy as np
 
+from ultralytics import YOLO
+import queue
+import threading
+from PySide6.QtGui import QImage, QPixmap
+
 class VideoUtils:
     
     def __init__(self) -> None:
@@ -70,47 +75,379 @@ class WhiteFrameGenerator(QThread):
         self._running = False
         self.wait()
 
-class VideoProcessor(QThread):
-    frame_processed = Signal(object)
+
+class VideoProcessorThread(QThread):
+    """
+    This class is used to process the video in a thread.
+    It will process the video frame by frame and emit signals with the results.
+    What I mean with processing is to detect humans and their keypoints frame by frame. 
+    Appending each result in the corresponding list.
+    Emmits signals with the results.
+
+    Here is the pseudo code:
+    1. Read the video
+    2. Get the total frames
+    3. Loop through the video frames
+       (Inside the loop)
+        4. Get the frame
+        5. Detect humans in the frame
+        6. Append the results in the human_detect_results_list
+        7. Detect the keypoints in the frame based on the results of the cropped image in the human_detect_results_list
+        8. Append the results in the human_pose_results_list
+        9. Update the progress
+    (Outside the loop)
+    10. Emit the signals with the results
+
+    """
+    #Initiate the signals
+
+    human_detect_results = Signal(object)
+    human_pose_results = Signal(object)
     progress_update = Signal(object)
 
-    def __init__(self, video_path, resize_frames = False):
+    def __init__(self, video_path,
+                 resize_frames = False,
+                 isFront = True,
+                 human_detection_model = None,
+                 human_detection_confidence = 0.5,
+                 human_pose_model = None,
+                 human_pose_confidence = 0.5,
+                 main_window = None):
+
         super().__init__()
+
+        self.isFront = isFront
+        self.human_detection_model = YOLO(human_detection_model)  
+        self.human_detection_confidence = human_detection_confidence
+        self.human_pose_model = YOLO(human_pose_model)
+        self.human_pose_confidence = human_pose_confidence
+        self.main_window = main_window
+
+        self.human_detect_results_list = []
+        self.human_pose_results_list = []
+
         self.video_path = video_path
         self.resize_frames = resize_frames
-        self._running = True
-        self.goSignal = False
-        self.videoWidth = None
-        self.videoHeight = None
 
+        self.initial_row_height = None
+
+        self._running = True
+
+    #Mask for front camera
+    def create_roi_mask(self, frame, row_height):
+        height, width, _ = frame.shape
+        mask = np.zeros((height, width), dtype=np.uint8)
+        roi = (0, row_height, width, height)  # Bottom to middle
+        cv2.rectangle(mask, (roi[0], roi[1]), (roi[2], roi[3]), 255, -1)
+        cv2.line(img=frame, pt1=(0, row_height), pt2=(frame.shape[1], row_height),color = (0,255,0), thickness=2)
+        return mask
+    
+    #Human Detection
+    def human_detect(self, frame):
+
+        #Just to declare the variables
+        id_name_dict = None
+        student_dict = None
+        results = None
+        #Add conditional to create mask or not
+        if self.isFront:
+            roi_mask = self.create_roi_mask(frame, self.initial_row_height)
+            masked_frame = cv2.bitwise_and(frame, frame, mask=roi_mask)
+            results = self.human_detection_model.track(masked_frame,
+                                                conf = self.human_detection_confidence,
+                                                persist=True,
+                                                classes=0,
+                                                iou=0.3,
+                                                agnostic_nms=True)[0]
+            id_name_dict = results.names
+            student_dict = {}
+        else:
+            results = self.human_detection_model.track(frame,
+                                                conf = self.human_detection_confidence,
+                                                persist=True,
+                                                classes=0,
+                                                iou=0.3,
+                                                agnostic_nms=True)[0]
+            id_name_dict = results.names
+            student_dict = {}
+
+        for result in results:
+            boxes = result.boxes
+            for box in boxes:
+                #Get the image per person
+                b = box.xyxy[0]
+                c = box.cls
+                
+                if box.id is not None and box.xyxy is not None and box.cls is not None:
+                    track_id = int(box.id.tolist()[0])
+                    track_result = box.xyxy.tolist()[0]
+                    object_cls_id = box.cls.tolist()[0]
+                    object_cls_name = id_name_dict.get(object_cls_id, "unknown")
+                    if object_cls_name == "person":
+                        student_dict[track_id] = track_result
+                else:
+                    print("One of the attributes is None:", box.id, box.xyxy, box.cls)
+        return student_dict
+    
+    #Human Pose Detection
+    def human_pose_detect(self, frame, human_results):
+        keypoints_dict = {}  # Initialize here to store keypoints for all detections in the frame
+
+        for track_id, bbox in human_results.items():
+            # Extract the bounding box coordinates
+            x1, y1, x2, y2 = map(int, bbox)
+            cropped_image = frame[y1:y2, x1:x2]
+
+            try:
+                # Perform pose detection on the cropped image
+                results = self.human_pose_model(cropped_image, self.human_pose_confidence)
+                for result in results:
+                    if result.keypoints:
+                        keypoints_normalized = np.array(result.keypoints.xyn.cpu().numpy()[0])
+                        keypoints_dict[track_id] = keypoints_normalized
+                    else:
+                        print(f"Error processing track ID {track_id}: {e}")
+            except Exception as e:
+                print(f"Error processing track ID {track_id}: {e}")
+        
+        return keypoints_dict
+
+    #Main function to run in a thread
     def run(self):
+        #Get the video
         cap = cv2.VideoCapture(self.video_path)
         total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-        self.videoHeight = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-        self.videoWidth = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-        shapes = [self.videoWidth, self.videoHeight]
-
         current_frame = 0
-        frames = []
+
+        self.main_window.status_label_front.setText("[ DETECTING HUMANS... ]")
+
+        #Variables for the human detection model
+        
         while self._running:
-            ret, frame = cap.read()
+            ret, frame = cap.read() #Get the frame
+
+            #Safety net if there is no frame anymore
             if not ret:
                 break
+
+            #Get the shape of the frame
+            height, width, _ = frame.shape
+
             if self.resize_frames:
                 frame = cv2.resize(frame, (1088, 608))
-            frames.append(frame)
-            current_frame += 1
+
+            #Get the initial row height
+            self.initial_row_height = int(height * (4 / 6))  # Bottom 4 rows (adjust as needed)
             
+            human_detect_results = self.human_detect(frame)
+            human_pose_detect_results = self.human_pose_detect(frame, human_detect_results)
+
+            self.human_detect_results_list.append(human_detect_results)
+            self.human_pose_results_list.append(human_pose_detect_results)
+
+            current_frame += 1
             progress = int(current_frame/total_frames *100)
             self.progress_update.emit(progress)
-            self.goSignal = False
             
-            del frame
-            
-        self.frame_processed.emit(frames)
-        
-        del frames
-        cap.release()
+            del frame #Just to delete unnecessary data
+
+        self.human_detect_results.emit(self.human_detect_results_list)
+        self.human_pose_results.emit(self.human_pose_results_list)
+
+        #Just to delete unnecessary data
+        del self.human_detect_results_list
+        del self.human_pose_results_list
+
+        cap.release() #Release the video
+
     def stop(self):
         self._running = False
         self.wait()
+
+############################################################################################################
+
+cv2.setNumThreads(1)  # 🚀 Disable OpenCV multi-threading to reduce CPU usage
+
+class VideoPlayerThread(QThread):
+    '''
+    The technique used in playing the video is to preload the frames in a queue and then play them in a loop.
+    This is done to ensure that the video is played smoothly without any lagging.
+    The technique is called "Frame Buffering WITH Lazy Lodaing
+    Producer-Consumer Pattern (Using queue.Queue)
+        Producer: The preload_frames() function continuously reads frames in the background and stores them in a queue (queue.Queue).
+        Consumer: The run() method fetches preloaded frames from the queue and sends them to the UI for display.
+    Advantage: This prevents the UI thread from waiting for frame decoding, making playback smooth.
+         Lazy Loading (On-Demand Processing)
+
+    Instead of storing all frames in RAM, we load only the next few frames (maxsize=10 in the queue).
+    When a frame is needed, it's already decoded and ready for display.
+
+    '''
+
+    
+    frame_signal = Signal(QImage)  # Signal to update UI
+    cv2.setNumThreads(1)  # Disable OpenCV multi-threading to reduce CPU usage
+
+    def __init__(self, video_path, main_window, is_Front, target_frame_index):
+        super().__init__()
+
+        self.main_window = main_window
+
+        self.video_path = video_path
+        self.cap = cv2.VideoCapture(self.video_path)
+        self.running = True
+        self.paused = False
+        self.frame_queue = queue.Queue(maxsize=10)  # Keep 10 preloaded frames
+        self.black_frame_queue = queue.Queue(maxsize=10)  # Keep 10 preloaded frames
+
+        self.current_frame_index = 0
+
+        self.is_Front = is_Front
+
+        self.target_frame_index = target_frame_index # Set target frame index
+        self.preload_thread = threading.Thread(target=self.preload_frames, daemon=True)
+        self.preload_thread.start()  # Start background frame loader
+
+        self.skeleton_pairs = [
+            (0, 1), (0, 2), (1, 3), (2, 4), (0, 5), (0, 6), (5, 6), 
+            (5, 7), (6, 8), (7, 9), (8, 10), (5, 11), (6, 12), (11, 12), 
+            (11, 13), (12, 14), (13, 15), (14, 16)
+        ]
+
+    def drawing_bounding_box(self, video_frame, results):
+
+        black_frame = np.zeros((1080, 1920, 3), dtype=np.uint8)
+
+        for track_id, bbox in results.items():
+            x1, y1, x2, y2 = bbox
+            cv2.putText(video_frame, f"Student ID: {track_id}", (int(bbox[0]), int(bbox[1] + 10)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 1)
+            cv2.rectangle(video_frame, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 2)
+
+            cv2.putText(black_frame, f"Student ID: {track_id}", (int(bbox[0]), int(bbox[1] + 10)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 1)
+            cv2.rectangle(black_frame, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 2)
+        
+        return video_frame, black_frame
+    
+    def drawing_keypoints(self, keypoints_dict, detection, black_frame, video_frame):
+        for track_id in keypoints_dict:
+            if track_id in detection:
+                keypoints = keypoints_dict[track_id]
+                bbox = detection[track_id]
+                bbox_x, bbox_y, bbox_w, bbox_h = bbox
+
+                cropped_frame = black_frame[int(bbox_y):int(bbox_h), int(bbox_x):int(bbox_w)]
+                video_cropped_frame = video_frame[int(bbox_y):int(bbox_h), int(bbox_x):int(bbox_w)]
+
+                for keypoint in keypoints:
+                    x = int(keypoint[0] * cropped_frame.shape[1])
+                    y = int(keypoint[1] * cropped_frame.shape[0])
+                    cv2.circle(cropped_frame, (x, y), radius=4, color=(0, 255, 0), thickness=-1)
+                    cv2.circle(video_cropped_frame, (x, y), radius=4, color=(0, 255, 0), thickness=-1)
+
+                # Draw skeleton
+                for pair in self.skeleton_pairs:
+                    if pair[0] < len(keypoints) and pair[1] < len(keypoints):
+                        pt1 = keypoints[pair[0]]
+                        pt2 = keypoints[pair[1]]
+                        #print(f"pt1: {pt1}, pt2: {pt2}")
+                        # # Debug statement
+                        if isinstance(pt1, np.ndarray) and isinstance(pt2, np.ndarray):
+                            x1 = int(pt1[0] * cropped_frame.shape[1])
+                            y1 = int(pt1[1] * cropped_frame.shape[0])
+                            x2 = int(pt2[0] * cropped_frame.shape[1])
+                            y2 = int(pt2[1] * cropped_frame.shape[0])
+                            
+                            if 0.1 <= x1 < cropped_frame.shape[1] and 0.1 <= y1 < cropped_frame.shape[0] and 0.1 <= x2 < cropped_frame.shape[1] and 0.1 <= y2 < cropped_frame.shape[0]:
+                                cv2.line(cropped_frame, (x1, y1), (x2, y2), color=(0, 255, 0), thickness=2)
+                                cv2.line(video_cropped_frame, (x1, y1), (x2, y2), color=(0, 255, 0), thickness=2)
+                        else:
+                            print(f"Invalid keypoints for track ID {track_id}: pt1={pt1}, pt2={pt2}")
+                    else:
+                        print(f"Keypoints array too small for track ID {track_id}: {keypoints}")
+
+                # Place the cropped frame back into the original frame
+
+                black_frame[int(bbox_y):int(bbox_h), int(bbox_x):int(bbox_w)] = cropped_frame
+                video_frame[int(bbox_y):int(bbox_h), int(bbox_x):int(bbox_w)] = video_cropped_frame
+        
+        return video_frame, black_frame
+
+    def preload_frames(self):
+        """Background thread to keep decoding frames ahead of playback"""
+        while self.running:
+            if not self.paused and not self.frame_queue.full():
+                ret, frame = self.cap.read()
+                if not ret:
+                    self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)  # Restart video if it ends
+                    self.current_frame_index = 0
+                    self.target_frame_index = 0 
+                    continue
+
+                results = None
+                keypoints = None
+                black_frame = None
+                if self.is_Front:
+                    results = self.main_window.human_detect_results_front
+                    keypoints = self.main_window.human_pose_results_front
+                else:
+                    results = self.main_window.human_detect_results_center
+                    keypoints = self.main_window.human_pose_results_center
+
+                # Draw bounding boxes and keypoints only for the current frame index
+                '''
+                LOL EQUAL LANG NAMAN EH! NAGLOLOKOHAN LANG TAYO RITO AHAHHAHHAHA
+                '''
+                if self.current_frame_index == self.target_frame_index:  # Draw only for target frame index #
+                    frame, black_frame = self.drawing_bounding_box(video_frame=frame,
+                                                                results=results[int(self.current_frame_index)])
+                    
+                    frame, black_frame = self.drawing_keypoints(keypoints_dict=keypoints[int(self.current_frame_index)],
+                                                                detection=results[int(self.current_frame_index)],
+                                                                black_frame=black_frame,
+                                                                video_frame=frame)
+                else:
+                    # If not the target frame, skip drawing
+                    frame = frame  # Just pass the frame unchanged
+                    black_frame = black_frame  # Just pass the black_frame unchanged
+
+                # Store the frame with the drawn bounding box and keypoints
+                self.frame_queue.put(frame)
+                self.black_frame_queue.put(black_frame)  # Store frame in queue
+                self.current_frame_index += 1
+                self.target_frame_index +=1
+
+                
+
+    def run(self):
+        """Main playback loop, sending frames from queue to UI"""
+        while self.running:
+            if not self.paused and not self.frame_queue.empty() and not self.black_frame_queue.empty():
+                video_frame = self.frame_queue.get()  # Get frame from queue
+                black_frame = self.black_frame_queue.get()
+                frame = None
+                if self.is_Front:
+                    if self.main_window.keypointsOnlyChkBox_front.isChecked():
+                        frame = black_frame
+                    else:
+                        frame = video_frame
+                else:
+                    if self.main_window.keypointsOnlyChkBox_Center.isChecked():
+                        frame = black_frame
+                    else:
+                        frame = video_frame
+                        
+                height, width, channels = frame.shape
+                bytes_per_line = channels * width
+                qimg = QImage(frame.data, width, height, bytes_per_line, QImage.Format_RGB888)
+                self.frame_signal.emit(qimg)  # Send frame to UI
+
+            self.msleep(33)  # Play at ~30 FPS
+
+    def stop(self):
+        self.running = False
+        self.quit()
+        self.wait()
+
+    def pause(self, status):
+        self.paused = status
+

@@ -429,7 +429,7 @@ Frequency [Linked List]</string>
         <number>0</number>
        </property>
        <property name="alignment">
-        <set>Qt::AlignmentFlag::AlignCenter</set>
+        <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
        </property>
        <property name="invertedAppearance">
         <bool>false</bool>
@@ -438,10 +438,10 @@ Frequency [Linked List]</string>
       <widget class="QLabel" name="status_label_front">
        <property name="geometry">
         <rect>
-         <x>20</x>
-         <y>130</y>
-         <width>451</width>
-         <height>21</height>
+         <x>10</x>
+         <y>110</y>
+         <width>461</width>
+         <height>41</height>
         </rect>
        </property>
        <property name="font">
@@ -454,7 +454,7 @@ Frequency [Linked List]</string>
         <string>[ IMPORT A VIDEO ]</string>
        </property>
        <property name="alignment">
-        <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+        <set>Qt::AlignmentFlag::AlignCenter</set>
        </property>
       </widget>
       <widget class="QLineEdit" name="videoDirectory_front">
@@ -509,7 +509,7 @@ Frequency [Linked List]</string>
         <number>0</number>
        </property>
        <property name="alignment">
-        <set>Qt::AlignmentFlag::AlignCenter</set>
+        <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
        </property>
        <property name="invertedAppearance">
         <bool>false</bool>
@@ -560,9 +560,9 @@ Frequency [Linked List]</string>
        <property name="geometry">
         <rect>
          <x>500</x>
-         <y>130</y>
+         <y>110</y>
          <width>441</width>
-         <height>21</height>
+         <height>41</height>
         </rect>
        </property>
        <property name="font">
@@ -575,7 +575,7 @@ Frequency [Linked List]</string>
         <string>[ IMPORT A VIDEO ]</string>
        </property>
        <property name="alignment">
-        <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+        <set>Qt::AlignmentFlag::AlignCenter</set>
        </property>
       </widget>
       <widget class="QLabel" name="somelabelforprogrss">

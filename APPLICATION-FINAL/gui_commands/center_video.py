@@ -148,8 +148,8 @@ class CenterVideo:
     def update_white_frame_last(self, frames):
         self.main_window.status_label_center.setText("[ VIDEO IS READY! ]")
         self.main_window.center_white_frames_preview = frames
-        self.main_window.play_pause_button_video_center.setEnabled(True)   
-        
+        self.main_window.play_pause_button_video_center.setEnabled(True)
+
         #Stop all Threads Running in order to save memory
         self.human_detection_thread.stop()
         self.pose_detection_thread.stop()

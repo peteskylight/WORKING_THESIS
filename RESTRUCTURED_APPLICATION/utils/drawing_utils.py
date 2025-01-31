@@ -151,7 +151,6 @@ class DrawingBoundingBoxesThread(QThread):
         current_frame = 0
         frames = []
         for detections, white_frame in zip(self.results, self.white_frames_list):
-            
             for track_id, bbox in detections.items():
                 # Generate a random color for each box
                 color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
