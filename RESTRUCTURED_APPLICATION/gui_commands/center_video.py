@@ -43,14 +43,18 @@ class CenterVideo:
 
     #When browse for center video is clicked
     def browse_video(self):
-        self.main_window.play_pause_button_video_center.setText("PLAY")
-        self.main_window.play_pause_button_video_center.setEnabled(False)
+
         self.human_detect_conf = (int(self.main_window.center_video_human_conf_slider.value())/100)
         self.human_pose_conf = (int(self.main_window.center_video_keypoint_conf_slider.value())/100)
         self.directory, _ = QFileDialog.getOpenFileName(self.main_window, "Select Video File", "", "Video Files (*.mp4 *.avi *.mkv *.mov *.wmv)")
         if self.directory:
             self.main_window.videoDirectory_center.setText(f"{self.directory}")
             self.start_video_processing(self.directory)
+            self.main_window.is_center_video_ready = False
+            self.main_window.human_pose_results_center = None
+            self.main_window.human_detect_results_center = None
+            self.main_window.action_results_list_center = None
+            self.main_window.import_video_button_center.setEnabled(False)
     
     def start_video_processing(self, video_path):
         self.main_window.status_label_center.setText("[ PROCESSING VIDEO... PLEASE WAIT ]")
@@ -99,7 +103,20 @@ class CenterVideo:
         self.action_results_list = actions
         self.main_window.action_results_list_center = actions
         self.main_window.status_label_center.setText("[ ACTIONS IDENTIFICATION, DONE! ]")
-        self.main_window.play_pause_button_video_center.setEnabled(True)
+        
+        self.main_window.is_center_video_ready = True
+
+        self.main_window.set_play_pause_preview_button(True)
+        
+        if self.main_window.is_center_video_ready and self.main_window.is_front_video_ready:
+            self.main_window.set_play_pause_preview_button(True)
+            
+        else:
+            self.main_window.set_play_pause_preview_button(False)
+        
+        print("CENTER VIDEO READY: ", self.main_window.is_center_video_ready)
+        print("FRONT VIDEO READY: ", self.main_window.is_front_video_ready)
+        self.video_processor.stop()
     
     def update_progress_bar(self,value):
         self.main_window.importProgressBar_center.setValue(value)
@@ -117,21 +134,9 @@ class CenterVideo:
             # Convert the frame from BGR to RGB
             #frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             
-            height, width, channel = frame.shape
+            height, width = frame.shape
             bytes_per_line = 3 * width
             q_img = QImage(frame.data, width, height, bytes_per_line, QImage.Format_RGB888).rgbSwapped()
-
-            # Set the QImage to the QLabel with aspect ratio maintained and white spaces
-            pixmap = QPixmap.fromImage(q_img)
-            scaled_pixmap = pixmap.scaled(self.main_window.video_preview_label_center.size(), Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
-            self.main_window.video_preview_label_center.setPixmap(scaled_pixmap)
-
-    def update_white_frame(self, white_frame):
-        if white_frame is not None and self.main_window.is_center_video_playing:
-            
-            height, width, channel = white_frame.shape
-            bytes_per_line = 3 * width
-            q_img = QImage(white_frame.data, width, height, bytes_per_line, QImage.Format_RGB888).rgbSwapped()
 
             # Set the QImage to the QLabel with aspect ratio maintained and white spaces
             pixmap = QPixmap.fromImage(q_img)
@@ -156,10 +161,8 @@ class CenterVideo:
                                                         target_frame_index=0)
             self.video_player_thread.frame_signal.connect(self.update_frame)
             self.video_player_thread.start()
-            self.main_window.play_pause_button_video_center.setText("PLAY")
         else:
             self.video_player_thread.pause(not self.video_player_thread.paused) 
-            self.main_window.play_pause_button_video_center.setText("PAUSE")
 
     def pause(self, status):
         """Pause or resume the video playback."""

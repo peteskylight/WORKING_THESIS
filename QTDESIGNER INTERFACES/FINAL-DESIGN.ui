@@ -83,9 +83,9 @@
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>30</y>
+         <y>100</y>
          <width>231</width>
-         <height>331</height>
+         <height>311</height>
         </rect>
        </property>
        <property name="frameShape">
@@ -178,7 +178,7 @@ Heatmap View</string>
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>160</y>
+          <y>150</y>
           <width>231</width>
           <height>61</height>
          </rect>
@@ -201,7 +201,7 @@ Visualizations</string>
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>230</y>
+          <y>210</y>
           <width>181</width>
           <height>51</height>
          </rect>
@@ -220,7 +220,7 @@ Frequency [Linked List]</string>
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>280</y>
+          <y>260</y>
           <width>131</width>
           <height>31</height>
          </rect>
@@ -239,9 +239,9 @@ Frequency [Linked List]</string>
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>530</y>
+         <y>510</y>
          <width>231</width>
-         <height>51</height>
+         <height>71</height>
         </rect>
        </property>
        <property name="font">
@@ -254,29 +254,34 @@ Frequency [Linked List]</string>
         <string>Analyze Footages</string>
        </property>
       </widget>
-      <widget class="QProgressBar" name="analyze_progressBar">
+      <widget class="QPushButton" name="play_pause_button_video_preview">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>490</y>
+         <y>420</y>
          <width>231</width>
-         <height>31</height>
+         <height>71</height>
         </rect>
        </property>
-       <property name="value">
-        <number>24</number>
+       <property name="font">
+        <font>
+         <pointsize>20</pointsize>
+        </font>
        </property>
-       <property name="alignment">
-        <set>Qt::AlignmentFlag::AlignCenter</set>
+       <property name="text">
+        <string>PLAY PREVIEW</string>
        </property>
       </widget>
       <widget class="QPushButton" name="analyze_video_button_2">
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>370</y>
+         <y>30</y>
          <width>231</width>
-         <height>51</height>
+         <height>61</height>
         </rect>
        </property>
        <property name="font">
@@ -355,7 +360,7 @@ Frequency [Linked List]</string>
       <widget class="QLineEdit" name="videoDirectory_center">
        <property name="geometry">
         <rect>
-         <x>490</x>
+         <x>510</x>
          <y>40</y>
          <width>461</width>
          <height>31</height>
@@ -386,15 +391,15 @@ Frequency [Linked List]</string>
       <widget class="QPushButton" name="import_video_button_front">
        <property name="geometry">
         <rect>
-         <x>330</x>
-         <y>180</y>
-         <width>141</width>
+         <x>290</x>
+         <y>170</y>
+         <width>181</width>
          <height>81</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>18</pointsize>
+         <pointsize>20</pointsize>
          <bold>false</bold>
         </font>
        </property>
@@ -439,14 +444,14 @@ Frequency [Linked List]</string>
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>110</y>
+         <y>130</y>
          <width>461</width>
-         <height>41</height>
+         <height>21</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>12</pointsize>
+         <pointsize>11</pointsize>
          <italic>true</italic>
         </font>
        </property>
@@ -462,7 +467,7 @@ Frequency [Linked List]</string>
         <rect>
          <x>10</x>
          <y>40</y>
-         <width>451</width>
+         <width>461</width>
          <height>31</height>
         </rect>
        </property>
@@ -491,9 +496,9 @@ Frequency [Linked List]</string>
       <widget class="QProgressBar" name="importProgressBar_center">
        <property name="geometry">
         <rect>
-         <x>490</x>
+         <x>510</x>
          <y>110</y>
-         <width>451</width>
+         <width>461</width>
          <height>41</height>
         </rect>
        </property>
@@ -518,9 +523,9 @@ Frequency [Linked List]</string>
       <widget class="QLabel" name="label_17">
        <property name="geometry">
         <rect>
-         <x>490</x>
+         <x>510</x>
          <y>10</y>
-         <width>211</width>
+         <width>191</width>
          <height>21</height>
         </rect>
        </property>
@@ -538,14 +543,14 @@ Frequency [Linked List]</string>
        <property name="geometry">
         <rect>
          <x>800</x>
-         <y>180</y>
-         <width>141</width>
+         <y>170</y>
+         <width>171</width>
          <height>81</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>18</pointsize>
+         <pointsize>20</pointsize>
          <bold>false</bold>
         </font>
        </property>
@@ -559,15 +564,15 @@ Frequency [Linked List]</string>
       <widget class="QLabel" name="status_label_center">
        <property name="geometry">
         <rect>
-         <x>500</x>
-         <y>110</y>
-         <width>441</width>
-         <height>41</height>
+         <x>510</x>
+         <y>130</y>
+         <width>461</width>
+         <height>21</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>12</pointsize>
+         <pointsize>11</pointsize>
          <italic>true</italic>
         </font>
        </property>
@@ -604,9 +609,9 @@ Frequency [Linked List]</string>
       <widget class="QLabel" name="somelabelforprogrss_2">
        <property name="geometry">
         <rect>
-         <x>490</x>
+         <x>510</x>
          <y>80</y>
-         <width>451</width>
+         <width>461</width>
          <height>31</height>
         </rect>
        </property>
@@ -640,7 +645,7 @@ Frequency [Linked List]</string>
         <number>5</number>
        </property>
        <property name="value">
-        <number>40</number>
+        <number>20</number>
        </property>
        <property name="orientation">
         <enum>Qt::Orientation::Horizontal</enum>
@@ -665,7 +670,7 @@ Frequency [Linked List]</string>
         <number>5</number>
        </property>
        <property name="value">
-        <number>40</number>
+        <number>20</number>
        </property>
        <property name="orientation">
         <enum>Qt::Orientation::Horizontal</enum>
@@ -677,7 +682,7 @@ Frequency [Linked List]</string>
       <widget class="QSlider" name="center_video_human_conf_slider">
        <property name="geometry">
         <rect>
-         <x>490</x>
+         <x>510</x>
          <y>190</y>
          <width>251</width>
          <height>22</height>
@@ -690,7 +695,10 @@ Frequency [Linked List]</string>
         <number>5</number>
        </property>
        <property name="value">
-        <number>40</number>
+        <number>20</number>
+       </property>
+       <property name="sliderPosition">
+        <number>20</number>
        </property>
        <property name="orientation">
         <enum>Qt::Orientation::Horizontal</enum>
@@ -702,7 +710,7 @@ Frequency [Linked List]</string>
       <widget class="QSlider" name="center_video_keypoint_conf_slider">
        <property name="geometry">
         <rect>
-         <x>490</x>
+         <x>510</x>
          <y>240</y>
          <width>251</width>
          <height>22</height>
@@ -715,7 +723,10 @@ Frequency [Linked List]</string>
         <number>5</number>
        </property>
        <property name="value">
-        <number>40</number>
+        <number>20</number>
+       </property>
+       <property name="sliderPosition">
+        <number>20</number>
        </property>
        <property name="orientation">
         <enum>Qt::Orientation::Horizontal</enum>
@@ -773,7 +784,7 @@ Frequency [Linked List]</string>
       <widget class="QLabel" name="somelabelforprogrss_5">
        <property name="geometry">
         <rect>
-         <x>490</x>
+         <x>510</x>
          <y>210</y>
          <width>251</width>
          <height>31</height>
@@ -796,7 +807,7 @@ Frequency [Linked List]</string>
       <widget class="QLabel" name="somelabelforprogrss_6">
        <property name="geometry">
         <rect>
-         <x>490</x>
+         <x>510</x>
          <y>160</y>
          <width>251</width>
          <height>31</height>
@@ -865,27 +876,6 @@ Frequency [Linked List]</string>
        <set>Qt::AlignmentFlag::AlignCenter</set>
       </property>
      </widget>
-     <widget class="QPushButton" name="play_pause_button_video_center">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>910</x>
-        <y>270</y>
-        <width>71</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>12</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>PLAY</string>
-      </property>
-     </widget>
      <widget class="QCheckBox" name="keypointsOnlyChkBox_Center">
       <property name="geometry">
        <rect>
@@ -896,7 +886,7 @@ Frequency [Linked List]</string>
        </rect>
       </property>
       <property name="autoFillBackground">
-       <bool>false</bool>
+       <bool>true</bool>
       </property>
       <property name="text">
        <string>Keypoints Only</string>
@@ -912,31 +902,10 @@ Frequency [Linked List]</string>
        </rect>
       </property>
       <property name="autoFillBackground">
-       <bool>false</bool>
+       <bool>true</bool>
       </property>
       <property name="text">
        <string>Keypoints Only</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="play_pause_button_video_front">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>410</x>
-        <y>270</y>
-        <width>71</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>12</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>PLAY</string>
       </property>
      </widget>
      <widget class="QLabel" name="video_preview_label_center">
@@ -974,9 +943,7 @@ Frequency [Linked List]</string>
      <zorder>keypointsOnlyChkBox_Center</zorder>
      <zorder>label_30</zorder>
      <zorder>keypointsOnlyChkBox_front</zorder>
-     <zorder>play_pause_button_video_front</zorder>
      <zorder>groupBox_2</zorder>
-     <zorder>play_pause_button_video_center</zorder>
     </widget>
     <widget class="QWidget" name="analyticsTab">
      <attribute name="title">
@@ -2856,16 +2823,16 @@ border-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0,
    <widget class="QLabel" name="label_18">
     <property name="geometry">
      <rect>
-      <x>910</x>
+      <x>990</x>
       <y>10</y>
-      <width>351</width>
+      <width>271</width>
       <height>61</height>
      </rect>
     </property>
     <property name="font">
      <font>
       <family>Gabriola</family>
-      <pointsize>50</pointsize>
+      <pointsize>48</pointsize>
      </font>
     </property>
     <property name="text">
@@ -3036,7 +3003,7 @@ border-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0,
      <x>0</x>
      <y>0</y>
      <width>1280</width>
-     <height>26</height>
+     <height>33</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuARMIS">

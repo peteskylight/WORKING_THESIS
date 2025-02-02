@@ -43,19 +43,23 @@ class FrontVideo:
 
     #When browse for center video is clicked
     def browse_video(self):
-        self.main_window.play_pause_button_video_front.setText("PLAY")
-        self.main_window.play_pause_button_video_front.setEnabled(False)
         self.human_detect_conf = (int(self.main_window.front_video_human_conf_slider.value())/100)
         self.human_pose_conf = (int(self.main_window.front_video_keypoint_conf_slider.value())/100)
         self.directory, _ = QFileDialog.getOpenFileName(self.main_window, "Select Video File", "", "Video Files (*.mp4 *.avi *.mkv *.mov *.wmv)")
         if self.directory:
             self.main_window.videoDirectory_front.setText(f"{self.directory}")
             self.start_video_processing(self.directory)
+            self.main_window.is_front_video_ready = False
+            self.main_window.human_pose_results_front = None
+            self.main_window.human_detect_results_front = None
+            self.main_window.action_results_list_front = None
+            self.main_window.import_video_button_front.setEnabled(False)
+
     
     def start_video_processing(self, video_path):
         self.main_window.status_label_front.setText("[ PROCESSING VIDEO... PLEASE WAIT ]")
 
-        self.video_processor = VideoProcessorThread(video_path, resize_frames=False,
+        self.front_video_processor = VideoProcessorThread(video_path, resize_frames=False,
                                                     isFront=True,
                                                     human_detection_model=self.human_detect_model,
                                                     human_detection_confidence=self.human_detect_conf,
@@ -63,12 +67,12 @@ class FrontVideo:
                                                     human_pose_confidence=self.human_pose_conf,
                                                     main_window=self.main_window)
         
-        self.video_processor.human_detect_results.connect(self.update_detection_results)
-        self.video_processor.human_pose_results.connect(self.update_pose_detection_results)
-        self.video_processor.progress_update.connect(self.update_progress_bar)
+        self.front_video_processor.human_detect_results.connect(self.update_detection_results)
+        self.front_video_processor.human_pose_results.connect(self.update_pose_detection_results)
+        self.front_video_processor.progress_update.connect(self.update_progress_bar)
 
         #Start the operation
-        self.video_processor.start()
+        self.front_video_processor.start()
         
     def update_detection_results(self, results_list):
         self.humanDetectionResults = results_list
@@ -99,25 +103,33 @@ class FrontVideo:
         self.action_results_list = actions
         self.main_window.action_results_list_front = actions
         self.main_window.status_label_front.setText("[ ACTIONS IDENTIFICATION, DONE! ]")
-        self.main_window.play_pause_button_video_front.setEnabled(True)
+        self.main_window.is_front_video_ready = True
+
+        self.main_window.import_video_button_front.setEnabled(True)
+
+        if self.main_window.is_center_video_ready and self.main_window.is_front_video_ready:
+            self.main_window.set_play_pause_preview_button(True)
+        else:
+            self.main_window.set_play_pause_preview_button(False)
+        
+        self.front_video_processor.stop()
     
     def update_progress_bar(self,value):
         self.main_window.importProgressBar_front.setValue(value)
 
     def closeEvent(self, event):
-        self.video_processor.stop()
+        self.front_video_processor.stop()
         self.white_frame_generator.stop()
         event.accept()
     
-
     #=== FOR UPDATING FRAMES:
 
     def update_frame(self, frame):
-        if frame is not None and self.main_window.is_front_video_playing:
+        if frame is not None:
             # Convert the frame from BGR to RGB
             #frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             
-            height, width, channel = frame.shape
+            height, width = frame.shape
             bytes_per_line = 3 * width
             q_img = QImage(frame.data, width, height, bytes_per_line, QImage.Format_RGB888).rgbSwapped()
 
@@ -125,26 +137,6 @@ class FrontVideo:
             pixmap = QPixmap.fromImage(q_img)
             scaled_pixmap = pixmap.scaled(self.main_window.video_preview_label_front.size(), Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
             self.main_window.video_preview_label_front.setPixmap(scaled_pixmap)
-
-    def update_white_frame(self, white_frame):
-        if white_frame is not None and self.main_window.is_front_video_playing:
-            
-            height, width, channel = white_frame.shape
-            bytes_per_line = 3 * width
-            q_img = QImage(white_frame.data, width, height, bytes_per_line, QImage.Format_RGB888).rgbSwapped()
-
-            # Set the QImage to the QLabel with aspect ratio maintained and white spaces
-            pixmap = QPixmap.fromImage(q_img)
-            scaled_pixmap = pixmap.scaled(self.main_window.video_preview_label_front.size(), Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
-            self.main_window.video_preview_label_front.setPixmap(scaled_pixmap)
-    
-    def show_next_frame(self):
-        if self.video_processor and self.main_window.is_front_video_playing:
-            self.video_processor.frame_processed.connect(self.main_window.update_frame)
-
-    def update_frame_processing(self):
-        fps = self.main_window.fps_loading_rate_slider.value()
-        self.main_window.fps_flider_value = fps
 
 
     def toggle_play_pause(self):
@@ -156,10 +148,8 @@ class FrontVideo:
                                                         target_frame_index=0)
             self.video_player_thread.frame_signal.connect(self.update_frame)
             self.video_player_thread.start()
-            self.main_window.play_pause_button_video_front.setText("PLAY")
         else:
             self.video_player_thread.pause(not self.video_player_thread.paused) 
-            self.main_window.play_pause_button_video_front.setText("PAUSE")
 
     def pause(self, status):
         """Pause or resume the video playback."""
@@ -172,11 +162,6 @@ class FrontVideo:
             self.video_player_thread.frame_signal.connect(self.update_frame)
             self.video_player_thread.finished.connect(self.cleanup_thread)
             self.video_player_thread.start()
-
-    def update_frame(self, qimg):
-        pixmap = QPixmap.fromImage(qimg)
-        scaled_pixmap = pixmap.scaled(self.main_window.video_preview_label_front.size(), Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
-        self.main_window.video_preview_label_front.setPixmap(scaled_pixmap)
 
     def stop_video(self):
         if self.video_player_thread and self.video_player_thread.isRunning():

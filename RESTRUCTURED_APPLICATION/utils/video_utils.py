@@ -219,8 +219,6 @@ class VideoProcessorThread(QThread):
         total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
         current_frame = 0
 
-        self.main_window.status_label_front.setText("[ DETECTING HUMANS... ]")
-
         #Variables for the human detection model
         
         while self._running:
@@ -266,7 +264,6 @@ class VideoProcessorThread(QThread):
 
 ############################################################################################################
 
-cv2.setNumThreads(1)  # 🚀 Disable OpenCV multi-threading to reduce CPU usage
 
 class VideoPlayerThread(QThread):
     '''
@@ -285,26 +282,39 @@ class VideoPlayerThread(QThread):
     '''
 
     
-    frame_signal = Signal(QImage)  # Signal to update UI
-    cv2.setNumThreads(1)  # Disable OpenCV multi-threading to reduce CPU usage
+    frames_signal = Signal(object)
+    #cv2.setNumThreads(1)  # Disable OpenCV multi-threading to reduce CPU usage
 
-    def __init__(self, video_path, main_window, is_Front, target_frame_index):
+    def __init__(self, center_video_path, front_video_path, main_window):
         super().__init__()
 
         self.main_window = main_window
 
-        self.video_path = video_path
-        self.cap = cv2.VideoCapture(self.video_path)
+        self.center_video_path = center_video_path
+        self.front_video_path = front_video_path
+
+        #Separate captures for each video
+
+        self.center_cap = cv2.VideoCapture(self.center_video_path)
+        self.front_cap = cv2.VideoCapture(self.front_video_path)
+
+        #For all
         self.running = True
         self.paused = False
-        self.frame_queue = queue.Queue(maxsize=10)  # Keep 10 preloaded frames
-        self.black_frame_queue = queue.Queue(maxsize=10)  # Keep 10 preloaded frames
 
+        self.max_size = 30
+        #Keep preloaded frames here
+
+        self.center_video_frame_queue = queue.Queue(maxsize=self.max_size)  
+        self.center_video_black_frame_queue = queue.Queue(maxsize=self.max_size) 
+        self.front_video_frame_queue = queue.Queue(maxsize=self.max_size)  
+        self.front_video_black_frame_queue = queue.Queue(maxsize=self.max_size)  
+
+        self.current_center_video_frame_index = 0
+        self.current_front_video_frame_index = 0
         self.current_frame_index = 0
 
-        self.is_Front = is_Front
-
-        self.target_frame_index = target_frame_index # Set target frame index
+        self.target_frame_index = 0 # Set target frame index
         self.preload_thread = threading.Thread(target=self.preload_frames, daemon=True)
         self.preload_thread.start()  # Start background frame loader
 
@@ -373,75 +383,109 @@ class VideoPlayerThread(QThread):
         return video_frame, black_frame
 
     def preload_frames(self):
-        """Background thread to keep decoding frames ahead of playback"""
+        results = None
+        keypoints = None
+        center_video_black_frame = None
+        front_video_black_frame = None
+
+        front_video_results = self.main_window.human_detect_results_front
+        front_video_keypoints = self.main_window.human_pose_results_front
+
+        center_video_results = self.main_window.human_detect_results_center
+        center_video_keypoints = self.main_window.human_pose_results_center
+
+        """
+        Background thread to keep decoding frames ahead of playback
+        """
+
         while self.running:
-            if not self.paused and not self.frame_queue.full():
-                ret, frame = self.cap.read()
-                if not ret:
-                    self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)  # Restart video if it ends
+            if not self.paused and (not self.center_video_frame_queue.full()):
+                front_ret, front_frame = self.front_cap.read()
+                center_ret, center_frame = self.center_cap.read()
+
+                if (not front_ret):
+                    self.center_cap.set(cv2.CAP_PROP_POS_FRAMES, 0)  # Restart video if it ends
+                    self.front_cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
                     self.current_frame_index = 0
                     self.target_frame_index = 0 
                     continue
-
-                results = None
-                keypoints = None
-                black_frame = None
-                if self.is_Front:
-                    results = self.main_window.human_detect_results_front
-                    keypoints = self.main_window.human_pose_results_front
-                else:
-                    results = self.main_window.human_detect_results_center
-                    keypoints = self.main_window.human_pose_results_center
-
+                
                 # Draw bounding boxes and keypoints only for the current frame index
                 '''
                 LOL EQUAL LANG NAMAN EH! NAGLOLOKOHAN LANG TAYO RITO AHAHHAHHAHA
                 '''
+
                 if self.current_frame_index == self.target_frame_index:  # Draw only for target frame index #
-                    frame, black_frame = self.drawing_bounding_box(video_frame=frame,
-                                                                results=results[int(self.current_frame_index)])
+                    center_frame, center_video_black_frame = self.drawing_bounding_box(video_frame=center_frame,
+                                                                results=center_video_results[int(self.current_frame_index)])
                     
-                    frame, black_frame = self.drawing_keypoints(keypoints_dict=keypoints[int(self.current_frame_index)],
-                                                                detection=results[int(self.current_frame_index)],
-                                                                black_frame=black_frame,
-                                                                video_frame=frame)
+                    center_frame, center_video_black_frame = self.drawing_keypoints(keypoints_dict=center_video_keypoints[int(self.current_frame_index)],
+                                                                detection=center_video_results[int(self.current_frame_index)],
+                                                                black_frame=center_video_black_frame,
+                                                                video_frame=center_frame)
+                    
+                    front_frame, front_video_black_frame = self.drawing_bounding_box(video_frame=front_frame,
+                                                                results=front_video_results[int(self.current_frame_index)])
+                    
+                    front_frame, front_video_black_frame = self.drawing_keypoints(keypoints_dict=front_video_keypoints[int(self.current_frame_index)],
+                                                                detection=front_video_results[int(self.current_frame_index)],
+                                                                black_frame=front_video_black_frame,
+                                                                video_frame=front_frame)
+                    
                 else:
                     # If not the target frame, skip drawing
-                    frame = frame  # Just pass the frame unchanged
-                    black_frame = black_frame  # Just pass the black_frame unchanged
 
+                    center_frame = center_frame  # Just pass the frame unchanged
+                    center_video_black_frame = center_video_black_frame  # Just pass the black_frame unchanged
+                    front_frame = front_frame
+                    front_video_black_frame = front_video_black_frame
+                
                 # Store the frame with the drawn bounding box and keypoints
-                self.frame_queue.put(frame)
-                self.black_frame_queue.put(black_frame)  # Store frame in queue
+                if center_frame is not None and center_video_black_frame is not None:
+                    self.center_video_frame_queue.put(center_frame)
+                    self.center_video_black_frame_queue.put(center_video_black_frame)
+                    print("UMABOT DITO 1")
+                if front_frame is not None and front_video_black_frame is not None:
+                    self.front_video_frame_queue.put(front_frame)
+                    self.front_video_black_frame_queue.put(front_video_black_frame)
+                    print("UMABOT DITO 2")
+
                 self.current_frame_index += 1
                 self.target_frame_index +=1
 
-                
+        # self.center_cap.release()
+        # self.front_cap.release()
 
     def run(self):
         """Main playback loop, sending frames from queue to UI"""
         while self.running:
-            if not self.paused and not self.frame_queue.empty() and not self.black_frame_queue.empty():
-                video_frame = self.frame_queue.get()  # Get frame from queue
-                black_frame = self.black_frame_queue.get()
-                frame = None
-                if self.is_Front:
-                    if self.main_window.keypointsOnlyChkBox_front.isChecked():
-                        frame = black_frame
-                    else:
-                        frame = video_frame
-                else:
-                    if self.main_window.keypointsOnlyChkBox_Center.isChecked():
-                        frame = black_frame
-                    else:
-                        frame = video_frame
-                        
-                height, width, channels = frame.shape
-                bytes_per_line = channels * width
-                qimg = QImage(frame.data, width, height, bytes_per_line, QImage.Format_RGB888)
-                self.frame_signal.emit(qimg)  # Send frame to UI
+            if not self.paused and not self.center_video_frame_queue.empty():
+                center_video_frame = self.center_video_frame_queue.get()  # Get frame from queue
+                center_black_frame = self.center_video_black_frame_queue.get()
 
-            self.msleep(33)  # Play at ~30 FPS
+                front_video_frame = self.front_video_frame_queue.get()  # Get frame from queue
+                front_black_frame = self.front_video_black_frame_queue.get()
+
+                center_frame = None
+                front_frame = None
+
+                if self.main_window.keypointsOnlyChkBox_front.isChecked():
+                    front_frame = front_black_frame
+                else:
+                    front_frame = front_video_frame
+
+                if self.main_window.keypointsOnlyChkBox_Center.isChecked():
+                    center_frame = center_black_frame
+                else:
+                    center_frame = center_video_frame
+            
+
+                # height, width, channels = frame.shape
+                # bytes_per_line = channels * width
+                # qimg = QImage(frame.data, width, height, bytes_per_line, QImage.Format_RGB888)
+                self.frames_signal.emit([center_frame, front_frame])  # Send frame to UI
+
+                cv2.waitKey(1000//30)  # Play at ~30 FPS
 
     def stop(self):
         self.running = False
