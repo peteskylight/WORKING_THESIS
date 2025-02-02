@@ -7,19 +7,18 @@ from PySide6.QtCore import Qt
 class AnalyticsTab:
     def __init__(self, main_window):
         self.main_window = main_window
-        pass
     
 
     def update_frame_for_center_video_label(self, frame, center_starting_y, front_starting_y):
         if frame is not None:
             # Get the dimensions of the frame
-            frame_height, frame_width, _ = frame.shape
 
-            # Debugging: Print frame dimensions and input parameters
-            #print(f"Frame dimensions: {frame.shape}")
-            #print(f"Input parameters - center_starting_y: {center_starting_y}, front_starting_y: {front_starting_y}")
+            if len(frame.shape) == 3:
+                frame_height, frame_width, _ = frame.shape
+            else:
+                frame_height, frame_width = frame.shape
 
-            # Calculate the height of the cropped region
+
             h = front_starting_y - center_starting_y
 
             # Ensure the cropping region is within the frame's bounds
@@ -29,12 +28,8 @@ class AnalyticsTab:
                 front_starting_y = frame_height  # Ensure front_starting_y does not exceed frame height
             if h <= 0:
                 raise ValueError("Invalid cropping parameters: front_starting_y must be greater than center_starting_y.")
-
             # Crop the frame
             cropped_frame = frame[center_starting_y:front_starting_y, 0:frame_width]
-
-            # Debugging: Print the dimensions of the cropped frame
-            #print(f"Cropped frame dimensions: {cropped_frame.shape}")
 
             # Convert the cropped frame to QImage
             height, width, channel = cropped_frame.shape
@@ -49,7 +44,10 @@ class AnalyticsTab:
     def update_frame_for_front_video_label(self, frame, starting_y, whole_classroom_height):
 
         if frame is not None:
-            frame_height, frame_width, _ = frame.shape
+            if len(frame.shape) == 3:
+                frame_height, frame_width, _ = frame.shape
+            else:
+                frame_height, frame_width = frame.shape
 
             # Define the starting y coordinate and height for cropping
 

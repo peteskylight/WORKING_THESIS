@@ -96,7 +96,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.frame_processing_value = None
 
-        self.video_player_thread = None
+        self.video_player_thread_preview = None
+        self.video_player_thread_analytics = None
         
         self.import_video_button_center.clicked.connect(self.CenterVideo.browse_video)
 
@@ -112,6 +113,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.analyze_video_button.clicked.connect(self.switch_to_analytics_tab)
 
+        self.play_pause_button_analytics.clicked.connect(self.toggle_play_pause_analytics)
 
         #Adjust this according to video but meh. This is just the default. Just check the specs of the cam. Default naman sya all the times
         self.center_video_interval = 1000//30 #30 fps
@@ -297,16 +299,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     #Switch to analytics tab
     def switch_to_analytics_tab(self):
-        if (self.returned_frames_from_browsed_center_video and self.returned_frames_from_browsed_front_video) is not None:
+        if (self.is_center_video_ready and self.is_front_video_ready) is not None:
             self.toggle_analytics_tab()
             self.MainTab.setCurrentIndex(1)
             self.are_videos_ready = True
             self.play_pause_button_analytics.setEnabled(True)
-            self.play_pause_button_analytics.setText("PAUSE")
+            self.play_pause_button_analytics.setText("PLAY")
+
+            self.play_pause_button_video_preview.setText("PLAY PREVIEW")
+            self.import_video_button_front.setEnabled(False)
+            self.import_video_button_center.setEnabled(False)
+            self.video_player_thread_preview.pause(True)
         else:
             self.show_warning_message(status_title="Error!",
                                       message= "Please import a complete set of footages.")
-    
 
     '''
     THIS AREA IS FOR VIDEO PLAYER THREAD
@@ -317,23 +323,76 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         center_video_directory = self.videoDirectory_center.text()
         front_video_directory = self.videoDirectory_front.text()
         
-        if self.video_player_thread is None or not self.video_player_thread.isRunning():
-            self.video_player_thread = VideoPlayerThread(center_video_path=center_video_directory,
+        if self.video_player_thread_analytics is not None:
+            if self.video_player_thread_analytics.isRunning():
+                self.video_player_thread_analytics.stop()
+            else:
+                self.video_player_thread_analytics = None
+
+        if self.video_player_thread_preview is None or not self.video_player_thread_preview.isRunning():
+            self.video_player_thread_preview = VideoPlayerThread(center_video_path=center_video_directory,
                                                          front_video_path= front_video_directory,
                                                          main_window=self)
             
-            self.video_player_thread.frames_signal.connect(self.update_frame)
-            self.video_player_thread.start()
+            self.video_player_thread_preview.frames_signal.connect(self.update_frame_for_preview)
+            self.video_player_thread_preview.start()
             self.play_pause_button_video_preview.setText("PLAY PREVIEW")
             self.import_video_button_front.setEnabled(False)
+            self.import_video_button_center.setEnabled(False)
         else:
-            self.video_player_thread.pause(not self.video_player_thread.paused) 
             self.play_pause_button_video_preview.setText("PAUSE PREVIEW")
             self.import_video_button_front.setEnabled(True)
-    
+            self.import_video_button_center.setEnabled(True)
+            self.video_player_thread_preview.pause(not self.video_player_thread_preview.paused) 
+            
 
-    def update_frame(self, frame_list):
-        print('PASSED')
+
+    def toggle_play_pause_analytics(self):
+        center_video_directory = self.videoDirectory_center.text()
+        front_video_directory = self.videoDirectory_front.text()
+        
+        #Just to make sure that the frames that will be shown is not black frames
+
+        self.keypointsOnlyChkBox_Center.setChecked(False)
+        self.keypointsOnlyChkBox_front.setChecked(False)
+
+        if self.video_player_thread_preview is not None:
+            if self.video_player_thread_preview.isRunning():
+                self.video_player_thread_preview.stop()
+            else:
+                self.video_player_thread_preview = None
+
+        #Just to stop the thread in viewing in order to save some CPU USAGE
+        #self.video_player_thread_preview.stop()
+        if self.video_player_thread_analytics is None or not self.video_player_thread_analytics.isRunning():
+            self.video_player_thread_analytics = VideoPlayerThread(center_video_path=center_video_directory,
+                                                                           front_video_path=front_video_directory,
+                                                                           main_window=self
+                                                                            )
+
+            self.video_player_thread_analytics.frames_signal.connect(self.update_frame_for_analytics)
+            self.video_player_thread_analytics.start()
+        else:
+            self.video_player_thread_analytics.pause(not self.video_player_thread_analytics.paused) 
+    
+    def update_frame_for_analytics(self, frame_list):
+        if frame_list is not None:
+            center_frame = frame_list[0]
+            front_frame = frame_list[1]
+
+            self.AnalyticsTab.update_frame_for_center_video_label(frame = center_frame,
+                                                                  center_starting_y=self.center_starting_y,
+                                                                  front_starting_y=self.front_starting_y)
+            print("NAKAABOT HERE")
+            self.AnalyticsTab.update_frame_for_front_video_label(frame=front_frame,
+                                                                 starting_y=self.front_starting_y,
+                                                                 whole_classroom_height=self.whole_classroom_height
+                                                                 )
+
+    '''
+    THIS AREA IS FOR VIDEO PLAYER THREAD
+    '''
+    def update_frame_for_preview(self, frame_list):
         '''
         This function is for updating the picture on the frames.
         More like key component to show frames and to look like a video

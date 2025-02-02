@@ -47,7 +47,7 @@
      <enum>QTabWidget::TabShape::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <property name="iconSize">
      <size>
@@ -434,7 +434,7 @@ Frequency [Linked List]</string>
         <number>0</number>
        </property>
        <property name="alignment">
-        <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+        <set>Qt::AlignmentFlag::AlignBottom|Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing</set>
        </property>
        <property name="invertedAppearance">
         <bool>false</bool>
@@ -514,7 +514,7 @@ Frequency [Linked List]</string>
         <number>0</number>
        </property>
        <property name="alignment">
-        <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+        <set>Qt::AlignmentFlag::AlignBottom|Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing</set>
        </property>
        <property name="invertedAppearance">
         <bool>false</bool>
@@ -1181,6 +1181,21 @@ Frequency [Linked List]</string>
         <width>961</width>
         <height>91</height>
        </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Shape::WinPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Shadow::Raised</enum>
+      </property>
+      <property name="backgroundBrush">
+       <brush brushstyle="NoBrush">
+        <color alpha="255">
+         <red>0</red>
+         <green>0</green>
+         <blue>0</blue>
+        </color>
+       </brush>
       </property>
      </widget>
      <widget class="QPushButton" name="play_pause_button_analytics">

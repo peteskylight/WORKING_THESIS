@@ -108,6 +108,8 @@ class CenterVideo:
 
         self.main_window.set_play_pause_preview_button(True)
         
+        self.main_window.import_video_button_center.setEnabled(True)
+
         if self.main_window.is_center_video_ready and self.main_window.is_front_video_ready:
             self.main_window.set_play_pause_preview_button(True)
             

@@ -137,7 +137,7 @@ class VideoProcessorThread(QThread):
     def create_roi_mask(self, frame, row_height):
         height, width, _ = frame.shape
         mask = np.zeros((height, width), dtype=np.uint8)
-        roi = (0, row_height, width, height)  # Bottom to middle
+        roi = (0, row_height+10, width, height)  # Bottom to middle
         cv2.rectangle(mask, (roi[0], roi[1]), (roi[2], roi[3]), 255, -1)
         cv2.line(img=frame, pt1=(0, row_height), pt2=(frame.shape[1], row_height),color = (0,255,0), thickness=2)
         return mask
@@ -324,16 +324,38 @@ class VideoPlayerThread(QThread):
             (11, 13), (12, 14), (13, 15), (14, 16)
         ]
 
+
+    def write_action_text(self, frame, black_frame, detections, actions):
+        """
+        Draw bounding boxes with action labels on each frame.
+        """
+
+        for person_id, bbox in detections.items():
+            x, y, w, h = map(int, bbox)  # Ensure coordinates are integers
+            action_text = f"Action: {actions.get(person_id, 'Unknown')}"
+            
+            # Ensure text position is within frame bounds
+            text_x, text_y = x, max(y - 10, 10)  # Prevent negative y
+            
+            #cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            cv2.putText(frame, action_text, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+            cv2.putText(black_frame, action_text, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        
+        return frame, black_frame
+
     def drawing_bounding_box(self, video_frame, results):
 
         black_frame = np.zeros((1080, 1920, 3), dtype=np.uint8)
+        item_count = 0
 
+        
+        
         for track_id, bbox in results.items():
             x1, y1, x2, y2 = bbox
-            cv2.putText(video_frame, f"Student ID: {track_id}", (int(bbox[0]), int(bbox[1] + 10)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 1)
+            cv2.putText(video_frame, f"Student ID: {track_id}", (int(bbox[0]), int(bbox[1] - 10)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 1)
             cv2.rectangle(video_frame, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 2)
 
-            cv2.putText(black_frame, f"Student ID: {track_id}", (int(bbox[0]), int(bbox[1] + 10)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 1)
+            cv2.putText(black_frame, f"Student ID: {track_id}", (int(bbox[0]), int(bbox[1] - 10)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 1)
             cv2.rectangle(black_frame, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 2)
         
         return video_frame, black_frame
@@ -390,9 +412,11 @@ class VideoPlayerThread(QThread):
 
         front_video_results = self.main_window.human_detect_results_front
         front_video_keypoints = self.main_window.human_pose_results_front
+        front_video_actions = self.main_window.action_results_list_front
 
         center_video_results = self.main_window.human_detect_results_center
         center_video_keypoints = self.main_window.human_pose_results_center
+        center_video_actions = self.main_window.action_results_list_center
 
         """
         Background thread to keep decoding frames ahead of playback
@@ -423,6 +447,11 @@ class VideoPlayerThread(QThread):
                                                                 detection=center_video_results[int(self.current_frame_index)],
                                                                 black_frame=center_video_black_frame,
                                                                 video_frame=center_frame)
+                    center_frame, center_video_black_frame = self.write_action_text(frame=center_frame,
+                                                                                    black_frame=center_video_black_frame,
+                                                                                    detections=center_video_results[int(self.current_frame_index)],
+                                                                                    actions=center_video_actions[int(self.current_frame_index)])
+
                     
                     front_frame, front_video_black_frame = self.drawing_bounding_box(video_frame=front_frame,
                                                                 results=front_video_results[int(self.current_frame_index)])
@@ -432,9 +461,13 @@ class VideoPlayerThread(QThread):
                                                                 black_frame=front_video_black_frame,
                                                                 video_frame=front_frame)
                     
+                    front_frame, front_video_black_frame = self.write_action_text(frame=front_frame,
+                                                                                  black_frame=front_video_black_frame,
+                                                                                  detections=front_video_results[int(self.current_frame_index)],
+                                                                                  actions=front_video_actions[int(self.current_frame_index)])
+
                 else:
                     # If not the target frame, skip drawing
-
                     center_frame = center_frame  # Just pass the frame unchanged
                     center_video_black_frame = center_video_black_frame  # Just pass the black_frame unchanged
                     front_frame = front_frame
@@ -444,11 +477,11 @@ class VideoPlayerThread(QThread):
                 if center_frame is not None and center_video_black_frame is not None:
                     self.center_video_frame_queue.put(center_frame)
                     self.center_video_black_frame_queue.put(center_video_black_frame)
-                    print("UMABOT DITO 1")
+
                 if front_frame is not None and front_video_black_frame is not None:
                     self.front_video_frame_queue.put(front_frame)
                     self.front_video_black_frame_queue.put(front_video_black_frame)
-                    print("UMABOT DITO 2")
+
 
                 self.current_frame_index += 1
                 self.target_frame_index +=1
@@ -494,4 +527,8 @@ class VideoPlayerThread(QThread):
 
     def pause(self, status):
         self.paused = status
+        if status:
+            self.main_window.play_pause_button_video_preview.setText("PLAY PREVIEW")
+        else:
+            self.main_window.play_pause_button_video_preview.setText("PAUSE PREVIEW")
 
