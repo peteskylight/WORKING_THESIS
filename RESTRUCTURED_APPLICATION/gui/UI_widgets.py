@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'FINAL-DESIGNlKYvNr.ui'
+## Form generated from reading UI file 'FINAL-DESIGNaVaBcw.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.8.1
 ##
@@ -926,7 +926,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.MainTab.setCurrentIndex(2)
+        self.MainTab.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(MainWindow)

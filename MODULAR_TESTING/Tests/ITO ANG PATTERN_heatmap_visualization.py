@@ -5,13 +5,22 @@ from ultralytics import YOLO
 # Load YOLOv8n model
 model = YOLO('yolov8n.pt')
 
+
+screen_width = 1920  # Replace with your screen width
+screen_height = 1080  # Replace with your screen height
+
+# Get image dimensions
+
+
+
 # Ensure the model is using the CPU
-device = 'cpu'
-model.to(device)
 
 # Initialize video capture
-video_path = r"C:\Users\Bennett\Documents\WORKING_THESIS\RESOURCES\Examination Sample Videos\Shorter.mp4"
+video_path = r"C:\Users\THESIS_WORKSPACE\Desktop\WORKING_THESIS\RESOURCES\Sample Vids\Shorter.mp4"
 cap = cv2.VideoCapture(video_path)
+
+
+
 
 # Get the frame rate of the video
 fps = cap.get(cv2.CAP_PROP_FPS)
@@ -28,7 +37,7 @@ def update_tracked_humans(tracked_humans, current_frame, detected_humans):
         tracked_humans[human_id]['frames'].append(current_frame)
 
 # Function to create a gradient circle
-def create_gradient_circle(radius, color):
+def create_gradient_circle(radius, color, max_alpha):
     gradient_circle = np.zeros((radius*2, radius*2, 4), dtype=np.uint8)
 
     # Create gradient from center (fully opaque) to edges (fully transparent)
@@ -36,7 +45,7 @@ def create_gradient_circle(radius, color):
         for x in range(radius*2):
             distance = np.sqrt((x - radius) ** 2 + (y - radius) ** 2)
             if distance < radius:
-                alpha = 255 - int(255 * (distance / radius))
+                alpha = max_alpha - int(max_alpha * (distance / radius))
                 gradient_circle[y, x] = [color[0], color[1], color[2], alpha]
 
     return gradient_circle
@@ -105,12 +114,27 @@ cap.release()
 for human_id, data in tracked_humans.items():
     for bbox in data['positions']:
         center = (int((bbox[0] + bbox[2]) / 2), int((bbox[1] + bbox[3]) / 2))
-        radius = 20
-        intensity = len(data['frames']) * 5  # Adjust intensity based on the number of frames
-        gradient_circle = create_gradient_circle(radius, (0, 0, 255))  # Red color
+        radius = 150
+        intensity = len(data['frames']) * 10  # Adjust intensity based on the number of frames
+        gradient_circle = create_gradient_circle(radius, (255, 255, 255), 64)  # Red color
         overlay_image_alpha(heatmap, gradient_circle, (center[0] - radius, center[1] - radius), gradient_circle)
 
 # Display the heatmap
+
+heatmap = cv2.resize(heatmap, (720,480))
+
+image_height, image_width = heatmap.shape[:2]
+
+background = np.zeros((screen_height, screen_width, 3), dtype=np.uint8)
+
+# Calculate the position to place the image at the center
+x_offset = (screen_width - image_width) // 2
+y_offset = (screen_height - image_height) // 2
+
+# Place the image on the background
+background[y_offset:y_offset+image_height, x_offset:x_offset+image_width] = heatmap
+
+
 cv2.imshow("Heatmap", heatmap)
 cv2.waitKey(0)
 cv2.destroyAllWindows()

@@ -10,7 +10,7 @@ model = YOLO('yolov8n.pt')
 # model.to(device)
 
 # Initialize video capture
-video_path = r"C:\Users\Bennett\Documents\WORKING_THESIS\RESOURCES\Examination Sample Videos\Shorter.mp4"
+video_path = r"C:\Users\THESIS_WORKSPACE\Desktop\WORKING_THESIS\RESOURCES\Sample Vids\Shorter.mp4"
 cap = cv2.VideoCapture(video_path)
 
 # Get the frame rate of the video
@@ -76,6 +76,7 @@ for human_id, data in tracked_humans.items():
         draw_solid_circle(heatmap, center, max_radius, intensity)
 
 # Display the heatmap
+heatmap = cv2.resize(heatmap,  (720,480))
 cv2.imshow("Heatmap", heatmap)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
