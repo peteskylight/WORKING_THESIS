@@ -12,7 +12,7 @@ from ultralytics import YOLO
 from utils.drawing_utils import DrawingUtils
 from gui import Ui_MainWindow
 from trackers import PoseDetection
-from utils import Tools, VideoUtils, VideoPlayerThread
+from utils import Tools, VideoUtils, VideoPlayerThread, SeekingVideoPlayerThread
 from gui_commands import (CenterVideo,
                           FrontVideo,
                           CreateDataset,
@@ -114,6 +114,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.analyze_video_button.clicked.connect(self.switch_to_analytics_tab)
 
         self.play_pause_button_analytics.clicked.connect(self.toggle_play_pause_analytics)
+
+        self.video_seek_slider.sliderPressed.connect(self.on_slider_clicked)
+        self.video_seek_slider.sliderReleased.connect(self.on_slider_moved)
 
         #Adjust this according to video but meh. This is just the default. Just check the specs of the cam. Default naman sya all the times
         self.center_video_interval = 1000//30 #30 fps
@@ -309,7 +312,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.play_pause_button_video_preview.setText("PLAY PREVIEW")
             self.import_video_button_front.setEnabled(False)
             self.import_video_button_center.setEnabled(False)
-            self.video_player_thread_preview.pause(True)
+            #self.video_player_thread_preview.pause(True)
         else:
             self.show_warning_message(status_title="Error!",
                                       message= "Please import a complete set of footages.")
@@ -325,6 +328,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         if self.video_player_thread_analytics is not None:
             if self.video_player_thread_analytics.isRunning():
+                self.video_player_thread_analytics.running = False
                 self.video_player_thread_analytics.stop()
             else:
                 self.video_player_thread_analytics = None
@@ -358,21 +362,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if self.video_player_thread_preview is not None:
             if self.video_player_thread_preview.isRunning():
+                self.video_player_thread_preview.running = False
                 self.video_player_thread_preview.stop()
+                
             else:
                 self.video_player_thread_preview = None
 
         #Just to stop the thread in viewing in order to save some CPU USAGE
         #self.video_player_thread_preview.stop()
         if self.video_player_thread_analytics is None or not self.video_player_thread_analytics.isRunning():
-            self.video_player_thread_analytics = VideoPlayerThread(center_video_path=center_video_directory,
+            self.video_player_thread_analytics = SeekingVideoPlayerThread(center_video_path=center_video_directory,
                                                                            front_video_path=front_video_directory,
                                                                            main_window=self
                                                                             )
-
+        # if self.video_player_thread_analytics is not None or self.video_player_thread_analytics.isRunning():
+            self.play_pause_button_analytics.setText("PLAY")
             self.video_player_thread_analytics.frames_signal.connect(self.update_frame_for_analytics)
             self.video_player_thread_analytics.start()
         else:
+            self.play_pause_button_analytics.setText("PAUSE")
             self.video_player_thread_analytics.pause(not self.video_player_thread_analytics.paused) 
     
     def update_frame_for_analytics(self, frame_list):
@@ -448,5 +456,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     '''
     THIS AREA IS FOR VIDEO PLAYER THREAD
     '''
-    def set_play_pause_preview_button(self, activation):
+    def activate_analytics(self, activation):
         self.play_pause_button_video_preview.setEnabled(activation)
+        self.analyze_video_button.setEnabled(activation)
+    
+
+    def on_slider_moved(self):
+        """Triggered when the slider is moved."""
+        value = self.video_seek_slider.value()
+        self.video_player_thread_analytics.seek_frame(value)
+    
+    def on_slider_clicked(self):
+        self.play_pause_button_analytics.setText("PAUSE")
+        self.video_player_thread_analytics.pause(True) 

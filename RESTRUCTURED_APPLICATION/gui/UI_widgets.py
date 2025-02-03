@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'FINAL-DESIGNGlrKwI.ui'
+## Form generated from reading UI file 'FINAL-DESIGNlKYvNr.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.8.1
 ##
@@ -111,6 +111,7 @@ class Ui_MainWindow(object):
         self.event_timeline_chkbox.setFont(font2)
         self.analyze_video_button = QPushButton(self.groupBox_2)
         self.analyze_video_button.setObjectName(u"analyze_video_button")
+        self.analyze_video_button.setEnabled(False)
         self.analyze_video_button.setGeometry(QRect(10, 510, 231, 71))
         font4 = QFont()
         font4.setPointSize(20)
@@ -294,11 +295,11 @@ class Ui_MainWindow(object):
         self.keypointsOnlyChkBox_Center = QCheckBox(self.importVideo)
         self.keypointsOnlyChkBox_Center.setObjectName(u"keypointsOnlyChkBox_Center")
         self.keypointsOnlyChkBox_Center.setGeometry(QRect(700, 10, 141, 20))
-        self.keypointsOnlyChkBox_Center.setAutoFillBackground(True)
+        self.keypointsOnlyChkBox_Center.setAutoFillBackground(False)
         self.keypointsOnlyChkBox_front = QCheckBox(self.importVideo)
         self.keypointsOnlyChkBox_front.setObjectName(u"keypointsOnlyChkBox_front")
         self.keypointsOnlyChkBox_front.setGeometry(QRect(200, 10, 131, 20))
-        self.keypointsOnlyChkBox_front.setAutoFillBackground(True)
+        self.keypointsOnlyChkBox_front.setAutoFillBackground(False)
         self.video_preview_label_center = QLabel(self.importVideo)
         self.video_preview_label_center.setObjectName(u"video_preview_label_center")
         self.video_preview_label_center.setGeometry(QRect(510, 10, 481, 301))
@@ -450,7 +451,7 @@ class Ui_MainWindow(object):
         self.frame.setLineWidth(2)
         self.camera_feed = QLabel(self.frame)
         self.camera_feed.setObjectName(u"camera_feed")
-        self.camera_feed.setGeometry(QRect(10, 10, 441, 242))
+        self.camera_feed.setGeometry(QRect(10, 10, 461, 271))
         font16 = QFont()
         font16.setFamilies([u"Segoe UI"])
         font16.setPointSize(16)
@@ -462,19 +463,19 @@ class Ui_MainWindow(object):
         self.camera_feed.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.white_frame_feed = QLabel(self.frame)
         self.white_frame_feed.setObjectName(u"white_frame_feed")
-        self.white_frame_feed.setGeometry(QRect(460, 10, 441, 242))
+        self.white_frame_feed.setGeometry(QRect(490, 10, 461, 271))
         self.white_frame_feed.setFont(font16)
         self.white_frame_feed.setFrameShape(QFrame.Shape.WinPanel)
         self.white_frame_feed.setFrameShadow(QFrame.Shadow.Raised)
         self.white_frame_feed.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.darkMode_whiteframe = QCheckBox(self.frame)
         self.darkMode_whiteframe.setObjectName(u"darkMode_whiteframe")
-        self.darkMode_whiteframe.setGeometry(QRect(470, 310, 141, 31))
+        self.darkMode_whiteframe.setGeometry(QRect(500, 310, 141, 31))
         self.darkMode_whiteframe.setFont(font14)
         self.darkMode_whiteframe.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.show_whiteframe_boundingbox = QCheckBox(self.frame)
         self.show_whiteframe_boundingbox.setObjectName(u"show_whiteframe_boundingbox")
-        self.show_whiteframe_boundingbox.setGeometry(QRect(470, 340, 221, 31))
+        self.show_whiteframe_boundingbox.setGeometry(QRect(500, 340, 221, 31))
         self.show_whiteframe_boundingbox.setFont(font14)
         self.show_whiteframe_boundingbox.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.showCameraLandmarksChkBox = QCheckBox(self.frame)
@@ -489,7 +490,7 @@ class Ui_MainWindow(object):
         self.showCameraBoundingBoxChkBox.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.label = QLabel(self.frame)
         self.label.setObjectName(u"label")
-        self.label.setGeometry(QRect(130, 280, 211, 31))
+        self.label.setGeometry(QRect(10, 280, 461, 31))
         font17 = QFont()
         font17.setFamilies([u"Segoe UI"])
         font17.setPointSize(16)
@@ -497,7 +498,7 @@ class Ui_MainWindow(object):
         self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.label_2 = QLabel(self.frame)
         self.label_2.setObjectName(u"label_2")
-        self.label_2.setGeometry(QRect(570, 280, 231, 31))
+        self.label_2.setGeometry(QRect(490, 280, 461, 31))
         self.label_2.setFont(font17)
         self.label_2.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.show_skeleton_camera = QCheckBox(self.frame)
@@ -507,7 +508,7 @@ class Ui_MainWindow(object):
         self.show_skeleton_camera.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.show_skeleton_white_frame = QCheckBox(self.frame)
         self.show_skeleton_white_frame.setObjectName(u"show_skeleton_white_frame")
-        self.show_skeleton_white_frame.setGeometry(QRect(730, 310, 171, 31))
+        self.show_skeleton_white_frame.setGeometry(QRect(760, 310, 171, 31))
         self.show_skeleton_white_frame.setFont(font14)
         self.show_skeleton_white_frame.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.frame_2 = QFrame(self.frame)
@@ -664,7 +665,7 @@ class Ui_MainWindow(object):
         self.label_3.setFont(font15)
         self.directoryLineEdit = QLineEdit(self.groupBox)
         self.directoryLineEdit.setObjectName(u"directoryLineEdit")
-        self.directoryLineEdit.setGeometry(QRect(20, 70, 221, 31))
+        self.directoryLineEdit.setGeometry(QRect(20, 70, 241, 31))
         font21 = QFont()
         font21.setFamilies([u"Segoe UI"])
         font21.setPointSize(10)
@@ -687,7 +688,7 @@ class Ui_MainWindow(object):
         if (self.action_table.rowCount() < 7):
             self.action_table.setRowCount(7)
         self.action_table.setObjectName(u"action_table")
-        self.action_table.setGeometry(QRect(10, 150, 241, 151))
+        self.action_table.setGeometry(QRect(10, 150, 261, 151))
         self.action_table.setFrameShape(QFrame.Shape.WinPanel)
         self.action_table.setFrameShadow(QFrame.Shadow.Raised)
         self.action_table.setLineWidth(2)
@@ -925,7 +926,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.MainTab.setCurrentIndex(1)
+        self.MainTab.setCurrentIndex(2)
 
 
         QMetaObject.connectSlotsByName(MainWindow)

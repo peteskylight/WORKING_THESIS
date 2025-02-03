@@ -47,7 +47,7 @@
      <enum>QTabWidget::TabShape::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>2</number>
     </property>
     <property name="iconSize">
      <size>
@@ -236,6 +236,9 @@ Frequency [Linked List]</string>
        </widget>
       </widget>
       <widget class="QPushButton" name="analyze_video_button">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -886,7 +889,7 @@ Frequency [Linked List]</string>
        </rect>
       </property>
       <property name="autoFillBackground">
-       <bool>true</bool>
+       <bool>false</bool>
       </property>
       <property name="text">
        <string>Keypoints Only</string>
@@ -902,7 +905,7 @@ Frequency [Linked List]</string>
        </rect>
       </property>
       <property name="autoFillBackground">
-       <bool>true</bool>
+       <bool>false</bool>
       </property>
       <property name="text">
        <string>Keypoints Only</string>
@@ -1383,8 +1386,8 @@ Frequency [Linked List]</string>
         <rect>
          <x>10</x>
          <y>10</y>
-         <width>441</width>
-         <height>242</height>
+         <width>461</width>
+         <height>271</height>
         </rect>
        </property>
        <property name="font">
@@ -1411,10 +1414,10 @@ Frequency [Linked List]</string>
       <widget class="QLabel" name="white_frame_feed">
        <property name="geometry">
         <rect>
-         <x>460</x>
+         <x>490</x>
          <y>10</y>
-         <width>441</width>
-         <height>242</height>
+         <width>461</width>
+         <height>271</height>
         </rect>
        </property>
        <property name="font">
@@ -1441,7 +1444,7 @@ Frequency [Linked List]</string>
       <widget class="QCheckBox" name="darkMode_whiteframe">
        <property name="geometry">
         <rect>
-         <x>470</x>
+         <x>500</x>
          <y>310</y>
          <width>141</width>
          <height>31</height>
@@ -1463,7 +1466,7 @@ Frequency [Linked List]</string>
       <widget class="QCheckBox" name="show_whiteframe_boundingbox">
        <property name="geometry">
         <rect>
-         <x>470</x>
+         <x>500</x>
          <y>340</y>
          <width>221</width>
          <height>31</height>
@@ -1529,9 +1532,9 @@ Frequency [Linked List]</string>
       <widget class="QLabel" name="label">
        <property name="geometry">
         <rect>
-         <x>130</x>
+         <x>10</x>
          <y>280</y>
-         <width>211</width>
+         <width>461</width>
          <height>31</height>
         </rect>
        </property>
@@ -1551,9 +1554,9 @@ Frequency [Linked List]</string>
       <widget class="QLabel" name="label_2">
        <property name="geometry">
         <rect>
-         <x>570</x>
+         <x>490</x>
          <y>280</y>
-         <width>231</width>
+         <width>461</width>
          <height>31</height>
         </rect>
        </property>
@@ -1595,7 +1598,7 @@ Frequency [Linked List]</string>
       <widget class="QCheckBox" name="show_skeleton_white_frame">
        <property name="geometry">
         <rect>
-         <x>730</x>
+         <x>760</x>
          <y>310</y>
          <width>171</width>
          <height>31</height>
@@ -2219,7 +2222,7 @@ RECORDING</string>
         <rect>
          <x>20</x>
          <y>70</y>
-         <width>221</width>
+         <width>241</width>
          <height>31</height>
         </rect>
        </property>
@@ -2273,7 +2276,7 @@ RECORDING</string>
         <rect>
          <x>10</x>
          <y>150</y>
-         <width>241</width>
+         <width>261</width>
          <height>151</height>
         </rect>
        </property>

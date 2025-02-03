@@ -108,9 +108,9 @@ class FrontVideo:
         self.main_window.import_video_button_front.setEnabled(True)
 
         if self.main_window.is_center_video_ready and self.main_window.is_front_video_ready:
-            self.main_window.set_play_pause_preview_button(True)
+            self.main_window.activate_analytics(True)
         else:
-            self.main_window.set_play_pause_preview_button(False)
+            self.main_window.activate_analytics(False)
         
         self.front_video_processor.stop()
     

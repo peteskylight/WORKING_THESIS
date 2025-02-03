@@ -1,4 +1,4 @@
-from utils.video_utils import VideoUtils, VideoProcessorThread, WhiteFrameGenerator, VideoPlayerThread
+from utils.video_utils import VideoUtils, VideoProcessorThread, WhiteFrameGenerator, VideoPlayerThread, SeekingVideoPlayerThread
 from utils.drawing_utils import DrawingUtils, DrawingBoundingBoxesThread, DrawingKeyPointsThread
 from utils.tools import Tools
 from utils.camera import CameraFeed

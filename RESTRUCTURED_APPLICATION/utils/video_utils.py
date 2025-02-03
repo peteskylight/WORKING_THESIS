@@ -352,10 +352,10 @@ class VideoPlayerThread(QThread):
         
         for track_id, bbox in results.items():
             x1, y1, x2, y2 = bbox
-            cv2.putText(video_frame, f"Student ID: {track_id}", (int(bbox[0]), int(bbox[1] - 10)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 1)
+            cv2.putText(video_frame, f"Student ID: {track_id}", (int(bbox[0]), int(bbox[1] - 20)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 1)
             cv2.rectangle(video_frame, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 2)
 
-            cv2.putText(black_frame, f"Student ID: {track_id}", (int(bbox[0]), int(bbox[1] - 10)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 1)
+            cv2.putText(black_frame, f"Student ID: {track_id}", (int(bbox[0]), int(bbox[1] - 20)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 1)
             cv2.rectangle(black_frame, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 2)
         
         return video_frame, black_frame
@@ -532,3 +532,299 @@ class VideoPlayerThread(QThread):
         else:
             self.main_window.play_pause_button_video_preview.setText("PAUSE PREVIEW")
 
+
+class SeekingVideoPlayerThread(QThread):
+    '''
+    The technique used in playing the video is to preload the frames in a queue and then play them in a loop.
+    This is done to ensure that the video is played smoothly without any lagging.
+    The technique is called "Frame Buffering WITH Lazy Lodaing
+    Producer-Consumer Pattern (Using queue.Queue)
+        Producer: The preload_frames() function continuously reads frames in the background and stores them in a queue (queue.Queue).
+        Consumer: The run() method fetches preloaded frames from the queue and sends them to the UI for display.
+    Advantage: This prevents the UI thread from waiting for frame decoding, making playback smooth.
+         Lazy Loading (On-Demand Processing)
+
+    Instead of storing all frames in RAM, we load only the next few frames (maxsize=10 in the queue).
+    When a frame is needed, it's already decoded and ready for display.
+
+    '''
+
+    
+    frames_signal = Signal(object)
+    #cv2.setNumThreads(1)  # Disable OpenCV multi-threading to reduce CPU usage
+
+    def __init__(self, center_video_path, front_video_path, main_window):
+        super().__init__()
+
+        self.main_window = main_window
+
+        self.center_video_path = center_video_path
+        self.front_video_path = front_video_path
+
+        #Separate captures for each video
+
+        self.center_cap = cv2.VideoCapture(self.center_video_path)
+        self.front_cap = cv2.VideoCapture(self.front_video_path)
+
+        #For all
+        self.running = True
+        self.paused = False
+
+        self.max_size = 30
+        #Keep preloaded frames here
+
+        self.center_video_frame_queue = queue.Queue(maxsize=self.max_size)  
+        self.center_video_black_frame_queue = queue.Queue(maxsize=self.max_size) 
+        self.front_video_frame_queue = queue.Queue(maxsize=self.max_size)  
+        self.front_video_black_frame_queue = queue.Queue(maxsize=self.max_size)  
+
+        self.current_center_video_frame_index = 0
+        self.current_front_video_frame_index = 0
+        self.current_frame_index = 0
+
+        self.target_frame_index = 0 # Set target frame index
+        self.preload_thread = threading.Thread(target=self.preload_frames, daemon=True)
+        self.preload_thread.start()  # Start background frame loader
+
+        self.skeleton_pairs = [
+            (0, 1), (0, 2), (1, 3), (2, 4), (0, 5), (0, 6), (5, 6), 
+            (5, 7), (6, 8), (7, 9), (8, 10), (5, 11), (6, 12), (11, 12), 
+            (11, 13), (12, 14), (13, 15), (14, 16)
+        ]
+
+
+    def write_action_text(self, frame, black_frame, detections, actions):
+        """
+        Draw bounding boxes with action labels on each frame.
+        """
+
+        for person_id, bbox in detections.items():
+            x, y, w, h = map(int, bbox)  # Ensure coordinates are integers
+            action_text = f"Action: {actions.get(person_id, 'Unknown')}"
+            
+            # Ensure text position is within frame bounds
+            text_x, text_y = x, max(y - 10, 10)  # Prevent negative y
+            
+            #cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            cv2.putText(frame, action_text, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+            cv2.putText(black_frame, action_text, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        
+        return frame, black_frame
+
+    def drawing_bounding_box(self, video_frame, results):
+
+        black_frame = np.zeros((1080, 1920, 3), dtype=np.uint8)
+        item_count = 0
+
+        
+        
+        for track_id, bbox in results.items():
+            x1, y1, x2, y2 = bbox
+            cv2.putText(video_frame, f"Student ID: {track_id}", (int(bbox[0]), int(bbox[1] - 20)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 1)
+            cv2.rectangle(video_frame, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 2)
+
+            cv2.putText(black_frame, f"Student ID: {track_id}", (int(bbox[0]), int(bbox[1] - 20)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 1)
+            cv2.rectangle(black_frame, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 2)
+        
+        return video_frame, black_frame
+    
+    def drawing_keypoints(self, keypoints_dict, detection, black_frame, video_frame):
+        for track_id in keypoints_dict:
+            if track_id in detection:
+                keypoints = keypoints_dict[track_id]
+                bbox = detection[track_id]
+                bbox_x, bbox_y, bbox_w, bbox_h = bbox
+
+                cropped_frame = black_frame[int(bbox_y):int(bbox_h), int(bbox_x):int(bbox_w)]
+                video_cropped_frame = video_frame[int(bbox_y):int(bbox_h), int(bbox_x):int(bbox_w)]
+
+                for keypoint in keypoints:
+                    x = int(keypoint[0] * cropped_frame.shape[1])
+                    y = int(keypoint[1] * cropped_frame.shape[0])
+                    cv2.circle(cropped_frame, (x, y), radius=4, color=(0, 255, 0), thickness=-1)
+                    cv2.circle(video_cropped_frame, (x, y), radius=4, color=(0, 255, 0), thickness=-1)
+
+                # Draw skeleton
+                for pair in self.skeleton_pairs:
+                    if pair[0] < len(keypoints) and pair[1] < len(keypoints):
+                        pt1 = keypoints[pair[0]]
+                        pt2 = keypoints[pair[1]]
+                        #print(f"pt1: {pt1}, pt2: {pt2}")
+                        # # Debug statement
+                        if isinstance(pt1, np.ndarray) and isinstance(pt2, np.ndarray):
+                            x1 = int(pt1[0] * cropped_frame.shape[1])
+                            y1 = int(pt1[1] * cropped_frame.shape[0])
+                            x2 = int(pt2[0] * cropped_frame.shape[1])
+                            y2 = int(pt2[1] * cropped_frame.shape[0])
+                            
+                            if 0.1 <= x1 < cropped_frame.shape[1] and 0.1 <= y1 < cropped_frame.shape[0] and 0.1 <= x2 < cropped_frame.shape[1] and 0.1 <= y2 < cropped_frame.shape[0]:
+                                cv2.line(cropped_frame, (x1, y1), (x2, y2), color=(0, 255, 0), thickness=2)
+                                cv2.line(video_cropped_frame, (x1, y1), (x2, y2), color=(0, 255, 0), thickness=2)
+                        else:
+                            print(f"Invalid keypoints for track ID {track_id}: pt1={pt1}, pt2={pt2}")
+                    else:
+                        print(f"Keypoints array too small for track ID {track_id}: {keypoints}")
+
+                # Place the cropped frame back into the original frame
+
+                black_frame[int(bbox_y):int(bbox_h), int(bbox_x):int(bbox_w)] = cropped_frame
+                video_frame[int(bbox_y):int(bbox_h), int(bbox_x):int(bbox_w)] = video_cropped_frame
+        
+        return video_frame, black_frame
+
+    def preload_frames(self):
+        results = None
+        keypoints = None
+        center_video_black_frame = None
+        front_video_black_frame = None
+
+        front_video_results = self.main_window.human_detect_results_front
+        front_video_keypoints = self.main_window.human_pose_results_front
+        front_video_actions = self.main_window.action_results_list_front
+
+        center_video_results = self.main_window.human_detect_results_center
+        center_video_keypoints = self.main_window.human_pose_results_center
+        center_video_actions = self.main_window.action_results_list_center
+
+        """
+        Background thread to keep decoding frames ahead of playback
+        """
+
+        while self.running:
+            if not self.paused and (not self.center_video_frame_queue.full()):
+                front_ret, front_frame = self.front_cap.read()
+                center_ret, center_frame = self.center_cap.read()
+
+                if (not front_ret):
+                    self.center_cap.set(cv2.CAP_PROP_POS_FRAMES, 0)  # Restart video if it ends
+                    self.front_cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+                    self.current_frame_index = 0
+                    self.target_frame_index = 0 
+                    continue
+                
+                # Draw bounding boxes and keypoints only for the current frame index
+                '''
+                LOL EQUAL LANG NAMAN EH! NAGLOLOKOHAN LANG TAYO RITO AHAHHAHHAHA
+                '''
+
+                if self.current_frame_index == self.target_frame_index:  # Draw only for target frame index #
+                    center_frame, center_video_black_frame = self.drawing_bounding_box(video_frame=center_frame,
+                                                                results=center_video_results[int(self.current_frame_index)])
+                    
+                    center_frame, center_video_black_frame = self.drawing_keypoints(keypoints_dict=center_video_keypoints[int(self.current_frame_index)],
+                                                                detection=center_video_results[int(self.current_frame_index)],
+                                                                black_frame=center_video_black_frame,
+                                                                video_frame=center_frame)
+                    center_frame, center_video_black_frame = self.write_action_text(frame=center_frame,
+                                                                                    black_frame=center_video_black_frame,
+                                                                                    detections=center_video_results[int(self.current_frame_index)],
+                                                                                    actions=center_video_actions[int(self.current_frame_index)])
+
+                    
+                    front_frame, front_video_black_frame = self.drawing_bounding_box(video_frame=front_frame,
+                                                                results=front_video_results[int(self.current_frame_index)])
+                    
+                    front_frame, front_video_black_frame = self.drawing_keypoints(keypoints_dict=front_video_keypoints[int(self.current_frame_index)],
+                                                                detection=front_video_results[int(self.current_frame_index)],
+                                                                black_frame=front_video_black_frame,
+                                                                video_frame=front_frame)
+                    
+                    front_frame, front_video_black_frame = self.write_action_text(frame=front_frame,
+                                                                                  black_frame=front_video_black_frame,
+                                                                                  detections=front_video_results[int(self.current_frame_index)],
+                                                                                  actions=front_video_actions[int(self.current_frame_index)])
+
+                else:
+                    # If not the target frame, skip drawing
+                    self.center_cap.set(cv2.CAP_PROP_POS_FRAMES, self.target_frame_index)
+                    self.front_cap.set(cv2.CAP_PROP_POS_FRAMES, self.target_frame_index)
+                    self.current_frame_index = self.target_frame_index
+                
+                # Store the frame with the drawn bounding box and keypoints
+                if center_frame is not None and center_video_black_frame is not None:
+                    self.center_video_frame_queue.put(center_frame)
+                    self.center_video_black_frame_queue.put(center_video_black_frame)
+
+                if front_frame is not None and front_video_black_frame is not None:
+                    self.front_video_frame_queue.put(front_frame)
+                    self.front_video_black_frame_queue.put(front_video_black_frame)
+
+
+                
+
+        # self.center_cap.release()
+        # self.front_cap.release()
+
+    def run(self):
+        """Main playback loop, sending frames from queue to UI"""
+        while self.running:
+            if not self.paused and not self.center_video_frame_queue.empty():
+                center_video_frame = self.center_video_frame_queue.get()  # Get frame from queue
+                center_black_frame = self.center_video_black_frame_queue.get()
+
+                front_video_frame = self.front_video_frame_queue.get()  # Get frame from queue
+                front_black_frame = self.front_video_black_frame_queue.get()
+
+                # if self.current_frame_index == self.target_frame_index:  
+                #     self.frames_signal.emit([center_video_frame, front_video_frame])
+
+                center_frame = None
+                front_frame = None
+
+                if self.main_window.keypointsOnlyChkBox_front.isChecked():
+                    front_frame = front_black_frame
+                else:
+                    front_frame = front_video_frame
+
+                if self.main_window.keypointsOnlyChkBox_Center.isChecked():
+                    center_frame = center_black_frame
+                else:
+                    center_frame = center_video_frame
+            
+                self.main_window.video_seek_slider.setValue(self.current_frame_index)
+
+                self.frames_signal.emit([center_frame, front_frame])  # Send frameS to UI
+
+
+                self.current_frame_index += 1
+                self.target_frame_index +=1
+                
+                cv2.waitKey(1000//30)  # Play at ~30 FPS
+
+    def stop(self):
+        self.running = False
+        self.quit()
+        self.wait()
+
+    def pause(self, status):
+        self.paused = status
+        if status:
+            self.main_window.play_pause_button_video_preview.setText("PLAY PREVIEW")
+        else:
+            self.main_window.play_pause_button_video_preview.setText("PAUSE PREVIEW")
+
+
+    def seek_frame(self, frame_index):
+        """Seeks to a specific frame in the video when the slider is moved."""
+        self.paused = True  # Pause while seeking
+
+        # Update the frame index
+        self.current_frame_index = frame_index
+        self.target_frame_index = frame_index
+
+        # Move the video capture to the requested frame
+        self.center_cap.set(cv2.CAP_PROP_POS_FRAMES, frame_index)
+        self.front_cap.set(cv2.CAP_PROP_POS_FRAMES, frame_index)
+
+        # Clear the frame queues to load new frames from the seek position
+        with self.center_video_frame_queue.mutex:
+            self.center_video_frame_queue.queue.clear()
+        with self.front_video_frame_queue.mutex:
+            self.front_video_frame_queue.queue.clear()
+
+        with self.center_video_black_frame_queue.mutex:
+            self.center_video_black_frame_queue.queue.clear()
+        with self.front_video_black_frame_queue.mutex:
+            self.front_video_black_frame_queue.queue.clear()
+
+        self.paused = False  # Resume after seeking

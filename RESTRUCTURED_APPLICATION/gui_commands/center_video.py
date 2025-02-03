@@ -77,7 +77,7 @@ class CenterVideo:
     def update_detection_results(self, results_list):
         self.humanDetectionResults = results_list
         self.main_window.human_detect_results_center = results_list
-
+        self.main_window.video_seek_slider.setMaximum(int(len(results_list)-1))
         print("HUMAN DETECT RESULTS:", len(results_list))
     
     def update_pose_detection_results(self, pose_results):
@@ -106,15 +106,15 @@ class CenterVideo:
         
         self.main_window.is_center_video_ready = True
 
-        self.main_window.set_play_pause_preview_button(True)
+        self.main_window.activate_analytics(True)
         
         self.main_window.import_video_button_center.setEnabled(True)
 
         if self.main_window.is_center_video_ready and self.main_window.is_front_video_ready:
-            self.main_window.set_play_pause_preview_button(True)
+            self.main_window.activate_analytics(True)
             
         else:
-            self.main_window.set_play_pause_preview_button(False)
+            self.main_window.activate_analytics(False)
         
         print("CENTER VIDEO READY: ", self.main_window.is_center_video_ready)
         print("FRONT VIDEO READY: ", self.main_window.is_front_video_ready)
