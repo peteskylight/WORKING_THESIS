@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1280</width>
-    <height>720</height>
+    <width>1284</width>
+    <height>728</height>
    </rect>
   </property>
   <property name="font">
@@ -47,7 +47,7 @@
      <enum>QTabWidget::TabShape::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <property name="iconSize">
      <size>
@@ -3020,8 +3020,8 @@ border-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0,
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1280</width>
-     <height>33</height>
+     <width>1284</width>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuARMIS">

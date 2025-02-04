@@ -1,10 +1,26 @@
+'''
+THIS PROJECT IS THE UNDERGRADUATE THESIS OF DATINGALING, GONZALES, MENDOZA, & SALAZAR
+
+        ENTITLED:
+            DESIGN AND DEVELOPMENT OF ACTION RECOGNITION MODEL AND SOFTWARE
+                FOR DIGITIZATION OF BEHAVIORAL CODING SYSTEM
+                                DURING EXAMINATION
+
+DEVELOPED ON A.Y. 2024-2025
+
+BY THE STUDENTS OF BS IN COMPUTER ENGINEERING STUDENTS
+4TH YEAR - BLOCK: 4102
+
+THESIS ADVISER: DR. JEFFREY S. SARMIENTO
+
+'''
+
 import sys
-import cv2 
-from PySide6.QtWidgets import QApplication, QLabel, QMainWindow
-from PySide6.QtGui import QScreen
+import cv2
+from PySide6.QtWidgets import QApplication
 from PySide6.QtWidgets import *
 
-from gui import (Ui_MainWindow, MainWindow)
+from gui import MainWindow
  
 if __name__ == "__main__":
     # Check if a QApplication instance already exists

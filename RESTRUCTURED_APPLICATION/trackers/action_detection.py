@@ -13,7 +13,12 @@ from ultralytics.utils.plotting import Annotator
 
 #from ultralytics.yolo.v8.detect.predict import Detections
 
+import tensorflow as tf
 from tensorflow.keras.models import load_model
+
+from tensorflow.keras import mixed_precision
+mixed_precision.set_global_policy('mixed_float16')
+
 
 
 import torch #========================================> GPU IMPORTANT <========
@@ -34,6 +39,12 @@ class ActionDetectionThread(QThread):
         self.detected_actions = []
 
         self.action_recognition_model = load_model("RESOURCES/action_recognition_model.h5")
+
+        #FOR GPU
+        with tf.device('/GPU:0'):
+            self.action_recognition_model.compile()  # Recompile model (optional but can help)
+        ############
+
         self.temp_sequence = []
         self.buffer_size = 30
         self.actions_list = np.array(['Looking Down', 'Looking Forward', 'Looking Left', 'Looking Right', 'Looking Up']) 
@@ -79,7 +90,15 @@ class ActionDetectionThread(QThread):
         for person_id, keypoints_sequence in frames_keypoints.items():
             if len(keypoints_sequence) == self.buffer_size:
                 input_data = np.array([keypoints_sequence])  # Shape (1, 30, 34)
-                prediction = self.action_recognition_model.predict(input_data)[0]  # Assuming single output per person
+                #FOR GPU
+                input_tensor = tf.convert_to_tensor(input_data)
+                input_tensor = input_tensor.numpy()
+
+                # Run inference
+                with tf.device('/GPU:0'):
+                    prediction = self.action_recognition_model.predict(input_tensor)[0]
+
+                #prediction = self.action_recognition_model.predict(input_data)[0]  # Assuming single output per person
                 predicted_action = np.argmax(prediction)  # Get the action INDEX
 
                 self.translate_action_results = self.actions_list[predicted_action] #GET THE ACTION NAME BASED ON THE INDEX!
