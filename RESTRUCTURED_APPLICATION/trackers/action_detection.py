@@ -16,8 +16,6 @@ from ultralytics.utils.plotting import Annotator
 import tensorflow as tf
 from tensorflow.keras.models import load_model
 
-from tensorflow.keras import mixed_precision
-mixed_precision.set_global_policy('mixed_float16')
 
 
 
@@ -40,9 +38,7 @@ class ActionDetectionThread(QThread):
 
         self.action_recognition_model = load_model("RESOURCES/action_recognition_model.h5")
 
-        #FOR GPU
-        with tf.device('/GPU:0'):
-            self.action_recognition_model.compile()  # Recompile model (optional but can help)
+ # Recompile model (optional but can help)
         ############
 
         self.temp_sequence = []
@@ -95,8 +91,8 @@ class ActionDetectionThread(QThread):
                 input_tensor = input_tensor.numpy()
 
                 # Run inference
-                with tf.device('/GPU:0'):
-                    prediction = self.action_recognition_model.predict(input_tensor)[0]
+
+                prediction = self.action_recognition_model.predict(input_tensor)[0]
 
                 #prediction = self.action_recognition_model.predict(input_data)[0]  # Assuming single output per person
                 predicted_action = np.argmax(prediction)  # Get the action INDEX

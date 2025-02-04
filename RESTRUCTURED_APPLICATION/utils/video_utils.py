@@ -573,8 +573,11 @@ class SeekingVideoPlayerThread(QThread):
         self.max_size = 30
         #Keep preloaded frames here
 
+        self.original_center_video_frame_queue = queue.Queue(maxsize=self.max_size)  
         self.center_video_frame_queue = queue.Queue(maxsize=self.max_size)  
         self.center_video_black_frame_queue = queue.Queue(maxsize=self.max_size) 
+
+        self.original_front_video_frame_queue = queue.Queue(maxsize=self.max_size)  
         self.front_video_frame_queue = queue.Queue(maxsize=self.max_size)  
         self.front_video_black_frame_queue = queue.Queue(maxsize=self.max_size)  
 
@@ -695,11 +698,17 @@ class SeekingVideoPlayerThread(QThread):
                 front_ret, front_frame = self.front_cap.read()
                 center_ret, center_frame = self.center_cap.read()
 
-                if (not front_ret):
-                    self.center_cap.set(cv2.CAP_PROP_POS_FRAMES, 0)  # Restart video if it ends
-                    self.front_cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
-                    self.current_frame_index = 0
-                    self.target_frame_index = 0 
+                original_front_frame = front_frame.copy()
+                original_center_frame = center_frame.copy()
+                
+                min_value, max_value = self.main_window.timeFrameRangeSlider.value()
+
+                if (not front_ret) or (self.current_frame_index > (max_value-1)):
+                    self.center_cap.set(cv2.CAP_PROP_POS_FRAMES, min_value)  # Restart video if it ends
+                    self.front_cap.set(cv2.CAP_PROP_POS_FRAMES, min_value)
+
+                    self.current_frame_index = min_value
+                    self.target_frame_index = min_value
                     continue
                 
                 # Draw bounding boxes and keypoints only for the current frame index
@@ -742,10 +751,12 @@ class SeekingVideoPlayerThread(QThread):
                 
                 # Store the frame with the drawn bounding box and keypoints
                 if center_frame is not None and center_video_black_frame is not None:
+                    self.original_center_video_frame_queue.put(original_center_frame)
                     self.center_video_frame_queue.put(center_frame)
                     self.center_video_black_frame_queue.put(center_video_black_frame)
 
                 if front_frame is not None and front_video_black_frame is not None:
+                    self.original_front_video_frame_queue.put(original_front_frame)
                     self.front_video_frame_queue.put(front_frame)
                     self.front_video_black_frame_queue.put(front_video_black_frame)
 
@@ -761,9 +772,11 @@ class SeekingVideoPlayerThread(QThread):
             if not self.paused and not self.center_video_frame_queue.empty():
                 center_video_frame = self.center_video_frame_queue.get()  # Get frame from queue
                 center_black_frame = self.center_video_black_frame_queue.get()
+                original_center_frame = self.original_center_video_frame_queue.get()
 
                 front_video_frame = self.front_video_frame_queue.get()  # Get frame from queue
                 front_black_frame = self.front_video_black_frame_queue.get()
+                original_front_frame = self.original_front_video_frame_queue.get()
 
                 # if self.current_frame_index == self.target_frame_index:  
                 #     self.frames_signal.emit([center_video_frame, front_video_frame])
@@ -771,20 +784,41 @@ class SeekingVideoPlayerThread(QThread):
                 center_frame = None
                 front_frame = None
 
-                if self.main_window.keypointsOnlyChkBox_front.isChecked():
+                if self.main_window.keypointsOnlyChkBox_front.isChecked() or self.main_window.keypointsOnlyChkBox_front_analytics.isChecked():
+                    self.main_window.originalVideoOnlyChkBox_front.setChecked(False)
+                    self.main_window.originalVideoOnlyChkBox_front.setEnabled(False)
                     front_frame = front_black_frame
                 else:
+                    self.main_window.originalVideoOnlyChkBox_front.setEnabled(True)
                     front_frame = front_video_frame
 
-                if self.main_window.keypointsOnlyChkBox_Center.isChecked():
+                if self.main_window.keypointsOnlyChkBox_Center.isChecked() or self.main_window.keypointsOnlyChkBox_Center_analytics.isChecked():
+                    self.main_window.originalVideoOnlyChkBox_center.setChecked(False)
+                    self.main_window.originalVideoOnlyChkBox_center.setEnabled(False)
                     center_frame = center_black_frame
                 else:
+                    self.main_window.originalVideoOnlyChkBox_center.setEnabled(True)
                     center_frame = center_video_frame
-            
-                self.main_window.video_seek_slider.setValue(self.current_frame_index)
 
-                self.frames_signal.emit([center_frame, front_frame])  # Send frameS to UI
+                if self.main_window.originalVideoOnlyChkBox_front.isChecked() or self.main_window.originalVideoOnlyChkBox_front_analytics.isChecked():
 
+                    self.main_window.keypointsOnlyChkBox_front.setChecked(False)
+                    self.main_window.keypointsOnlyChkBox_front.setEnabled(False)
+        
+                    front_frame = original_front_frame
+                else:
+                    self.main_window.keypointsOnlyChkBox_front.setEnabled(True)
+                    front_frame = front_video_frame
+                
+                if self.main_window.originalVideoOnlyChkBox_center.isChecked() or self.main_window.originalVideoOnlyChkBox_center_analytics.isChecked():
+                    self.main_window.keypointsOnlyChkBox_Center.setChecked(False)
+                    self.main_window.keypointsOnlyChkBox_Center.setEnabled(False)
+                    center_frame = original_center_frame
+                else:
+                    self.main_window.keypointsOnlyChkBox_Center.setEnabled(True)
+                    center_frame = center_video_frame
+
+                self.frames_signal.emit([center_frame, front_frame])  # Send frameS to UI displayer/updater
 
                 self.current_frame_index += 1
                 self.target_frame_index +=1

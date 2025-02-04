@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1284</width>
-    <height>728</height>
+    <width>1280</width>
+    <height>720</height>
    </rect>
   </property>
   <property name="font">
@@ -27,8 +27,8 @@
      <rect>
       <x>10</x>
       <y>20</y>
-      <width>1271</width>
-      <height>641</height>
+      <width>1280</width>
+      <height>720</height>
      </rect>
     </property>
     <property name="font">
@@ -36,6 +36,9 @@
       <family>Segoe UI</family>
       <pointsize>18</pointsize>
      </font>
+    </property>
+    <property name="autoFillBackground">
+     <bool>false</bool>
     </property>
     <property name="styleSheet">
      <string notr="true">border-color: rgb(0, 0, 0);</string>
@@ -47,7 +50,7 @@
      <enum>QTabWidget::TabShape::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <property name="iconSize">
      <size>
@@ -83,9 +86,9 @@
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>100</y>
+         <y>180</y>
          <width>231</width>
-         <height>311</height>
+         <height>291</height>
         </rect>
        </property>
        <property name="frameShape">
@@ -178,7 +181,7 @@ Heatmap View</string>
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>150</y>
+          <y>140</y>
           <width>231</width>
           <height>61</height>
          </rect>
@@ -201,7 +204,7 @@ Visualizations</string>
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>210</y>
+          <y>200</y>
           <width>181</width>
           <height>51</height>
          </rect>
@@ -220,7 +223,7 @@ Frequency [Linked List]</string>
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>260</y>
+          <y>250</y>
           <width>131</width>
           <height>31</height>
          </rect>
@@ -242,9 +245,9 @@ Frequency [Linked List]</string>
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>510</y>
+         <y>480</y>
          <width>231</width>
-         <height>71</height>
+         <height>101</height>
         </rect>
        </property>
        <property name="font">
@@ -254,28 +257,8 @@ Frequency [Linked List]</string>
         </font>
        </property>
        <property name="text">
-        <string>Analyze Footages</string>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="play_pause_button_video_preview">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>420</y>
-         <width>231</width>
-         <height>71</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>20</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>PLAY PREVIEW</string>
+        <string>Analyze
+Footages</string>
        </property>
       </widget>
       <widget class="QPushButton" name="analyze_video_button_2">
@@ -297,13 +280,34 @@ Frequency [Linked List]</string>
         <string>Record Session</string>
        </property>
       </widget>
+      <widget class="QPushButton" name="play_pause_button_video_preview">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>100</y>
+         <width>231</width>
+         <height>71</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>20</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>PLAY PREVIEW</string>
+       </property>
+      </widget>
      </widget>
      <widget class="QLabel" name="video_preview_label_front">
       <property name="geometry">
        <rect>
         <x>10</x>
         <y>10</y>
-        <width>481</width>
+        <width>491</width>
         <height>301</height>
        </rect>
       </property>
@@ -637,7 +641,7 @@ Frequency [Linked List]</string>
         <rect>
          <x>10</x>
          <y>240</y>
-         <width>261</width>
+         <width>271</width>
          <height>22</height>
         </rect>
        </property>
@@ -662,7 +666,7 @@ Frequency [Linked List]</string>
         <rect>
          <x>10</x>
          <y>190</y>
-         <width>261</width>
+         <width>271</width>
          <height>22</height>
         </rect>
        </property>
@@ -687,7 +691,7 @@ Frequency [Linked List]</string>
         <rect>
          <x>510</x>
          <y>190</y>
-         <width>251</width>
+         <width>281</width>
          <height>22</height>
         </rect>
        </property>
@@ -715,7 +719,7 @@ Frequency [Linked List]</string>
         <rect>
          <x>510</x>
          <y>240</y>
-         <width>251</width>
+         <width>281</width>
          <height>22</height>
         </rect>
        </property>
@@ -882,7 +886,7 @@ Frequency [Linked List]</string>
      <widget class="QCheckBox" name="keypointsOnlyChkBox_Center">
       <property name="geometry">
        <rect>
-        <x>700</x>
+        <x>830</x>
         <y>10</y>
         <width>141</width>
         <height>20</height>
@@ -898,9 +902,9 @@ Frequency [Linked List]</string>
      <widget class="QCheckBox" name="keypointsOnlyChkBox_front">
       <property name="geometry">
        <rect>
-        <x>200</x>
+        <x>330</x>
         <y>10</y>
-        <width>131</width>
+        <width>101</width>
         <height>20</height>
        </rect>
       </property>
@@ -910,13 +914,16 @@ Frequency [Linked List]</string>
       <property name="text">
        <string>Keypoints Only</string>
       </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
      </widget>
      <widget class="QLabel" name="video_preview_label_center">
       <property name="geometry">
        <rect>
-        <x>510</x>
+        <x>500</x>
         <y>10</y>
-        <width>481</width>
+        <width>491</width>
         <height>301</height>
        </rect>
       </property>
@@ -939,6 +946,44 @@ Frequency [Linked List]</string>
        <set>Qt::AlignmentFlag::AlignCenter</set>
       </property>
      </widget>
+     <widget class="QCheckBox" name="originalVideoOnlyChkBox_front">
+      <property name="geometry">
+       <rect>
+        <x>200</x>
+        <y>10</y>
+        <width>131</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="text">
+       <string>Original Video Only</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="originalVideoOnlyChkBox_center">
+      <property name="geometry">
+       <rect>
+        <x>700</x>
+        <y>10</y>
+        <width>131</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="text">
+       <string>Original Video Only</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+     </widget>
      <zorder>video_preview_label_center</zorder>
      <zorder>video_preview_label_front</zorder>
      <zorder>frame_5</zorder>
@@ -947,6 +992,8 @@ Frequency [Linked List]</string>
      <zorder>label_30</zorder>
      <zorder>keypointsOnlyChkBox_front</zorder>
      <zorder>groupBox_2</zorder>
+     <zorder>originalVideoOnlyChkBox_front</zorder>
+     <zorder>originalVideoOnlyChkBox_center</zorder>
     </widget>
     <widget class="QWidget" name="analyticsTab">
      <attribute name="title">
@@ -976,7 +1023,7 @@ Frequency [Linked List]</string>
         <x>710</x>
         <y>50</y>
         <width>551</width>
-        <height>201</height>
+        <height>191</height>
        </rect>
       </property>
       <property name="font">
@@ -1048,9 +1095,9 @@ Frequency [Linked List]</string>
      <widget class="QComboBox" name="comboBox">
       <property name="geometry">
        <rect>
-        <x>320</x>
+        <x>280</x>
         <y>10</y>
-        <width>221</width>
+        <width>261</width>
         <height>31</height>
        </rect>
       </property>
@@ -1141,48 +1188,13 @@ Frequency [Linked List]</string>
        <set>Qt::AlignmentFlag::AlignCenter</set>
       </property>
      </widget>
-     <widget class="QSlider" name="video_seek_slider">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>550</y>
-        <width>961</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Orientation::Horizontal</enum>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_21">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>570</y>
-        <width>961</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>12</pointsize>
-        <italic>true</italic>
-       </font>
-      </property>
-      <property name="text">
-       <string>Video Seek</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignmentFlag::AlignCenter</set>
-      </property>
-     </widget>
      <widget class="QGraphicsView" name="graphicsView_events_timeline">
       <property name="geometry">
        <rect>
         <x>20</x>
         <y>450</y>
         <width>961</width>
-        <height>91</height>
+        <height>151</height>
        </rect>
       </property>
       <property name="frameShape">
@@ -1210,7 +1222,7 @@ Frequency [Linked List]</string>
         <x>990</x>
         <y>450</y>
         <width>271</width>
-        <height>61</height>
+        <height>71</height>
        </rect>
       </property>
       <property name="font">
@@ -1226,7 +1238,7 @@ Frequency [Linked List]</string>
       <property name="geometry">
        <rect>
         <x>990</x>
-        <y>520</y>
+        <y>530</y>
         <width>271</width>
         <height>71</height>
        </rect>
@@ -1246,7 +1258,7 @@ Frequency [Linked List]</string>
         <x>20</x>
         <y>50</y>
         <width>681</width>
-        <height>391</height>
+        <height>341</height>
        </rect>
       </property>
       <property name="font">
@@ -1268,7 +1280,16 @@ Frequency [Linked List]</string>
        <set>Qt::AlignmentFlag::AlignCenter</set>
       </property>
      </widget>
-     <zorder>video_seek_slider</zorder>
+     <widget class="QWidget" name="timeFrameContainer" native="true">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>390</y>
+        <width>681</width>
+        <height>51</height>
+       </rect>
+      </property>
+     </widget>
      <zorder>pushButton</zorder>
      <zorder>center_video_preview_label</zorder>
      <zorder>label_14</zorder>
@@ -1276,12 +1297,12 @@ Frequency [Linked List]</string>
      <zorder>comboBox</zorder>
      <zorder>front_video_preview_label</zorder>
      <zorder>label_13</zorder>
-     <zorder>label_21</zorder>
      <zorder>graphicsView_events_timeline</zorder>
      <zorder>play_pause_button_analytics</zorder>
      <zorder>see_full_data_button</zorder>
      <zorder>heatmap_present_label</zorder>
      <zorder>label_19</zorder>
+     <zorder>timeFrameContainer</zorder>
     </widget>
     <widget class="QWidget" name="createDatasetTab">
      <attribute name="title">
@@ -2355,7 +2376,7 @@ RECORDING</string>
         <rect>
          <x>10</x>
          <y>370</y>
-         <width>171</width>
+         <width>211</width>
          <height>21</height>
         </rect>
        </property>
@@ -2381,7 +2402,7 @@ RECORDING</string>
       <widget class="QLabel" name="interval_label">
        <property name="geometry">
         <rect>
-         <x>200</x>
+         <x>230</x>
          <y>360</y>
          <width>41</width>
          <height>41</height>
@@ -2443,7 +2464,7 @@ border-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0,
       <widget class="QLabel" name="sequence_label">
        <property name="geometry">
         <rect>
-         <x>200</x>
+         <x>230</x>
          <y>430</y>
          <width>41</width>
          <height>41</height>
@@ -2484,7 +2505,7 @@ border-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0,
         <rect>
          <x>10</x>
          <y>440</y>
-         <width>171</width>
+         <width>211</width>
          <height>21</height>
         </rect>
        </property>
@@ -3020,13 +3041,8 @@ border-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0,
     <rect>
      <x>0</x>
      <y>0</y>
-<<<<<<< Updated upstream
-     <width>1284</width>
-     <height>26</height>
-=======
      <width>1280</width>
-     <height>33</height>
->>>>>>> Stashed changes
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuARMIS">

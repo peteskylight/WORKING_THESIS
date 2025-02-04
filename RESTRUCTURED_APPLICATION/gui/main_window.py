@@ -4,9 +4,20 @@ import os
 import numpy as np
 import psutil
 import GPUtil
-from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QTableWidgetItem, QWidget, QButtonGroup
+from PySide6.QtWidgets import (QApplication,
+                                QMainWindow,
+                                QVBoxLayout,
+                                QFileDialog,
+                                QMessageBox,
+                                QTableWidgetItem,
+                                QWidget,
+                                QButtonGroup)
+
 from PySide6.QtCore import QRect, QCoreApplication, QMetaObject, QTimer, QTime, Qt, QDate
 from PySide6.QtGui import QImage, QPixmap
+
+from superqt import QRangeSlider
+
 from ultralytics import YOLO
 
 from utils.drawing_utils import DrawingUtils
@@ -115,8 +126,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.play_pause_button_analytics.clicked.connect(self.toggle_play_pause_analytics)
 
-        self.video_seek_slider.sliderPressed.connect(self.on_slider_clicked)
-        self.video_seek_slider.sliderReleased.connect(self.on_slider_moved)
+        # self.video_seek_slider.sliderPressed.connect(self.on_slider_clicked)
+        # self.video_seek_slider.sliderReleased.connect(self.on_slider_moved)
 
         #Adjust this according to video but meh. This is just the default. Just check the specs of the cam. Default naman sya all the times
         self.center_video_interval = 1000//30 #30 fps
@@ -140,9 +151,30 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.cropped_center_video_frame_counter = 0
         self.cropped_front_video_frame_counter = 0
 
+        self.time_range_start_time = 0
+        self.time_range_end_time = 0
+
+        # Locate the QWidget placeholder
+        self.sliderContainer = self.findChild(QWidget, "timeFrameContainer")
         
+
+        # THIS IS FOR TIME RANGE VIDEO SEEKER
+        self.timeFrameRangeSlider = QRangeSlider(Qt.Horizontal)
+        self.timeFrameRangeSlider.setMinimum(0)  # Example duration
+        self.timeFrameRangeSlider.setMaximum(100)  # Example duration
+        self.timeFrameRangeSlider.setValue((20, 80))  # Default selected range
+        self.timeFrameRangeSlider.setFixedHeight(40)
+
+        # Replace placeholder with actual QRangeSlider
+        layout = QVBoxLayout(self.sliderContainer)
+        layout.addWidget(self.timeFrameRangeSlider)
+
+        #self.timeFrameRangeSlider.valueChanged.connect(self.update_time_range)
+
+        #============ FOR ANALYTICS TAB =================
+        
+
         #============ FOR CREATE DATASET TAB ============
-        
         #Disable Maximize Button
         self.setWindowFlag(Qt.WindowMaximizeButtonHint, False)
 
@@ -334,6 +366,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.video_player_thread_analytics = None
 
         if self.video_player_thread_preview is None or not self.video_player_thread_preview.isRunning():
+            self.keypointsOnlyChkBox_Center_analytics.setChecked(False)
+            self.keypointsOnlyChkBox_front_analytics.setChecked(False)
             self.video_player_thread_preview = VideoPlayerThread(center_video_path=center_video_directory,
                                                          front_video_path= front_video_directory,
                                                          main_window=self)
@@ -371,6 +405,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #Just to stop the thread in viewing in order to save some CPU USAGE
         #self.video_player_thread_preview.stop()
         if self.video_player_thread_analytics is None or not self.video_player_thread_analytics.isRunning():
+            self.keypointsOnlyChkBox_Center.setChecked(False)
+            self.keypointsOnlyChkBox_front.setChecked(False)
             self.video_player_thread_analytics = SeekingVideoPlayerThread(center_video_path=center_video_directory,
                                                                            front_video_path=front_video_directory,
                                                                            main_window=self
@@ -457,15 +493,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     THIS AREA IS FOR VIDEO PLAYER THREAD
     '''
     def activate_analytics(self, activation):
+        self.timeFrameRangeSlider.setMaximum(int(len(self.human_pose_results_center)-1))
         self.play_pause_button_video_preview.setEnabled(activation)
         self.analyze_video_button.setEnabled(activation)
     
-
-    def on_slider_moved(self):
-        """Triggered when the slider is moved."""
-        value = self.video_seek_slider.value()
-        self.video_player_thread_analytics.seek_frame(value)
-    
-    def on_slider_clicked(self):
-        self.play_pause_button_analytics.setText("PAUSE")
-        self.video_player_thread_analytics.pause(True) 

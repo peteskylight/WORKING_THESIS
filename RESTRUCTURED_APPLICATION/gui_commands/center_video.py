@@ -77,7 +77,7 @@ class CenterVideo:
     def update_detection_results(self, results_list):
         self.humanDetectionResults = results_list
         self.main_window.human_detect_results_center = results_list
-        self.main_window.video_seek_slider.setMaximum(int(len(results_list)-1))
+        
         print("HUMAN DETECT RESULTS:", len(results_list))
     
     def update_pose_detection_results(self, pose_results):

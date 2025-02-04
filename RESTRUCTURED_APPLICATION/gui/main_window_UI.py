@@ -1,11 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-<<<<<<< Updated upstream:RESTRUCTURED_APPLICATION/gui/main_window_UI.py
-## Form generated from reading UI file 'FINAL-DESIGNMBMWPs.ui'
-=======
-## Form generated from reading UI file 'FINAL-DESIGNaVaBcw.ui'
->>>>>>> Stashed changes:RESTRUCTURED_APPLICATION/gui/UI_widgets.py
+## Form generated from reading UI file 'FINAL-DESIGNKYXGrV.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.8.1
 ##
@@ -31,7 +27,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1284, 720)
+        MainWindow.resize(1280, 720)
         font = QFont()
         font.setPointSize(11)
         MainWindow.setFont(font)
@@ -56,11 +52,12 @@ class Ui_MainWindow(object):
         self.MainTab = QTabWidget(self.centralwidget)
         self.MainTab.setObjectName(u"MainTab")
         self.MainTab.setEnabled(True)
-        self.MainTab.setGeometry(QRect(10, 20, 1271, 641))
+        self.MainTab.setGeometry(QRect(10, 20, 1280, 720))
         font1 = QFont()
         font1.setFamilies([u"Segoe UI"])
         font1.setPointSize(18)
         self.MainTab.setFont(font1)
+        self.MainTab.setAutoFillBackground(False)
         self.MainTab.setStyleSheet(u"border-color: rgb(0, 0, 0);")
         self.MainTab.setTabPosition(QTabWidget.TabPosition.North)
         self.MainTab.setTabShape(QTabWidget.TabShape.Rounded)
@@ -76,11 +73,7 @@ class Ui_MainWindow(object):
         self.groupBox_2.setFont(font2)
         self.frame_7 = QFrame(self.groupBox_2)
         self.frame_7.setObjectName(u"frame_7")
-<<<<<<< Updated upstream:RESTRUCTURED_APPLICATION/gui/main_window_UI.py
         self.frame_7.setGeometry(QRect(10, 180, 231, 291))
-=======
-        self.frame_7.setGeometry(QRect(10, 100, 231, 311))
->>>>>>> Stashed changes:RESTRUCTURED_APPLICATION/gui/UI_widgets.py
         self.frame_7.setFrameShape(QFrame.Shape.Box)
         self.frame_7.setFrameShadow(QFrame.Shadow.Sunken)
         self.frame_7.setLineWidth(1)
@@ -106,51 +99,25 @@ class Ui_MainWindow(object):
         self.behavior_count_freq_chkbox.setFont(font2)
         self.label_20 = QLabel(self.frame_7)
         self.label_20.setObjectName(u"label_20")
-<<<<<<< Updated upstream:RESTRUCTURED_APPLICATION/gui/main_window_UI.py
         self.label_20.setGeometry(QRect(0, 140, 231, 61))
-=======
-        self.label_20.setGeometry(QRect(0, 150, 231, 61))
->>>>>>> Stashed changes:RESTRUCTURED_APPLICATION/gui/UI_widgets.py
         self.label_20.setFont(font3)
         self.label_20.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.behavior_count_link_list_chkbox = QCheckBox(self.frame_7)
         self.behavior_count_link_list_chkbox.setObjectName(u"behavior_count_link_list_chkbox")
-<<<<<<< Updated upstream:RESTRUCTURED_APPLICATION/gui/main_window_UI.py
         self.behavior_count_link_list_chkbox.setGeometry(QRect(10, 200, 181, 51))
         self.behavior_count_link_list_chkbox.setFont(font2)
         self.event_timeline_chkbox = QCheckBox(self.frame_7)
         self.event_timeline_chkbox.setObjectName(u"event_timeline_chkbox")
         self.event_timeline_chkbox.setGeometry(QRect(10, 250, 131, 31))
-=======
-        self.behavior_count_link_list_chkbox.setGeometry(QRect(10, 210, 181, 51))
-        self.behavior_count_link_list_chkbox.setFont(font2)
-        self.event_timeline_chkbox = QCheckBox(self.frame_7)
-        self.event_timeline_chkbox.setObjectName(u"event_timeline_chkbox")
-        self.event_timeline_chkbox.setGeometry(QRect(10, 260, 131, 31))
->>>>>>> Stashed changes:RESTRUCTURED_APPLICATION/gui/UI_widgets.py
         self.event_timeline_chkbox.setFont(font2)
         self.analyze_video_button = QPushButton(self.groupBox_2)
         self.analyze_video_button.setObjectName(u"analyze_video_button")
         self.analyze_video_button.setEnabled(False)
-<<<<<<< Updated upstream:RESTRUCTURED_APPLICATION/gui/main_window_UI.py
         self.analyze_video_button.setGeometry(QRect(10, 480, 231, 101))
-=======
-        self.analyze_video_button.setGeometry(QRect(10, 510, 231, 71))
->>>>>>> Stashed changes:RESTRUCTURED_APPLICATION/gui/UI_widgets.py
         font4 = QFont()
         font4.setPointSize(20)
         font4.setBold(False)
         self.analyze_video_button.setFont(font4)
-<<<<<<< Updated upstream:RESTRUCTURED_APPLICATION/gui/main_window_UI.py
-=======
-        self.play_pause_button_video_preview = QPushButton(self.groupBox_2)
-        self.play_pause_button_video_preview.setObjectName(u"play_pause_button_video_preview")
-        self.play_pause_button_video_preview.setEnabled(False)
-        self.play_pause_button_video_preview.setGeometry(QRect(10, 420, 231, 71))
-        font5 = QFont()
-        font5.setPointSize(20)
-        self.play_pause_button_video_preview.setFont(font5)
->>>>>>> Stashed changes:RESTRUCTURED_APPLICATION/gui/UI_widgets.py
         self.analyze_video_button_2 = QPushButton(self.groupBox_2)
         self.analyze_video_button_2.setObjectName(u"analyze_video_button_2")
         self.analyze_video_button_2.setGeometry(QRect(10, 30, 231, 61))
@@ -164,11 +131,7 @@ class Ui_MainWindow(object):
         self.play_pause_button_video_preview.setFont(font5)
         self.video_preview_label_front = QLabel(self.importVideo)
         self.video_preview_label_front.setObjectName(u"video_preview_label_front")
-<<<<<<< Updated upstream:RESTRUCTURED_APPLICATION/gui/main_window_UI.py
         self.video_preview_label_front.setGeometry(QRect(10, 10, 491, 301))
-=======
-        self.video_preview_label_front.setGeometry(QRect(10, 10, 481, 301))
->>>>>>> Stashed changes:RESTRUCTURED_APPLICATION/gui/UI_widgets.py
         font6 = QFont()
         font6.setPointSize(16)
         font6.setItalic(True)
@@ -278,11 +241,7 @@ class Ui_MainWindow(object):
         self.front_video_human_conf_slider.setTickInterval(5)
         self.center_video_human_conf_slider = QSlider(self.frame_5)
         self.center_video_human_conf_slider.setObjectName(u"center_video_human_conf_slider")
-<<<<<<< Updated upstream:RESTRUCTURED_APPLICATION/gui/main_window_UI.py
         self.center_video_human_conf_slider.setGeometry(QRect(510, 190, 281, 22))
-=======
-        self.center_video_human_conf_slider.setGeometry(QRect(510, 190, 251, 22))
->>>>>>> Stashed changes:RESTRUCTURED_APPLICATION/gui/UI_widgets.py
         self.center_video_human_conf_slider.setMaximum(100)
         self.center_video_human_conf_slider.setSingleStep(5)
         self.center_video_human_conf_slider.setValue(20)
@@ -291,11 +250,7 @@ class Ui_MainWindow(object):
         self.center_video_human_conf_slider.setTickInterval(5)
         self.center_video_keypoint_conf_slider = QSlider(self.frame_5)
         self.center_video_keypoint_conf_slider.setObjectName(u"center_video_keypoint_conf_slider")
-<<<<<<< Updated upstream:RESTRUCTURED_APPLICATION/gui/main_window_UI.py
         self.center_video_keypoint_conf_slider.setGeometry(QRect(510, 240, 281, 22))
-=======
-        self.center_video_keypoint_conf_slider.setGeometry(QRect(510, 240, 251, 22))
->>>>>>> Stashed changes:RESTRUCTURED_APPLICATION/gui/UI_widgets.py
         self.center_video_keypoint_conf_slider.setMaximum(100)
         self.center_video_keypoint_conf_slider.setSingleStep(5)
         self.center_video_keypoint_conf_slider.setValue(20)
@@ -340,23 +295,30 @@ class Ui_MainWindow(object):
         self.label_30.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.keypointsOnlyChkBox_Center = QCheckBox(self.importVideo)
         self.keypointsOnlyChkBox_Center.setObjectName(u"keypointsOnlyChkBox_Center")
-        self.keypointsOnlyChkBox_Center.setGeometry(QRect(700, 10, 141, 20))
+        self.keypointsOnlyChkBox_Center.setGeometry(QRect(830, 10, 141, 20))
         self.keypointsOnlyChkBox_Center.setAutoFillBackground(False)
         self.keypointsOnlyChkBox_front = QCheckBox(self.importVideo)
         self.keypointsOnlyChkBox_front.setObjectName(u"keypointsOnlyChkBox_front")
-        self.keypointsOnlyChkBox_front.setGeometry(QRect(200, 10, 131, 20))
+        self.keypointsOnlyChkBox_front.setGeometry(QRect(330, 10, 101, 20))
         self.keypointsOnlyChkBox_front.setAutoFillBackground(False)
+        self.keypointsOnlyChkBox_front.setChecked(False)
         self.video_preview_label_center = QLabel(self.importVideo)
         self.video_preview_label_center.setObjectName(u"video_preview_label_center")
-<<<<<<< Updated upstream:RESTRUCTURED_APPLICATION/gui/main_window_UI.py
         self.video_preview_label_center.setGeometry(QRect(500, 10, 491, 301))
-=======
-        self.video_preview_label_center.setGeometry(QRect(510, 10, 481, 301))
->>>>>>> Stashed changes:RESTRUCTURED_APPLICATION/gui/UI_widgets.py
         self.video_preview_label_center.setFont(font6)
         self.video_preview_label_center.setFrameShape(QFrame.Shape.WinPanel)
         self.video_preview_label_center.setFrameShadow(QFrame.Shadow.Raised)
         self.video_preview_label_center.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.originalVideoOnlyChkBox_front = QCheckBox(self.importVideo)
+        self.originalVideoOnlyChkBox_front.setObjectName(u"originalVideoOnlyChkBox_front")
+        self.originalVideoOnlyChkBox_front.setGeometry(QRect(200, 10, 131, 20))
+        self.originalVideoOnlyChkBox_front.setAutoFillBackground(False)
+        self.originalVideoOnlyChkBox_front.setChecked(True)
+        self.originalVideoOnlyChkBox_center = QCheckBox(self.importVideo)
+        self.originalVideoOnlyChkBox_center.setObjectName(u"originalVideoOnlyChkBox_center")
+        self.originalVideoOnlyChkBox_center.setGeometry(QRect(700, 10, 131, 20))
+        self.originalVideoOnlyChkBox_center.setAutoFillBackground(False)
+        self.originalVideoOnlyChkBox_center.setChecked(True)
         self.MainTab.addTab(self.importVideo, "")
         self.video_preview_label_center.raise_()
         self.video_preview_label_front.raise_()
@@ -366,6 +328,8 @@ class Ui_MainWindow(object):
         self.label_30.raise_()
         self.keypointsOnlyChkBox_front.raise_()
         self.groupBox_2.raise_()
+        self.originalVideoOnlyChkBox_front.raise_()
+        self.originalVideoOnlyChkBox_center.raise_()
         self.analyticsTab = QWidget()
         self.analyticsTab.setObjectName(u"analyticsTab")
         self.pushButton = QPushButton(self.analyticsTab)
@@ -374,7 +338,7 @@ class Ui_MainWindow(object):
         self.pushButton.setFont(font2)
         self.center_video_preview_label = QLabel(self.analyticsTab)
         self.center_video_preview_label.setObjectName(u"center_video_preview_label")
-        self.center_video_preview_label.setGeometry(QRect(710, 50, 551, 201))
+        self.center_video_preview_label.setGeometry(QRect(710, 50, 551, 191))
         font11 = QFont()
         font11.setPointSize(18)
         font11.setItalic(True)
@@ -395,7 +359,7 @@ class Ui_MainWindow(object):
         self.label_40.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.comboBox = QComboBox(self.analyticsTab)
         self.comboBox.setObjectName(u"comboBox")
-        self.comboBox.setGeometry(QRect(320, 10, 221, 31))
+        self.comboBox.setGeometry(QRect(280, 10, 261, 31))
         font12 = QFont()
         font12.setPointSize(14)
         self.comboBox.setFont(font12)
@@ -418,18 +382,9 @@ class Ui_MainWindow(object):
         self.label_19.setFont(font7)
         self.label_19.setAutoFillBackground(True)
         self.label_19.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.video_seek_slider = QSlider(self.analyticsTab)
-        self.video_seek_slider.setObjectName(u"video_seek_slider")
-        self.video_seek_slider.setGeometry(QRect(20, 550, 961, 31))
-        self.video_seek_slider.setOrientation(Qt.Orientation.Horizontal)
-        self.label_21 = QLabel(self.analyticsTab)
-        self.label_21.setObjectName(u"label_21")
-        self.label_21.setGeometry(QRect(20, 570, 961, 31))
-        self.label_21.setFont(font7)
-        self.label_21.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.graphicsView_events_timeline = QGraphicsView(self.analyticsTab)
         self.graphicsView_events_timeline.setObjectName(u"graphicsView_events_timeline")
-        self.graphicsView_events_timeline.setGeometry(QRect(20, 450, 961, 91))
+        self.graphicsView_events_timeline.setGeometry(QRect(20, 450, 961, 151))
         self.graphicsView_events_timeline.setFrameShape(QFrame.Shape.WinPanel)
         self.graphicsView_events_timeline.setFrameShadow(QFrame.Shadow.Raised)
         brush = QBrush(QColor(0, 0, 0, 255))
@@ -438,23 +393,43 @@ class Ui_MainWindow(object):
         self.play_pause_button_analytics = QPushButton(self.analyticsTab)
         self.play_pause_button_analytics.setObjectName(u"play_pause_button_analytics")
         self.play_pause_button_analytics.setEnabled(False)
-        self.play_pause_button_analytics.setGeometry(QRect(990, 450, 271, 61))
+        self.play_pause_button_analytics.setGeometry(QRect(990, 450, 271, 71))
         font13 = QFont()
         font13.setPointSize(22)
         self.play_pause_button_analytics.setFont(font13)
         self.see_full_data_button = QPushButton(self.analyticsTab)
         self.see_full_data_button.setObjectName(u"see_full_data_button")
-        self.see_full_data_button.setGeometry(QRect(990, 520, 271, 71))
+        self.see_full_data_button.setGeometry(QRect(990, 530, 271, 71))
         self.see_full_data_button.setFont(font13)
         self.heatmap_present_label = QLabel(self.analyticsTab)
         self.heatmap_present_label.setObjectName(u"heatmap_present_label")
-        self.heatmap_present_label.setGeometry(QRect(20, 50, 681, 391))
+        self.heatmap_present_label.setGeometry(QRect(20, 50, 681, 341))
         self.heatmap_present_label.setFont(font6)
         self.heatmap_present_label.setFrameShape(QFrame.Shape.WinPanel)
         self.heatmap_present_label.setFrameShadow(QFrame.Shadow.Raised)
         self.heatmap_present_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.timeFrameContainer = QWidget(self.analyticsTab)
+        self.timeFrameContainer.setObjectName(u"timeFrameContainer")
+        self.timeFrameContainer.setGeometry(QRect(20, 390, 681, 51))
+        self.originalVideoOnlyChkBox_center_analytics = QCheckBox(self.analyticsTab)
+        self.originalVideoOnlyChkBox_center_analytics.setObjectName(u"originalVideoOnlyChkBox_center_analytics")
+        self.originalVideoOnlyChkBox_center_analytics.setGeometry(QRect(900, 50, 131, 31))
+        self.originalVideoOnlyChkBox_center_analytics.setAutoFillBackground(False)
+        self.originalVideoOnlyChkBox_center_analytics.setChecked(True)
+        self.originalVideoOnlyChkBox_front_analytics_2 = QCheckBox(self.analyticsTab)
+        self.originalVideoOnlyChkBox_front_analytics_2.setObjectName(u"originalVideoOnlyChkBox_front_analytics_2")
+        self.originalVideoOnlyChkBox_front_analytics_2.setGeometry(QRect(890, 250, 131, 31))
+        self.originalVideoOnlyChkBox_front_analytics_2.setAutoFillBackground(False)
+        self.originalVideoOnlyChkBox_front_analytics_2.setChecked(True)
+        self.keypointsOnlyChkBox_Center_analytics = QCheckBox(self.analyticsTab)
+        self.keypointsOnlyChkBox_Center_analytics.setObjectName(u"keypointsOnlyChkBox_Center_analytics")
+        self.keypointsOnlyChkBox_Center_analytics.setGeometry(QRect(1030, 49, 141, 31))
+        self.keypointsOnlyChkBox_Center_analytics.setAutoFillBackground(False)
+        self.keypointsOnlyChkBox_front_analytics = QCheckBox(self.analyticsTab)
+        self.keypointsOnlyChkBox_front_analytics.setObjectName(u"keypointsOnlyChkBox_front_analytics")
+        self.keypointsOnlyChkBox_front_analytics.setGeometry(QRect(1030, 250, 141, 31))
+        self.keypointsOnlyChkBox_front_analytics.setAutoFillBackground(False)
         self.MainTab.addTab(self.analyticsTab, "")
-        self.video_seek_slider.raise_()
         self.pushButton.raise_()
         self.center_video_preview_label.raise_()
         self.label_14.raise_()
@@ -462,12 +437,16 @@ class Ui_MainWindow(object):
         self.comboBox.raise_()
         self.front_video_preview_label.raise_()
         self.label_13.raise_()
-        self.label_21.raise_()
         self.graphicsView_events_timeline.raise_()
         self.play_pause_button_analytics.raise_()
         self.see_full_data_button.raise_()
         self.heatmap_present_label.raise_()
         self.label_19.raise_()
+        self.timeFrameContainer.raise_()
+        self.originalVideoOnlyChkBox_center_analytics.raise_()
+        self.originalVideoOnlyChkBox_front_analytics_2.raise_()
+        self.keypointsOnlyChkBox_Center_analytics.raise_()
+        self.keypointsOnlyChkBox_front_analytics.raise_()
         self.createDatasetTab = QWidget()
         self.createDatasetTab.setObjectName(u"createDatasetTab")
         self.cameraComboBox = QComboBox(self.createDatasetTab)
@@ -770,11 +749,7 @@ class Ui_MainWindow(object):
         self.interval_slider.setTickPosition(QSlider.TickPosition.TicksAbove)
         self.interval_label = QLabel(self.groupBox)
         self.interval_label.setObjectName(u"interval_label")
-<<<<<<< Updated upstream:RESTRUCTURED_APPLICATION/gui/main_window_UI.py
         self.interval_label.setGeometry(QRect(230, 360, 41, 41))
-=======
-        self.interval_label.setGeometry(QRect(200, 360, 41, 41))
->>>>>>> Stashed changes:RESTRUCTURED_APPLICATION/gui/UI_widgets.py
         self.interval_label.setFont(font18)
         self.interval_label.setStyleSheet(u"border-color: rgb(0, 0, 0);\n"
 "border-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0, 0, 0, 255), stop:1 rgba(255, 255, 255, 255));")
@@ -794,11 +769,7 @@ class Ui_MainWindow(object):
         self.label_8.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
         self.sequence_label = QLabel(self.groupBox)
         self.sequence_label.setObjectName(u"sequence_label")
-<<<<<<< Updated upstream:RESTRUCTURED_APPLICATION/gui/main_window_UI.py
         self.sequence_label.setGeometry(QRect(230, 430, 41, 41))
-=======
-        self.sequence_label.setGeometry(QRect(200, 430, 41, 41))
->>>>>>> Stashed changes:RESTRUCTURED_APPLICATION/gui/UI_widgets.py
         self.sequence_label.setFont(font18)
         self.sequence_label.setStyleSheet(u"border-color: rgb(0, 0, 0);\n"
 "border-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0, 0, 0, 255), stop:1 rgba(255, 255, 255, 255));")
@@ -958,11 +929,7 @@ class Ui_MainWindow(object):
         self.line_3.raise_()
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-<<<<<<< Updated upstream:RESTRUCTURED_APPLICATION/gui/main_window_UI.py
-        self.menubar.setGeometry(QRect(0, 0, 1284, 26))
-=======
-        self.menubar.setGeometry(QRect(0, 0, 1280, 33))
->>>>>>> Stashed changes:RESTRUCTURED_APPLICATION/gui/UI_widgets.py
+        self.menubar.setGeometry(QRect(0, 0, 1280, 26))
         self.menuARMIS = QMenu(self.menubar)
         self.menuARMIS.setObjectName(u"menuARMIS")
         self.menuARMIS.setStyleSheet(u"border-color: rgb(0, 0, 0);")
@@ -1015,13 +982,8 @@ class Ui_MainWindow(object):
         self.behavior_count_link_list_chkbox.setText(QCoreApplication.translate("MainWindow", u"Behavior Count\n"
 "Frequency [Linked List]", None))
         self.event_timeline_chkbox.setText(QCoreApplication.translate("MainWindow", u"Event Timeline", None))
-<<<<<<< Updated upstream:RESTRUCTURED_APPLICATION/gui/main_window_UI.py
         self.analyze_video_button.setText(QCoreApplication.translate("MainWindow", u"Analyze\n"
 "Footages", None))
-=======
-        self.analyze_video_button.setText(QCoreApplication.translate("MainWindow", u"Analyze Footages", None))
-        self.play_pause_button_video_preview.setText(QCoreApplication.translate("MainWindow", u"PLAY PREVIEW", None))
->>>>>>> Stashed changes:RESTRUCTURED_APPLICATION/gui/UI_widgets.py
         self.analyze_video_button_2.setText(QCoreApplication.translate("MainWindow", u"Record Session", None))
         self.play_pause_button_video_preview.setText(QCoreApplication.translate("MainWindow", u"PLAY PREVIEW", None))
         self.video_preview_label_front.setText(QCoreApplication.translate("MainWindow", u"Import a video to see preview", None))
@@ -1046,6 +1008,8 @@ class Ui_MainWindow(object):
         self.keypointsOnlyChkBox_Center.setText(QCoreApplication.translate("MainWindow", u"Keypoints Only", None))
         self.keypointsOnlyChkBox_front.setText(QCoreApplication.translate("MainWindow", u"Keypoints Only", None))
         self.video_preview_label_center.setText(QCoreApplication.translate("MainWindow", u"Import a video to see preview", None))
+        self.originalVideoOnlyChkBox_front.setText(QCoreApplication.translate("MainWindow", u"Original Video Only", None))
+        self.originalVideoOnlyChkBox_center.setText(QCoreApplication.translate("MainWindow", u"Original Video Only", None))
         self.MainTab.setTabText(self.MainTab.indexOf(self.importVideo), QCoreApplication.translate("MainWindow", u"Import Video", None))
         self.pushButton.setText(QCoreApplication.translate("MainWindow", u"Refresh Heatmap", None))
         self.center_video_preview_label.setText(QCoreApplication.translate("MainWindow", u"Import an Examination Footage First", None))
@@ -1055,10 +1019,13 @@ class Ui_MainWindow(object):
         self.front_video_preview_label.setText(QCoreApplication.translate("MainWindow", u"Import an Examination Footage First", None))
         self.label_13.setText(QCoreApplication.translate("MainWindow", u"Center Video Placement", None))
         self.label_19.setText(QCoreApplication.translate("MainWindow", u"Front Video Placement", None))
-        self.label_21.setText(QCoreApplication.translate("MainWindow", u"Video Seek", None))
         self.play_pause_button_analytics.setText(QCoreApplication.translate("MainWindow", u"PAUSE", None))
         self.see_full_data_button.setText(QCoreApplication.translate("MainWindow", u"SEE FULL DATA", None))
         self.heatmap_present_label.setText(QCoreApplication.translate("MainWindow", u"Heatmap Visualization will be presented here.", None))
+        self.originalVideoOnlyChkBox_center_analytics.setText(QCoreApplication.translate("MainWindow", u"Original Video Only", None))
+        self.originalVideoOnlyChkBox_front_analytics_2.setText(QCoreApplication.translate("MainWindow", u"Original Video Only", None))
+        self.keypointsOnlyChkBox_Center_analytics.setText(QCoreApplication.translate("MainWindow", u"Keypoints Only", None))
+        self.keypointsOnlyChkBox_front_analytics.setText(QCoreApplication.translate("MainWindow", u"Keypoints Only", None))
         self.MainTab.setTabText(self.MainTab.indexOf(self.analyticsTab), QCoreApplication.translate("MainWindow", u"Analytics", None))
         self.label_Camera.setText(QCoreApplication.translate("MainWindow", u"Camera", None))
         self.openCamera.setText(QCoreApplication.translate("MainWindow", u"Open Camera", None))
