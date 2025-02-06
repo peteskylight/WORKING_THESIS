@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1280</width>
-    <height>720</height>
+    <height>713</height>
    </rect>
   </property>
   <property name="font">
@@ -27,8 +27,8 @@
      <rect>
       <x>10</x>
       <y>20</y>
-      <width>1280</width>
-      <height>720</height>
+      <width>1271</width>
+      <height>651</height>
      </rect>
     </property>
     <property name="font">
@@ -50,7 +50,7 @@
      <enum>QTabWidget::TabShape::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <property name="iconSize">
      <size>
@@ -69,9 +69,9 @@
       <property name="geometry">
        <rect>
         <x>1000</x>
-        <y>0</y>
+        <y>10</y>
         <width>251</width>
-        <height>591</height>
+        <height>581</height>
        </rect>
       </property>
       <property name="font">
@@ -86,7 +86,7 @@
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>180</y>
+         <y>190</y>
          <width>231</width>
          <height>291</height>
         </rect>
@@ -245,9 +245,9 @@ Frequency [Linked List]</string>
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>480</y>
+         <y>490</y>
          <width>231</width>
-         <height>101</height>
+         <height>91</height>
         </rect>
        </property>
        <property name="font">
@@ -261,11 +261,11 @@ Frequency [Linked List]</string>
 Footages</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="analyze_video_button_2">
+      <widget class="QPushButton" name="recording_window_button">
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>30</y>
+         <y>40</y>
          <width>231</width>
          <height>61</height>
         </rect>
@@ -287,7 +287,7 @@ Footages</string>
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>100</y>
+         <y>110</y>
          <width>231</width>
          <height>71</height>
         </rect>
@@ -883,41 +883,6 @@ Footages</string>
        <set>Qt::AlignmentFlag::AlignCenter</set>
       </property>
      </widget>
-     <widget class="QCheckBox" name="keypointsOnlyChkBox_Center">
-      <property name="geometry">
-       <rect>
-        <x>830</x>
-        <y>10</y>
-        <width>141</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="autoFillBackground">
-       <bool>false</bool>
-      </property>
-      <property name="text">
-       <string>Keypoints Only</string>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="keypointsOnlyChkBox_front">
-      <property name="geometry">
-       <rect>
-        <x>330</x>
-        <y>10</y>
-        <width>101</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="autoFillBackground">
-       <bool>false</bool>
-      </property>
-      <property name="text">
-       <string>Keypoints Only</string>
-      </property>
-      <property name="checked">
-       <bool>false</bool>
-      </property>
-     </widget>
      <widget class="QLabel" name="video_preview_label_center">
       <property name="geometry">
        <rect>
@@ -946,54 +911,12 @@ Footages</string>
        <set>Qt::AlignmentFlag::AlignCenter</set>
       </property>
      </widget>
-     <widget class="QCheckBox" name="originalVideoOnlyChkBox_front">
-      <property name="geometry">
-       <rect>
-        <x>200</x>
-        <y>10</y>
-        <width>131</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="autoFillBackground">
-       <bool>false</bool>
-      </property>
-      <property name="text">
-       <string>Original Video Only</string>
-      </property>
-      <property name="checked">
-       <bool>true</bool>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="originalVideoOnlyChkBox_center">
-      <property name="geometry">
-       <rect>
-        <x>700</x>
-        <y>10</y>
-        <width>131</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="autoFillBackground">
-       <bool>false</bool>
-      </property>
-      <property name="text">
-       <string>Original Video Only</string>
-      </property>
-      <property name="checked">
-       <bool>true</bool>
-      </property>
-     </widget>
      <zorder>video_preview_label_center</zorder>
      <zorder>video_preview_label_front</zorder>
      <zorder>frame_5</zorder>
      <zorder>label_29</zorder>
-     <zorder>keypointsOnlyChkBox_Center</zorder>
      <zorder>label_30</zorder>
-     <zorder>keypointsOnlyChkBox_front</zorder>
      <zorder>groupBox_2</zorder>
-     <zorder>originalVideoOnlyChkBox_front</zorder>
-     <zorder>originalVideoOnlyChkBox_center</zorder>
     </widget>
     <widget class="QWidget" name="analyticsTab">
      <attribute name="title">
@@ -1306,10 +1229,10 @@ Footages</string>
        <string>Original Video Only</string>
       </property>
       <property name="checked">
-       <bool>true</bool>
+       <bool>false</bool>
       </property>
      </widget>
-     <widget class="QCheckBox" name="originalVideoOnlyChkBox_front_analytics_2">
+     <widget class="QCheckBox" name="originalVideoOnlyChkBox_front_analytics">
       <property name="geometry">
        <rect>
         <x>890</x>
@@ -1325,7 +1248,7 @@ Footages</string>
        <string>Original Video Only</string>
       </property>
       <property name="checked">
-       <bool>true</bool>
+       <bool>false</bool>
       </property>
      </widget>
      <widget class="QCheckBox" name="keypointsOnlyChkBox_Center_analytics">
@@ -1374,7 +1297,7 @@ Footages</string>
      <zorder>label_19</zorder>
      <zorder>timeFrameContainer</zorder>
      <zorder>originalVideoOnlyChkBox_center_analytics</zorder>
-     <zorder>originalVideoOnlyChkBox_front_analytics_2</zorder>
+     <zorder>originalVideoOnlyChkBox_front_analytics</zorder>
      <zorder>keypointsOnlyChkBox_Center_analytics</zorder>
      <zorder>keypointsOnlyChkBox_front_analytics</zorder>
     </widget>
@@ -2933,35 +2856,13 @@ border-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0,
      </widget>
     </widget>
    </widget>
-   <widget class="QLabel" name="label_18">
-    <property name="geometry">
-     <rect>
-      <x>990</x>
-      <y>10</y>
-      <width>271</width>
-      <height>61</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>Gabriola</family>
-      <pointsize>48</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>LearnScope</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
-    </property>
-   </widget>
    <widget class="QLCDNumber" name="timeLCD">
     <property name="geometry">
      <rect>
-      <x>740</x>
+      <x>1090</x>
       <y>10</y>
       <width>161</width>
-      <height>51</height>
+      <height>41</height>
      </rect>
     </property>
     <property name="font">
@@ -2991,10 +2892,10 @@ border-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0,
    <widget class="QLabel" name="label_7">
     <property name="geometry">
      <rect>
-      <x>700</x>
-      <y>0</y>
+      <x>1050</x>
+      <y>10</y>
       <width>31</width>
-      <height>31</height>
+      <height>21</height>
      </rect>
     </property>
     <property name="font">
@@ -3010,10 +2911,10 @@ border-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0,
    <widget class="QLabel" name="date_label">
     <property name="geometry">
      <rect>
-      <x>510</x>
-      <y>0</y>
-      <width>131</width>
-      <height>31</height>
+      <x>800</x>
+      <y>10</y>
+      <width>61</width>
+      <height>20</height>
      </rect>
     </property>
     <property name="font">
@@ -3029,8 +2930,8 @@ border-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0,
    <widget class="QLabel" name="day_label">
     <property name="geometry">
      <rect>
-      <x>510</x>
-      <y>20</y>
+      <x>860</x>
+      <y>10</y>
       <width>211</width>
       <height>41</height>
      </rect>
@@ -3038,7 +2939,7 @@ border-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0,
     <property name="font">
      <font>
       <family>Segoe UI</family>
-      <pointsize>20</pointsize>
+      <pointsize>18</pointsize>
       <italic>false</italic>
      </font>
     </property>
@@ -3102,7 +3003,6 @@ border-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0,
    </widget>
    <zorder>line</zorder>
    <zorder>MainTab</zorder>
-   <zorder>label_18</zorder>
    <zorder>timeLCD</zorder>
    <zorder>label_7</zorder>
    <zorder>date_label</zorder>

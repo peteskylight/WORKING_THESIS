@@ -3,10 +3,15 @@ import numpy as np
 from PySide6.QtGui import QImage, QPixmap
 from PySide6.QtCore import Qt
 
+from pathlib import Path
+
 
 class AnalyticsTab:
     def __init__(self, main_window):
         self.main_window = main_window
+        script_dir = Path(__file__).parent  # Get script's folder
+        image_path = script_dir.parent / "assets" / "SEAT PLAN.png"
+        self.seat_plan_picture = cv2.imread(image_path)
     
 
     def update_frame_for_center_video_label(self, frame, center_starting_y, front_starting_y):
@@ -71,3 +76,16 @@ class AnalyticsTab:
             pixmap = QPixmap.fromImage(q_img)
             scaled_pixmap = pixmap.scaled(self.main_window.front_video_preview_label.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
             self.main_window.front_video_preview_label.setPixmap(scaled_pixmap)
+
+
+
+    def update_heatmap(self, frame):
+        height, width = frame.shape[:2]
+
+        bytes_per_line = 3 * width
+        q_img = QImage(frame.data, width, height, bytes_per_line, QImage.Format_RGB888).rgbSwapped()
+
+        # Set the QImage to the QLabel with aspect ratio maintained and white spaces
+        pixmap = QPixmap.fromImage(q_img)
+        scaled_pixmap = pixmap.scaled(self.main_window.heatmap_present_label.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        self.main_window.heatmap_present_label.setPixmap(scaled_pixmap)

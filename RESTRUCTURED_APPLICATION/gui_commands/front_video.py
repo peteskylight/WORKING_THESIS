@@ -124,48 +124,25 @@ class FrontVideo:
     
     #=== FOR UPDATING FRAMES:
 
-    def update_frame(self, frame):
-        if frame is not None:
-            # Convert the frame from BGR to RGB
-            #frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            
-            height, width = frame.shape
-            bytes_per_line = 3 * width
-            q_img = QImage(frame.data, width, height, bytes_per_line, QImage.Format_RGB888).rgbSwapped()
-
-            # Set the QImage to the QLabel with aspect ratio maintained and white spaces
-            pixmap = QPixmap.fromImage(q_img)
-            scaled_pixmap = pixmap.scaled(self.main_window.video_preview_label_front.size(), Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
-            self.main_window.video_preview_label_front.setPixmap(scaled_pixmap)
-
-
-    def toggle_play_pause(self):
-        """Start, pause, or resume video playback."""
-        if self.video_player_thread is None or not self.video_player_thread.isRunning():
-            self.video_player_thread = VideoPlayerThread(video_path=self.directory,
-                                                        main_window=self.main_window,
-                                                        is_Front=True,
-                                                        target_frame_index=0)
-            self.video_player_thread.frame_signal.connect(self.update_frame)
-            self.video_player_thread.start()
+    def update_frame(self, front_frame):
+        if len(front_frame.shape) == 3:
+            front_video_height, front_video_width, _ = front_frame.shape
         else:
-            self.video_player_thread.pause(not self.video_player_thread.paused) 
+            front_video_height, front_video_width = front_frame.shape
 
-    def pause(self, status):
-        """Pause or resume the video playback."""
-        self.paused = status
+        initial_row_height = int(front_video_height * (4 / 6))  # Bottom 4 rows (adjust as needed)
+
+        cv2.line(img=front_frame, pt1=(0, initial_row_height), pt2=(front_frame.shape[1], initial_row_height),color = (0,255,0), thickness=2)
+
+        bytes_per_line = 3 * front_video_width
+        q_img_front = QImage(front_frame.data, front_video_width, front_video_height, bytes_per_line, QImage.Format_RGB888).rgbSwapped()
+
+        # Set the QImage to the QLabel with aspect ratio maintained and white spaces
+        pixmap_front = QPixmap.fromImage(q_img_front)
+        scaled_pixmap_front = pixmap_front.scaled(self.main_window.video_preview_label_front.size(), Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
+        self.main_window.video_preview_label_front.setPixmap(scaled_pixmap_front)
 
 
-    def start_video(self):
-        if self.video_player_thread is None or not self.video_player_thread.isRunning():
-            self.video_player_thread = VideoPlayerThread(self.directory)
-            self.video_player_thread.frame_signal.connect(self.update_frame)
-            self.video_player_thread.finished.connect(self.cleanup_thread)
-            self.video_player_thread.start()
-
-    def stop_video(self):
-        if self.video_player_thread and self.video_player_thread.isRunning():
-            self.video_player_thread.stop()
 
     def cleanup_thread(self):
         """Called when the thread finishes to release memory."""

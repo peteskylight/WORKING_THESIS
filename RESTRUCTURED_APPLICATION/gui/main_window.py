@@ -21,13 +21,28 @@ from superqt import QRangeSlider
 from ultralytics import YOLO
 
 from utils.drawing_utils import DrawingUtils
-from gui import Ui_MainWindow
+
 from trackers import PoseDetection
 from utils import Tools, VideoUtils, VideoPlayerThread, SeekingVideoPlayerThread
 from gui_commands import (CenterVideo,
                           FrontVideo,
                           CreateDataset,
                           AnalyticsTab)
+
+#UI Design
+from gui import Ui_MainWindow
+
+from PySide6.QtWidgets import QDialog
+
+
+from .recording_window_UI import Ui_RecordingWindow  # Import the UI class
+
+class RecordingWindow(QDialog):  # ✅ Use QDialog instead of QMainWindow
+    def __init__(self):
+        super().__init__()
+        self.ui = Ui_RecordingWindow()
+        self.ui.setupUi(self)  # ✅ Apply UI
+
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
@@ -115,6 +130,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.play_pause_button_video_preview.clicked.connect(self.toggle_play_pause_preview)
 
         self.import_video_button_front.clicked.connect(self.FrontVideo.browse_video)
+
+        self.recording_window_button.clicked.connect(self.open_recording_window)
 
         #=====GET FOOTAGE ANALYTICS
         self.are_videos_ready = False
@@ -381,8 +398,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.play_pause_button_video_preview.setText("PAUSE PREVIEW")
             self.import_video_button_front.setEnabled(True)
             self.import_video_button_center.setEnabled(True)
-            self.video_player_thread_preview.pause(not self.video_player_thread_preview.paused) 
-            
+            self.video_player_thread_preview.pause(not self.video_player_thread_preview.paused)
 
 
     def toggle_play_pause_analytics(self):
@@ -390,9 +406,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         front_video_directory = self.videoDirectory_front.text()
         
         #Just to make sure that the frames that will be shown is not black frames
-
-        self.keypointsOnlyChkBox_Center.setChecked(False)
-        self.keypointsOnlyChkBox_front.setChecked(False)
 
         if self.video_player_thread_preview is not None:
             if self.video_player_thread_preview.isRunning():
@@ -405,8 +418,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #Just to stop the thread in viewing in order to save some CPU USAGE
         #self.video_player_thread_preview.stop()
         if self.video_player_thread_analytics is None or not self.video_player_thread_analytics.isRunning():
-            self.keypointsOnlyChkBox_Center.setChecked(False)
-            self.keypointsOnlyChkBox_front.setChecked(False)
             self.video_player_thread_analytics = SeekingVideoPlayerThread(center_video_path=center_video_directory,
                                                                            front_video_path=front_video_directory,
                                                                            main_window=self
@@ -415,6 +426,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.play_pause_button_analytics.setText("PLAY")
             self.video_player_thread_analytics.frames_signal.connect(self.update_frame_for_analytics)
             self.video_player_thread_analytics.start()
+
+            min_value, max_value = self.timeFrameRangeSlider.value()
+            self.video_player_thread_analytics.current_frame_index = min_value
+            self.video_player_thread_analytics.target_frame_index = min_value
+
         else:
             self.play_pause_button_analytics.setText("PAUSE")
             self.video_player_thread_analytics.pause(not self.video_player_thread_analytics.paused) 
@@ -423,15 +439,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if frame_list is not None:
             center_frame = frame_list[0]
             front_frame = frame_list[1]
+            heatmap_frame = frame_list[2]
 
             self.AnalyticsTab.update_frame_for_center_video_label(frame = center_frame,
                                                                   center_starting_y=self.center_starting_y,
                                                                   front_starting_y=self.front_starting_y)
-            print("NAKAABOT HERE")
+            
             self.AnalyticsTab.update_frame_for_front_video_label(frame=front_frame,
                                                                  starting_y=self.front_starting_y,
                                                                  whole_classroom_height=self.whole_classroom_height
                                                                  )
+
+            self.AnalyticsTab.update_heatmap(frame=heatmap_frame)
+
 
     '''
     THIS AREA IS FOR VIDEO PLAYER THREAD
@@ -441,8 +461,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         This function is for updating the picture on the frames.
         More like key component to show frames and to look like a video
 
-        frame_list[0] - Center Video Frame
-        frame_list[1] - Front Video Frame
         '''
         if frame_list is not None:
             
@@ -455,45 +473,33 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # Convert the frame from BGR to RGB
             #frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-            if len(center_frame.shape) == 3:
-                center_video_height, center_video_width, _ = center_frame.shape
-            else:
-                center_video_height, center_video_width = center_frame.shape
-
-            bytes_per_line = 3 * center_video_width
-            q_img_center = QImage(center_frame.data, center_video_width, center_video_height, bytes_per_line, QImage.Format_RGB888).rgbSwapped()
-
-            # Set the QImage to the QLabel with aspect ratio maintained and white spaces
-            pixmap_center = QPixmap.fromImage(q_img_center)
-            scaled_pixmap_center = pixmap_center.scaled(self.video_preview_label_center.size(), Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
-            self.video_preview_label_center.setPixmap(scaled_pixmap_center)
+            
 
             '''
             THIS AREA IS FOR CENTER FRAME
             '''
-
+            self.CenterVideo.update_frame(center_frame=center_frame)
             '''
             THIS AREA IS FOR FRONT FRAME
             '''
+            self.FrontVideo.update_frame(front_frame=front_frame)
 
-            if len(front_frame.shape) == 3:
-                front_video_height, front_video_width, _ = front_frame.shape
-            else:
-                front_video_height, front_video_width = front_frame.shape
-
-            bytes_per_line = 3 * front_video_width
-            q_img_front = QImage(front_frame.data, front_video_width, front_video_height, bytes_per_line, QImage.Format_RGB888).rgbSwapped()
-
-            # Set the QImage to the QLabel with aspect ratio maintained and white spaces
-            pixmap_front = QPixmap.fromImage(q_img_front)
-            scaled_pixmap_front = pixmap_front.scaled(self.video_preview_label_front.size(), Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
-            self.video_preview_label_front.setPixmap(scaled_pixmap_front)
+            
 
     '''
     THIS AREA IS FOR VIDEO PLAYER THREAD
     '''
+
     def activate_analytics(self, activation):
         self.timeFrameRangeSlider.setMaximum(int(len(self.human_pose_results_center)-1))
         self.play_pause_button_video_preview.setEnabled(activation)
         self.analyze_video_button.setEnabled(activation)
     
+    def open_recording_window(self):
+        self.recording_window_button.setDisabled(True)
+        self.recording_window = RecordingWindow()
+        self.recording_window.finished.connect(self.reenable_recording_button)
+        self.recording_window.show()
+    
+    def reenable_recording_button(self):
+        self.recording_window_button.setDisabled(False)

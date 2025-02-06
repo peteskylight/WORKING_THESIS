@@ -131,61 +131,20 @@ class CenterVideo:
 
     #=== FOR UPDATING FRAMES:
 
-    def update_frame(self, frame):
-        if frame is not None and self.main_window.is_center_video_playing:
-            # Convert the frame from BGR to RGB
-            #frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            
-            height, width = frame.shape
-            bytes_per_line = 3 * width
-            q_img = QImage(frame.data, width, height, bytes_per_line, QImage.Format_RGB888).rgbSwapped()
-
-            # Set the QImage to the QLabel with aspect ratio maintained and white spaces
-            pixmap = QPixmap.fromImage(q_img)
-            scaled_pixmap = pixmap.scaled(self.main_window.video_preview_label_center.size(), Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
-            self.main_window.video_preview_label_center.setPixmap(scaled_pixmap)
-    
-    def show_next_frame(self):
-        if self.video_processor and self.main_window.is_center_video_playing:
-            self.video_processor.frame_processed.connect(self.main_window.update_frame)
-
-    def update_frame_processing(self):
-        fps = self.main_window.fps_loading_rate_slider.value()
-        self.main_window.fps_flider_value = fps
-
-
-    def toggle_play_pause(self):
-        """Start, pause, or resume video playback."""
-        if self.video_player_thread is None or not self.video_player_thread.isRunning():
-            self.video_player_thread = VideoPlayerThread(video_path=self.directory,
-                                                        main_window=self.main_window,
-                                                        is_Front=False,
-                                                        target_frame_index=0)
-            self.video_player_thread.frame_signal.connect(self.update_frame)
-            self.video_player_thread.start()
+    def update_frame(self, center_frame):
+        if len(center_frame.shape) == 3:
+            center_video_height, center_video_width, _ = center_frame.shape
         else:
-            self.video_player_thread.pause(not self.video_player_thread.paused) 
+            center_video_height, center_video_width = center_frame.shape
 
-    def pause(self, status):
-        """Pause or resume the video playback."""
-        self.paused = status
+        bytes_per_line = 3 * center_video_width
+        q_img_center = QImage(center_frame.data, center_video_width, center_video_height, bytes_per_line, QImage.Format_RGB888).rgbSwapped()
 
+        # Set the QImage to the QLabel with aspect ratio maintained and white spaces
+        pixmap_center = QPixmap.fromImage(q_img_center)
+        scaled_pixmap_center = pixmap_center.scaled(self.main_window.video_preview_label_center.size(), Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
+        self.main_window.video_preview_label_center.setPixmap(scaled_pixmap_center)
 
-    def start_video(self):
-        if self.video_player_thread is None or not self.video_player_thread.isRunning():
-            self.video_player_thread = VideoPlayerThread(self.directory)
-            self.video_player_thread.frame_signal.connect(self.update_frame)
-            self.video_player_thread.finished.connect(self.cleanup_thread)
-            self.video_player_thread.start()
-
-    def update_frame(self, qimg):
-        pixmap = QPixmap.fromImage(qimg)
-        scaled_pixmap = pixmap.scaled(self.main_window.video_preview_label_center.size(), Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
-        self.main_window.video_preview_label_center.setPixmap(scaled_pixmap)
-
-    def stop_video(self):
-        if self.video_player_thread and self.video_player_thread.isRunning():
-            self.video_player_thread.stop()
 
     def cleanup_thread(self):
         """Called when the thread finishes to release memory."""

@@ -20,7 +20,7 @@ import cv2
 from PySide6.QtWidgets import QApplication
 from PySide6.QtWidgets import *
 
-from gui import MainWindow
+from gui import MainWindow, Ui_RecordingWindow
  
 if __name__ == "__main__":
     # Check if a QApplication instance already exists
@@ -34,3 +34,5 @@ if __name__ == "__main__":
     window.show()
     sys.exit(app.exec())
         
+
+

@@ -161,16 +161,6 @@
      <pointsize>14</pointsize>
     </font>
    </property>
-   <item>
-    <property name="text">
-     <string>FRONT VIEW CAMERA</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>CENTER VIEW CAMERA</string>
-    </property>
-   </item>
   </widget>
   <widget class="QComboBox" name="center_recording_camera_combo_box">
    <property name="geometry">
@@ -186,16 +176,6 @@
      <pointsize>14</pointsize>
     </font>
    </property>
-   <item>
-    <property name="text">
-     <string>FRONT VIEW CAMERA</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>CENTER VIEW CAMERA</string>
-    </property>
-   </item>
   </widget>
   <widget class="QLabel" name="label_6">
    <property name="geometry">
@@ -284,7 +264,7 @@
     </font>
    </property>
    <property name="text">
-    <string/>
+    <string>YTRY</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
@@ -327,20 +307,6 @@
 RECORDINGS</string>
    </property>
   </widget>
-  <zorder>label_5</zorder>
-  <zorder>center_view_recording_label</zorder>
-  <zorder>front_view_recording_label</zorder>
-  <zorder>stop_recording_videos_button</zorder>
-  <zorder>pushButton_5</zorder>
-  <zorder>front_recording_camera_combo_box</zorder>
-  <zorder>center_recording_camera_combo_box</zorder>
-  <zorder>label_6</zorder>
-  <zorder>label_7</zorder>
-  <zorder>open_center_recording_camera</zorder>
-  <zorder>open_front_recording_camera</zorder>
-  <zorder>fileName_line_edit</zorder>
-  <zorder>start_recording_videos_button</zorder>
-  <zorder>import_recording_button</zorder>
  </widget>
  <resources/>
  <connections/>

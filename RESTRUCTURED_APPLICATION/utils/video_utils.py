@@ -7,6 +7,8 @@ import queue
 import threading
 from PySide6.QtGui import QImage, QPixmap
 
+from pathlib import Path
+
 class VideoUtils:
     
     def __init__(self) -> None:
@@ -502,15 +504,8 @@ class VideoPlayerThread(QThread):
                 center_frame = None
                 front_frame = None
 
-                if self.main_window.keypointsOnlyChkBox_front.isChecked():
-                    front_frame = front_black_frame
-                else:
-                    front_frame = front_video_frame
-
-                if self.main_window.keypointsOnlyChkBox_Center.isChecked():
-                    center_frame = center_black_frame
-                else:
-                    center_frame = center_video_frame
+                front_frame = front_video_frame
+                center_frame = center_video_frame
             
 
                 # height, width, channels = frame.shape
@@ -571,7 +566,11 @@ class SeekingVideoPlayerThread(QThread):
         self.paused = False
 
         self.max_size = 30
+
+
         #Keep preloaded frames here
+
+        self.classroom_heatmap_frames_queue = queue.Queue(maxsize=self.max_size)
 
         self.original_center_video_frame_queue = queue.Queue(maxsize=self.max_size)  
         self.center_video_frame_queue = queue.Queue(maxsize=self.max_size)  
@@ -588,6 +587,13 @@ class SeekingVideoPlayerThread(QThread):
         self.target_frame_index = 0 # Set target frame index
         self.preload_thread = threading.Thread(target=self.preload_frames, daemon=True)
         self.preload_thread.start()  # Start background frame loader
+
+        #For getting the seatplan image hehe
+        script_dir = Path(__file__).parent  # Get script's folder
+        image_path = script_dir.parent / "assets" / "SEAT PLAN.png"
+        self.seat_plan_picture = cv2.imread(image_path)
+        self.seat_plan_picture_previous_frame = None
+        self.isFirstFrame =True
 
         self.skeleton_pairs = [
             (0, 1), (0, 2), (1, 3), (2, 4), (0, 5), (0, 6), (5, 6), 
@@ -674,12 +680,75 @@ class SeekingVideoPlayerThread(QThread):
                 video_frame[int(bbox_y):int(bbox_h), int(bbox_x):int(bbox_w)] = video_cropped_frame
         
         return video_frame, black_frame
+    
+    def drawing_classroom_heatmap(self, frame, results):
+        # Use a cached heatmap to avoid recomputing everything
+        if self.isFirstFrame:
+            self.heatmap_image = self.seat_plan_picture.copy()
+            self.isFirstFrame = False
+        else:
+            self.heatmap_image = frame.copy()
+
+        # Process people in parallel
+        radius = 150
+        gradient_circle = self.create_gradient_circle(radius, (0, 0, 255), 16)  # Precompute once
+
+        for person_id, bbox in results.items():
+            center = (int((bbox[0] + bbox[2]) / 2), int((bbox[1] + bbox[3]) / 2))
+            self.overlay_image_alpha(self.heatmap_image, gradient_circle, (center[0] - radius, center[1] - radius))
+
+        self.seat_plan_picture_previous_frame = self.heatmap_image
+        return self.heatmap_image
+
+
+        # Function to create a gradient circle
+    def create_gradient_circle(self, radius, color, max_alpha):
+        Y, X = np.ogrid[:2*radius, :2*radius]
+        center = radius
+        dist_from_center = np.sqrt((X - center) ** 2 + (Y - center) ** 2)
+
+        alpha = np.clip(max_alpha - (max_alpha * (dist_from_center / radius)), 0, max_alpha).astype(np.uint8)
+
+        # Vectorized assignment
+        gradient_circle = np.zeros((2*radius, 2*radius, 4), dtype=np.uint8)
+        gradient_circle[..., :3] = color  # Set RGB channels
+        gradient_circle[..., 3] = alpha  # Set alpha channel
+
+        return gradient_circle
+
+
+
+    # Function to overlay image with alpha
+    def overlay_image_alpha(self, img, img_overlay, pos):
+        x, y = pos
+        h, w = img_overlay.shape[:2]
+
+        # Compute overlap regions
+        y1, y2 = max(0, y), min(img.shape[0], y + h)
+        x1, x2 = max(0, x), min(img.shape[1], x + w)
+
+        y1o, y2o = max(0, -y), min(h, img.shape[0] - y)
+        x1o, x2o = max(0, -x), min(w, img.shape[1] - x)
+
+        if y1 >= y2 or x1 >= x2 or y1o >= y2o or x1o >= x2o:
+            return
+
+        # Vectorized alpha blending
+        img_overlay_crop = img_overlay[y1o:y2o, x1o:x2o]
+        alpha = img_overlay_crop[..., 3:4] / 255.0  # Keep alpha as (h, w, 1) for broadcasting
+        img[y1:y2, x1:x2, :3] = (alpha * img_overlay_crop[..., :3] +
+                                (1 - alpha) * img[y1:y2, x1:x2, :3]).astype(np.uint8)
+
+
+
 
     def preload_frames(self):
         results = None
         keypoints = None
         center_video_black_frame = None
         front_video_black_frame = None
+        front_classroom_heatmap = None
+        center_classroom_heatmap = None
 
         front_video_results = self.main_window.human_detect_results_front
         front_video_keypoints = self.main_window.human_pose_results_front
@@ -698,6 +767,9 @@ class SeekingVideoPlayerThread(QThread):
                 front_ret, front_frame = self.front_cap.read()
                 center_ret, center_frame = self.center_cap.read()
 
+
+                
+
                 original_front_frame = front_frame.copy()
                 original_center_frame = center_frame.copy()
                 
@@ -706,6 +778,9 @@ class SeekingVideoPlayerThread(QThread):
                 if (not front_ret) or (self.current_frame_index > (max_value-1)):
                     self.center_cap.set(cv2.CAP_PROP_POS_FRAMES, min_value)  # Restart video if it ends
                     self.front_cap.set(cv2.CAP_PROP_POS_FRAMES, min_value)
+
+                    self.seat_plan_picture_previous_frame = self.seat_plan_picture.copy()
+                    self.isFirstFrame = True
 
                     self.current_frame_index = min_value
                     self.target_frame_index = min_value
@@ -742,11 +817,20 @@ class SeekingVideoPlayerThread(QThread):
                                                                                   black_frame=front_video_black_frame,
                                                                                   detections=front_video_results[int(self.current_frame_index)],
                                                                                   actions=front_video_actions[int(self.current_frame_index)])
+                    
+                    #For heatmap
+                    front_classroom_heatmap = self.drawing_classroom_heatmap(frame=self.seat_plan_picture_previous_frame,
+                                                                             results=front_video_results[int(self.current_frame_index)])
+                    
+                    #For center and whole heatmap
+                    center_classroom_heatmap = self.drawing_classroom_heatmap(frame=front_classroom_heatmap,
+                                                                              results=center_video_results[int(self.current_frame_index)])
+
 
                 else:
                     # If not the target frame, skip drawing
-                    self.center_cap.set(cv2.CAP_PROP_POS_FRAMES, self.target_frame_index)
-                    self.front_cap.set(cv2.CAP_PROP_POS_FRAMES, self.target_frame_index)
+                    self.center_cap.set(cv2.CAP_PROP_POS_FRAMES, self.current_frame_index)
+                    self.front_cap.set(cv2.CAP_PROP_POS_FRAMES, self.current_frame_index)
                     self.current_frame_index = self.target_frame_index
                 
                 # Store the frame with the drawn bounding box and keypoints
@@ -755,13 +839,19 @@ class SeekingVideoPlayerThread(QThread):
                     self.center_video_frame_queue.put(center_frame)
                     self.center_video_black_frame_queue.put(center_video_black_frame)
 
+                    
+
+
                 if front_frame is not None and front_video_black_frame is not None:
                     self.original_front_video_frame_queue.put(original_front_frame)
                     self.front_video_frame_queue.put(front_frame)
                     self.front_video_black_frame_queue.put(front_video_black_frame)
 
+                #For heatmap (Can be placed anywhere)
+                self.classroom_heatmap_frames_queue.put(center_classroom_heatmap)
 
-                
+                self.current_frame_index += 1
+                self.target_frame_index +=1
 
         # self.center_cap.release()
         # self.front_cap.release()
@@ -778,50 +868,45 @@ class SeekingVideoPlayerThread(QThread):
                 front_black_frame = self.front_video_black_frame_queue.get()
                 original_front_frame = self.original_front_video_frame_queue.get()
 
+                classroom_heatmap = self.classroom_heatmap_frames_queue.get()
+
                 # if self.current_frame_index == self.target_frame_index:  
                 #     self.frames_signal.emit([center_video_frame, front_video_frame])
 
                 center_frame = None
                 front_frame = None
 
-                if self.main_window.keypointsOnlyChkBox_front.isChecked() or self.main_window.keypointsOnlyChkBox_front_analytics.isChecked():
-                    self.main_window.originalVideoOnlyChkBox_front.setChecked(False)
-                    self.main_window.originalVideoOnlyChkBox_front.setEnabled(False)
+                if self.main_window.keypointsOnlyChkBox_front_analytics.isChecked():
+                    self.main_window.originalVideoOnlyChkBox_front_analytics.setEnabled(False)
                     front_frame = front_black_frame
                 else:
-                    self.main_window.originalVideoOnlyChkBox_front.setEnabled(True)
+                    self.main_window.originalVideoOnlyChkBox_front_analytics.setEnabled(True)
                     front_frame = front_video_frame
 
-                if self.main_window.keypointsOnlyChkBox_Center.isChecked() or self.main_window.keypointsOnlyChkBox_Center_analytics.isChecked():
-                    self.main_window.originalVideoOnlyChkBox_center.setChecked(False)
-                    self.main_window.originalVideoOnlyChkBox_center.setEnabled(False)
+                if self.main_window.keypointsOnlyChkBox_Center_analytics.isChecked():
+                    self.main_window.originalVideoOnlyChkBox_center_analytics.setEnabled(False)
                     center_frame = center_black_frame
                 else:
-                    self.main_window.originalVideoOnlyChkBox_center.setEnabled(True)
+                    self.main_window.originalVideoOnlyChkBox_center_analytics.setEnabled(True)
                     center_frame = center_video_frame
 
-                if self.main_window.originalVideoOnlyChkBox_front.isChecked() or self.main_window.originalVideoOnlyChkBox_front_analytics.isChecked():
-
-                    self.main_window.keypointsOnlyChkBox_front.setChecked(False)
-                    self.main_window.keypointsOnlyChkBox_front.setEnabled(False)
-        
+                if self.main_window.originalVideoOnlyChkBox_front_analytics.isChecked():
+                    self.main_window.keypointsOnlyChkBox_front_analytics.setEnabled(False)
                     front_frame = original_front_frame
                 else:
-                    self.main_window.keypointsOnlyChkBox_front.setEnabled(True)
+                    self.main_window.keypointsOnlyChkBox_front_analytics.setEnabled(True)
                     front_frame = front_video_frame
                 
-                if self.main_window.originalVideoOnlyChkBox_center.isChecked() or self.main_window.originalVideoOnlyChkBox_center_analytics.isChecked():
-                    self.main_window.keypointsOnlyChkBox_Center.setChecked(False)
-                    self.main_window.keypointsOnlyChkBox_Center.setEnabled(False)
+                if self.main_window.originalVideoOnlyChkBox_center_analytics.isChecked():
+                    self.main_window.keypointsOnlyChkBox_Center_analytics.setEnabled(False)
                     center_frame = original_center_frame
                 else:
-                    self.main_window.keypointsOnlyChkBox_Center.setEnabled(True)
+                    self.main_window.keypointsOnlyChkBox_Center_analytics.setEnabled(True)
                     center_frame = center_video_frame
 
-                self.frames_signal.emit([center_frame, front_frame])  # Send frameS to UI displayer/updater
+                self.frames_signal.emit([center_frame, front_frame, classroom_heatmap])  # Send frameS to UI displayer/updater
 
-                self.current_frame_index += 1
-                self.target_frame_index +=1
+                
                 
                 cv2.waitKey(1000//30)  # Play at ~30 FPS
 

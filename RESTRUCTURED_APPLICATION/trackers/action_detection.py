@@ -83,23 +83,50 @@ class ActionDetectionThread(QThread):
         Returns a dictionary with person ID as keys and their predicted actions as values.
         """
         predictions = {}
+
         for person_id, keypoints_sequence in frames_keypoints.items():
-            if len(keypoints_sequence) == self.buffer_size:
-                input_data = np.array([keypoints_sequence])  # Shape (1, 30, 34)
-                #FOR GPU
-                input_tensor = tf.convert_to_tensor(input_data)
-                input_tensor = input_tensor.numpy()
+            # Ensure keypoints_sequence contains exactly 30 valid frames
+            if len(keypoints_sequence) != self.buffer_size:
+                print(f"Warning: Person {person_id} does not have {self.buffer_size} valid frames. Skipping prediction.")
+                predictions[person_id] = "No Action"
+                continue
+
+            # Convert keypoints sequence to numpy array, handling missing or malformed data
+            cleaned_sequence = []
+            for i, keypoints in enumerate(keypoints_sequence):
+                if isinstance(keypoints, (list, np.ndarray)) and np.array(keypoints).shape == (34,):
+                    cleaned_sequence.append(np.array(keypoints))
+                else:
+                    print(f"Warning: Frame {i} for person {person_id} has invalid keypoints. Replacing with zeros.")
+                    cleaned_sequence.append(np.zeros(34))  # Fill invalid keypoints with zeros
+
+            keypoints_array = np.array(cleaned_sequence)  # Ensure uniform shape (30, 34)
+
+            # Final shape validation
+            if keypoints_array.shape != (self.buffer_size, 34):
+                print(f"Error: Unexpected shape {keypoints_array.shape} for person {person_id}. Skipping prediction.")
+                predictions[person_id] = "No Action"
+                continue
+
+            input_data = np.expand_dims(keypoints_array, axis=0)  # Ensure shape is (1, 30, 34)
+
+            try:
+                # Convert to tensor for GPU processing
+                input_tensor = tf.convert_to_tensor(input_data, dtype=tf.float32)
 
                 # Run inference
-
-                prediction = self.action_recognition_model.predict(input_tensor)[0]
-
-                #prediction = self.action_recognition_model.predict(input_data)[0]  # Assuming single output per person
+                prediction = self.action_recognition_model.predict(input_tensor)[0]  # Assuming single output per person
                 predicted_action = np.argmax(prediction)  # Get the action INDEX
 
-                self.translate_action_results = self.actions_list[predicted_action] #GET THE ACTION NAME BASED ON THE INDEX!
+                self.translate_action_results = self.actions_list[predicted_action]  # Get action name
                 predictions[person_id] = self.translate_action_results
+
+            except Exception as e:
+                print(f"Error predicting action for person {person_id}: {e}")
+                predictions[person_id] = "No Action"  # Handle prediction errors gracefully
+
         return predictions
+
     
     def run(self):
         
