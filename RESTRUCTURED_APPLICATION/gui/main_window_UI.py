@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'FINAL-DESIGNHvODJt.ui'
+## Form generated from reading UI file 'FINAL-DESIGNRTkQfZ.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.8.1
 ##

@@ -775,7 +775,14 @@ class SeekingVideoPlayerThread(QThread):
                 
                 min_value, max_value = self.main_window.timeFrameRangeSlider.value()
 
-                if (not front_ret) or (self.current_frame_index > (max_value-1)) or self.isFirstFrame:
+                #Make sure that the videos are starting based on the set range sliders
+                if self.isFirstFrame:
+                    self.center_cap.set(cv2.CAP_PROP_POS_FRAMES, min_value)
+                    self.front_cap.set(cv2.CAP_PROP_POS_FRAMES, min_value)
+                    self.isFirstFrame = False
+                    self.seat_plan_picture_previous_frame = self.seat_plan_picture.copy()
+
+                if (not front_ret) or (self.current_frame_index > (max_value-1)):
                     self.center_cap.set(cv2.CAP_PROP_POS_FRAMES, min_value)  # Restart video if it ends
                     self.front_cap.set(cv2.CAP_PROP_POS_FRAMES, min_value)
 

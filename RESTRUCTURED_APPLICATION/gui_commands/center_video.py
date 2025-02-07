@@ -14,9 +14,9 @@ class CenterVideo:
     def __init__(self, main_window):
         self.main_window = main_window
         
-        self.human_detect_model = "yolov8n.pt"
+        self.human_detect_model = "yolov8m.pt"
         self.human_detect_conf = 0.5
-        self.human_pose_model = "yolov8n-pose.pt"
+        self.human_pose_model = "yolov8m-pose.pt"
         self.human_pose_conf = 0.5
         self.iou_value = 0.3
 

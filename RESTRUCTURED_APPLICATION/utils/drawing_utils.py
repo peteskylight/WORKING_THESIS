@@ -54,73 +54,77 @@ class DrawingUtils:
 
 
 
-class HeatmapWorker(QThread):
-    heatmap_ready = Signal(np.ndarray)  # Signal to send processed heatmap
+from superqt import QRangeSlider
+from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout
+from PySide6.QtGui import QPainter, QPixmap, QImage
+from PySide6.QtCore import Qt
 
-    def __init__(self, seat_plan_picture):
-        super().__init__()
-        self.frame = None
-        self.results = None
-        self.running = True
-        self.seat_plan_picture = seat_plan_picture.copy()
+class ThumbnailRangeSlider(QRangeSlider):
 
-    def run(self):
-        while self.running:
-            if self.frame is not None and self.results is not None:
-                heatmap = self.drawing_classroom_heatmap(self.frame, self.results)
-                self.heatmap_ready.emit(heatmap)  # Send result back to main thread
-                self.frame = None  # Reset frame to avoid unnecessary recomputation
 
-    def process_frame(self, frame, results):
-        """Receives a new frame and results, and processes it in the thread."""
-        self.frame = frame.copy()
-        self.results = results
+    '''
+    THIS FUNCTION IS JUST EME
+    '''
+    def __init__(self, video_path, num_thumbnails=10, *args, **kwargs):
+        """
+        Custom QRangeSlider that overlays video thumbnails in the selected range.
 
-    def stop(self):
-        """Stops the worker thread."""
-        self.running = False
-        self.quit()
-        self.wait()
+        :param video_path: Path to the video file.
+        :param num_thumbnails: Number of thumbnails to extract.
+        """
+        super().__init__(*args, **kwargs)
+        self.video_path = video_path
+        self.num_thumbnails = num_thumbnails
+        self.thumbnails = self.extract_video_thumbnails()
 
-    def drawing_classroom_heatmap(self, frame, results):
-        heatmap_image = self.seat_plan_picture.copy()
+    def extract_video_thumbnails(self):
+        """ Extracts evenly spaced thumbnails from the video. """
+        cap = cv2.VideoCapture(self.video_path)
+        if not cap.isOpened():
+            print("Error: Cannot open video")
+            return []
 
-        radius = 150
-        gradient_circle = self.create_gradient_circle(radius, (255, 0, 0), 16)  # Precompute once
+        total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        frame_interval = total_frames // self.num_thumbnails
+        thumbnails = []
 
-        for _, bbox in results.items():
-            center = (int((bbox[0] + bbox[2]) / 2), int((bbox[1] + bbox[3]) / 2))
-            self.overlay_image_alpha(heatmap_image, gradient_circle, (center[0] - radius, center[1] - radius))
+        for i in range(self.num_thumbnails):
+            frame_index = i * frame_interval
+            cap.set(cv2.CAP_PROP_POS_FRAMES, frame_index)
+            ret, frame = cap.read()
+            if ret:
+                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)  # Convert BGR to RGB
+                height, width, channel = frame.shape
+                bytes_per_line = channel * width
+                qimg = QImage(frame.data, width, height, bytes_per_line, QImage.Format_RGB888)
+                thumbnails.append(QPixmap.fromImage(qimg))
 
-        return heatmap_image
+        cap.release()
+        return thumbnails
 
-    def create_gradient_circle(self, radius, color, max_alpha):
-        Y, X = np.ogrid[:2*radius, :2*radius]
-        center = radius
-        dist_from_center = np.sqrt((X - center) ** 2 + (Y - center) ** 2)
+    def paintEvent(self, event):
+        """ Custom painting of the slider including video thumbnails. """
+        super().paintEvent(event)  # Call base class painting
+        
+        painter = QPainter(self)
+        slider_rect = self.rect()
 
-        alpha = np.clip(max_alpha - (max_alpha * (dist_from_center / radius)), 0, max_alpha).astype(np.uint8)
+        # Get min/max handle positions
+        min_pos, max_pos = self.value()
+        range_min, range_max = self.minimum(), self.maximum()
 
-        gradient_circle = np.zeros((2*radius, 2*radius, 4), dtype=np.uint8)
-        gradient_circle[..., :3] = color
-        gradient_circle[..., 3] = alpha
+        # Convert values to pixel positions
+        min_x = int(slider_rect.width() * (min_pos - range_min) / (range_max - range_min))
+        max_x = int(slider_rect.width() * (max_pos - range_min) / (range_max - range_min))
 
-        return gradient_circle
+        # Draw Thumbnails in the Selected Range
+        if self.thumbnails:
+            num_thumbnails = len(self.thumbnails)
+            thumb_width = (max_x - min_x) // num_thumbnails  # Adjust thumbnail width dynamically
 
-    def overlay_image_alpha(self, img, img_overlay, pos):
-        x, y = pos
-        h, w = img_overlay.shape[:2]
+            for i in range(num_thumbnails):
+                x_pos = min_x + i * thumb_width
+                thumb = self.thumbnails[i].scaled(thumb_width, 30, Qt.KeepAspectRatio)  # Resize thumbnail
+                painter.drawPixmap(x_pos, slider_rect.height() // 2 - 15, thumb)
 
-        y1, y2 = max(0, y), min(img.shape[0], y + h)
-        x1, x2 = max(0, x), min(img.shape[1], x + w)
-
-        y1o, y2o = max(0, -y), min(h, img.shape[0] - y)
-        x1o, x2o = max(0, -x), min(w, img.shape[1] - x)
-
-        if y1 >= y2 or x1 >= x2 or y1o >= y2o or x1o >= x2o:
-            return
-
-        img_overlay_crop = img_overlay[y1o:y2o, x1o:x2o]
-        alpha = img_overlay_crop[..., 3:4] / 255.0
-        img[y1:y2, x1:x2, :3] = (alpha * img_overlay_crop[..., :3] +
-                                  (1 - alpha) * img[y1:y2, x1:x2, :3]).astype(np.uint8)
+        painter.end()

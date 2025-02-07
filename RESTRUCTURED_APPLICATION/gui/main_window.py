@@ -182,6 +182,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.timeFrameRangeSlider.setValue((20, 80))  # Default selected range
         self.timeFrameRangeSlider.setFixedHeight(40)
 
+        
+
         # Replace placeholder with actual QRangeSlider
         layout = QVBoxLayout(self.sliderContainer)
         layout.addWidget(self.timeFrameRangeSlider)
