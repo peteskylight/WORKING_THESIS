@@ -101,9 +101,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.human_detect_conf = 0.5
         self.human_pose_conf = 0.5
         
-        self.human_pose_detection = PoseDetection(humanDetectionModel="yolov8n.pt",
+        self.human_pose_detection = PoseDetection(humanDetectionModel="yolov8x.pt",
                                                   humanDetectConf=self.human_detect_conf,
-                                                  humanPoseModel="yolov8n-pose.pt",
+                                                  humanPoseModel="yolov8x-pose.pt",
                                                   humanPoseConf=self.human_pose_conf)
         
         self.human_detect_results_front = None

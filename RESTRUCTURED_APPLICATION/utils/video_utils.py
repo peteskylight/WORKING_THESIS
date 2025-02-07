@@ -775,7 +775,7 @@ class SeekingVideoPlayerThread(QThread):
                 
                 min_value, max_value = self.main_window.timeFrameRangeSlider.value()
 
-                if (not front_ret) or (self.current_frame_index > (max_value-1)):
+                if (not front_ret) or (self.current_frame_index > (max_value-1)) or self.isFirstFrame:
                     self.center_cap.set(cv2.CAP_PROP_POS_FRAMES, min_value)  # Restart video if it ends
                     self.front_cap.set(cv2.CAP_PROP_POS_FRAMES, min_value)
 
@@ -817,15 +817,23 @@ class SeekingVideoPlayerThread(QThread):
                                                                                   black_frame=front_video_black_frame,
                                                                                   detections=front_video_results[int(self.current_frame_index)],
                                                                                   actions=front_video_actions[int(self.current_frame_index)])
-                    
-                    #For heatmap
-                    front_classroom_heatmap = self.drawing_classroom_heatmap(frame=self.seat_plan_picture_previous_frame,
-                                                                             results=front_video_results[int(self.current_frame_index)])
-                    
-                    #For center and whole heatmap
-                    center_classroom_heatmap = self.drawing_classroom_heatmap(frame=front_classroom_heatmap,
-                                                                              results=center_video_results[int(self.current_frame_index)])
+                    heatmap_frame_threshold = 30
+                    if self.current_frame_index % heatmap_frame_threshold == 0:
+                        #For heatmap
+                        front_classroom_heatmap = self.drawing_classroom_heatmap(frame=self.seat_plan_picture_previous_frame,
+                                                                                results=front_video_results[int(self.current_frame_index)])
+                        
+                        #For center and whole heatmap
+                        center_classroom_heatmap = self.drawing_classroom_heatmap(frame=front_classroom_heatmap,
+                                                                                results=center_video_results[int(self.current_frame_index)])
 
+                        #For heatmap (Can be placed anywhere)
+                        self.classroom_heatmap_frames_queue.put(center_classroom_heatmap)
+                    else:
+                        if self.isFirstFrame:
+                            self.classroom_heatmap_frames_queue.put(self.seat_plan_picture)
+                        else:
+                            self.classroom_heatmap_frames_queue.put(self.seat_plan_picture_previous_frame)
 
                 else:
                     # If not the target frame, skip drawing
@@ -847,9 +855,7 @@ class SeekingVideoPlayerThread(QThread):
                     self.front_video_frame_queue.put(front_frame)
                     self.front_video_black_frame_queue.put(front_video_black_frame)
 
-                #For heatmap (Can be placed anywhere)
-                self.classroom_heatmap_frames_queue.put(center_classroom_heatmap)
-
+                
                 self.current_frame_index += 1
                 self.target_frame_index +=1
 
