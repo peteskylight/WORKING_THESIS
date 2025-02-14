@@ -189,6 +189,7 @@ class VideoProcessorThread(QThread):
                         student_dict[track_id] = track_result
                 else:
                     print("One of the attributes is None:", box.id, box.xyxy, box.cls)
+                    student_dict[track_id] = None
         return student_dict
     
     #Human Pose Detection
@@ -211,6 +212,7 @@ class VideoProcessorThread(QThread):
                         print(f"Error processing track ID {track_id}: {e}")
             except Exception as e:
                 print(f"Error processing track ID {track_id}: {e}")
+                keypoints_dict[track_id] = None
         
         return keypoints_dict
 
@@ -237,7 +239,7 @@ class VideoProcessorThread(QThread):
                 frame = cv2.resize(frame, (1088, 608))
 
             #Get the initial row height
-            self.initial_row_height = int(height * (4 / 6))  # Bottom 4 rows (adjust as needed)
+            self.initial_row_height = int(height * (1/16))  # Bottom 4 rows (adjust as needed)
             
             human_detect_results = self.human_detect(frame)
             human_pose_detect_results = self.human_pose_detect(frame, human_detect_results)
@@ -429,7 +431,7 @@ class VideoPlayerThread(QThread):
                 front_ret, front_frame = self.front_cap.read()
                 center_ret, center_frame = self.center_cap.read()
 
-                if (not front_ret):
+                if (not front_ret) or (not center_ret):
                     self.center_cap.set(cv2.CAP_PROP_POS_FRAMES, 0)  # Restart video if it ends
                     self.front_cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
                     self.current_frame_index = 0
@@ -769,7 +771,7 @@ class SeekingVideoPlayerThread(QThread):
 
 
                 
-
+ 
                 original_front_frame = front_frame.copy()
                 original_center_frame = center_frame.copy()
                 

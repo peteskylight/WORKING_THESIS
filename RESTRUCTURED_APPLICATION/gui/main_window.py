@@ -136,8 +136,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #=====GET FOOTAGE ANALYTICS
         self.are_videos_ready = False
         self.whole_classroom_height = 1080
-        self.front_starting_y = 750
-        self.center_starting_y = 100
+        self.center_video_height = 700
+        self.front_starting_y = 0
+        self.center_starting_y = 0
 
         self.analyze_video_button.clicked.connect(self.switch_to_analytics_tab)
 
@@ -445,7 +446,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             self.AnalyticsTab.update_frame_for_center_video_label(frame = center_frame,
                                                                   center_starting_y=self.center_starting_y,
-                                                                  front_starting_y=self.front_starting_y)
+                                                                  front_starting_y=self.center_video_height)
             
             self.AnalyticsTab.update_frame_for_front_video_label(frame=front_frame,
                                                                  starting_y=self.front_starting_y,
@@ -493,7 +494,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     '''
 
     def activate_analytics(self, activation):
-        self.timeFrameRangeSlider.setMaximum(int(len(self.human_pose_results_center)-1))
+        front_video_directory = self.videoDirectory_front.text()
+        center_video_directory = self.videoDirectory_center.text()
+        
+        front_cap = cv2.VideoCapture(front_video_directory)
+        center_cap = cv2.VideoCapture(center_video_directory)
+
+        front_video_frame_count = int(front_cap.get(cv2.CAP_PROP_FRAME_COUNT))
+
+        center_video_frame_count = int(center_cap.get(cv2.CAP_PROP_FRAME_COUNT))
+
+        if front_video_frame_count > center_video_frame_count:
+            self.timeFrameRangeSlider.setMaximum(int(len(self.human_pose_results_front)-1))
+        else:
+            self.timeFrameRangeSlider.setMaximum(int(len(self.human_pose_results_center)-1))
+
         self.play_pause_button_video_preview.setEnabled(activation)
         self.analyze_video_button.setEnabled(activation)
     

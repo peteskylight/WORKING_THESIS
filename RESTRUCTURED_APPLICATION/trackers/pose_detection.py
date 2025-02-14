@@ -118,7 +118,7 @@ class HumanDetectionThread(QThread):
                 break
 
             height, width, _ = frame.shape
-            initial_row_height = int(height * (4 / 6))  # Bottom 4 rows (adjust as needed)
+            initial_row_height = int(height * (1/16))  # Bottom 4 rows (adjust as needed)
 
             if self.isFront:
                 roi_mask = self.create_roi_mask(frame, initial_row_height)

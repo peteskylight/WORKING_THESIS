@@ -43,9 +43,6 @@ class CenterVideo:
 
     #When browse for center video is clicked
     def browse_video(self):
-
-        self.human_detect_conf = (int(self.main_window.center_video_human_conf_slider.value())/100)
-        self.human_pose_conf = (int(self.main_window.center_video_keypoint_conf_slider.value())/100)
         self.directory, _ = QFileDialog.getOpenFileName(self.main_window, "Select Video File", "", "Video Files (*.mp4 *.avi *.mkv *.mov *.wmv)")
         if self.directory:
             self.main_window.videoDirectory_center.setText(f"{self.directory}")
@@ -109,6 +106,29 @@ class CenterVideo:
         self.main_window.activate_analytics(True)
         
         self.main_window.import_video_button_center.setEnabled(True)
+
+        cap = cv2.VideoCapture(self.directory)
+
+        #Get the frame count
+        frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+
+        #Get the video length
+        # Get the frame rate (frames per second)
+        fps = cap.get(cv2.CAP_PROP_FPS)
+
+        # Calculate the video length in seconds
+        video_length = frame_count / fps
+        
+        # Convert video length to hours, minutes, and seconds
+        hours = int(video_length // 3600)
+        minutes = int((video_length % 3600) // 60)
+        seconds = int(video_length % 60)
+        time_formatted = f"{hours:02}:{minutes:02}:{seconds:02}"
+
+        self.main_window.center_frame_count.setText(str(frame_count))
+        
+        self.main_window.center_video_length.setText(time_formatted)
+        
 
         if self.main_window.is_center_video_ready and self.main_window.is_front_video_ready:
             self.main_window.activate_analytics(True)
