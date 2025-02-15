@@ -14,9 +14,9 @@ class FrontVideo:
     def __init__(self, main_window):
         self.main_window = main_window
         
-        self.human_detect_model = "yolov8m.pt"
+        self.human_detect_model = "yolov8n.pt"
         self.human_detect_conf = 0.5
-        self.human_pose_model = "yolov8m-pose.pt"
+        self.human_pose_model = "yolov8n-pose.pt"
         self.human_pose_conf = 0.5
         self.iou_value = 0.3
 
@@ -33,7 +33,7 @@ class FrontVideo:
         self.video_player_thread = None
 
         self.directory = None
-    
+        self.front_video_processor = None
         self.detection = PoseDetection(humanDetectionModel=self.human_detect_model,
                                                     humanDetectConf= self.human_detect_conf,
                                                     humanPoseModel= self.human_pose_model,
@@ -45,12 +45,18 @@ class FrontVideo:
     def browse_video(self):
         self.directory, _ = QFileDialog.getOpenFileName(self.main_window, "Select Video File", "", "Video Files (*.mp4 *.avi *.mkv *.mov *.wmv)")
         if self.directory:
+            self.returned_frames = []
+            self.humanDetectionResults = []
+            self.action_results_list = []
+            
+            self.main_window.video_player_thread_preview = None
             self.main_window.videoDirectory_front.setText(f"{self.directory}")
             self.start_video_processing(self.directory)
             self.main_window.is_front_video_ready = False
             self.main_window.human_pose_results_front = None
             self.main_window.human_detect_results_front = None
             self.main_window.action_results_list_front = None
+            
             self.main_window.import_video_button_front.setEnabled(False)
 
     
@@ -133,6 +139,7 @@ class FrontVideo:
             self.main_window.activate_analytics(False)
         
         self.front_video_processor.stop()
+        self.front_video_processor = None
     
     def update_progress_bar(self,value):
         self.main_window.importProgressBar_front.setValue(value)

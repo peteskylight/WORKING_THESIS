@@ -517,10 +517,18 @@ class VideoPlayerThread(QThread):
 
                 cv2.waitKey(1000//30)  # Play at ~30 FPS
 
+
     def stop(self):
-        self.running = False
+        """Stops video playback and terminates threads."""
+        self.running = False  # Stop preload loop
         self.quit()
         self.wait()
+        if self.preload_thread.is_alive():
+            self.preload_thread.join()  # Ensure the thread exits cleanly
+
+        self.center_cap.release()
+        self.front_cap.release()
+
 
     def pause(self, status):
         self.paused = status
@@ -801,6 +809,9 @@ class SeekingVideoPlayerThread(QThread):
                 '''
 
                 if self.current_frame_index == self.target_frame_index:  # Draw only for target frame index #
+                    #DEBUGGING
+                    print("CURRENT INDEX: ", self.current_center_video_frame_index)
+                    print("LENGTH OF LIST", len(center_video_results))
                     center_frame, center_video_black_frame = self.drawing_bounding_box(video_frame=center_frame,
                                                                 results=center_video_results[int(self.current_frame_index)])
                     

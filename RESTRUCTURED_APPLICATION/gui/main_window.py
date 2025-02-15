@@ -360,7 +360,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.are_videos_ready = True
             self.play_pause_button_analytics.setEnabled(True)
             self.play_pause_button_analytics.setText("PLAY")
-
+            self.activate_analytics(activation=True)
             self.play_pause_button_video_preview.setText("PLAY PREVIEW")
             self.import_video_button_front.setEnabled(False)
             self.import_video_button_center.setEnabled(False)
@@ -420,7 +420,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         #Just to stop the thread in viewing in order to save some CPU USAGE
         #self.video_player_thread_preview.stop()
-        if self.video_player_thread_analytics is None or not self.video_player_thread_analytics.isRunning():
+        if self.video_player_thread_analytics is None:
             self.video_player_thread_analytics = SeekingVideoPlayerThread(center_video_path=center_video_directory,
                                                                            front_video_path=front_video_directory,
                                                                            main_window=self

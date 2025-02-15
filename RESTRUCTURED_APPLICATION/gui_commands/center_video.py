@@ -14,9 +14,9 @@ class CenterVideo:
     def __init__(self, main_window):
         self.main_window = main_window
         
-        self.human_detect_model = "yolov8m.pt"
+        self.human_detect_model = "yolov8n.pt"
         self.human_detect_conf = 0.5
-        self.human_pose_model = "yolov8m-pose.pt"
+        self.human_pose_model = "yolov8n-pose.pt"
         self.human_pose_conf = 0.5
         self.iou_value = 0.3
 
@@ -45,9 +45,14 @@ class CenterVideo:
     def browse_video(self):
         self.directory, _ = QFileDialog.getOpenFileName(self.main_window, "Select Video File", "", "Video Files (*.mp4 *.avi *.mkv *.mov *.wmv)")
         if self.directory:
+            self.returned_frames = []
+            self.humanDetectionResults = []
+            self.action_results_list = []
             self.main_window.videoDirectory_center.setText(f"{self.directory}")
             self.start_video_processing(self.directory)
             self.main_window.is_center_video_ready = False
+
+            self.main_window.video_player_thread_preview = None
             self.main_window.human_pose_results_center = None
             self.main_window.human_detect_results_center = None
             self.main_window.action_results_list_center = None
@@ -138,7 +143,9 @@ class CenterVideo:
         
         print("CENTER VIDEO READY: ", self.main_window.is_center_video_ready)
         print("FRONT VIDEO READY: ", self.main_window.is_front_video_ready)
+        
         self.video_processor.stop()
+        self.video_processor = None
     
     def update_progress_bar(self,value):
         self.main_window.importProgressBar_center.setValue(value)
