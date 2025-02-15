@@ -80,34 +80,34 @@ class CreateDataset:
 
         try:
             os.makedirs(new_folder_path)
-            QMessageBox.information(self, "Success", "Action folder created successfully.")
+            QMessageBox.information(self.main_window, "Success", "Action folder created successfully.")
             self.scan_directory(directory)
         except Exception as e:
-            QMessageBox.critical(self, "Error", f"An error occurred: {e}")
+            QMessageBox.critical(self.main_window, "Error", f"An error occurred: {e}")
 
     def delete_folder(self):
         directory = self.main_window.directoryLineEdit.text()
         folder_name = self.main_window.action_comboBox.currentText()
 
         if not os.path.isdir(directory):
-            QMessageBox.critical(self, "Error", "The specified directory does not exist. Check the chosen directory")
+            QMessageBox.critical(self.main_window, "Error", "The specified directory does not exist. Check the chosen directory")
             return
 
         folder_path = os.path.join(directory, folder_name)
         if not os.path.exists(folder_path):
-            QMessageBox.critical(self, "Error", "The folder does not exist.")
+            QMessageBox.critical(self.main_window, "Error", "The folder does not exist.")
             return
 
-        reply = QMessageBox.question(self, "Confirm Deletion", f"Are you sure you want to delete the action folder '{folder_name}'?",
+        reply = QMessageBox.question(self.main_window, "Confirm Deletion", f"Are you sure you want to delete the action folder '{folder_name}'?",
                                      QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
 
         if reply == QMessageBox.Yes:
             try:
                 os.rmdir(folder_path)
-                QMessageBox.information(self, "Success", "Folder deleted successfully.")
+                QMessageBox.information(self.main_window, "Success", "Folder deleted successfully.")
                 self.scan_directory(directory)
             except Exception as e:
-                QMessageBox.critical(self, "Error", f"An error occurred: {e}")
+                QMessageBox.critical(self.main_window, "Error", f"An error occurred: {e}")
     
 
     

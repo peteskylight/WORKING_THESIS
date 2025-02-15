@@ -24,5 +24,5 @@ def rename_folders(directory):
         print(f'Renamed "{temp_names[temp_name]}" -> "{index}"')
 
 # Example usage
-directory_path =  r"C:\Users\Bennett\Documents\WORKING_THESIS\Dataset Sample\Raising Left"
+directory_path =  r"C:\Users\Bennett\Documents\WORKING_THESIS\Dataset Sample\Looking Right"
 rename_folders(directory_path)
