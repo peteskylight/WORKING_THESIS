@@ -612,6 +612,69 @@ class SeekingVideoPlayerThread(QThread):
         ]
 
 
+        # Define 4 corresponding points from the center video frame to the heatmap
+
+
+        self.src_pts_center = np.array([
+                            [655,121],  # Top-left
+                            [1939,169],  # Top-right
+                            [105,674],  # Bottom-left
+                            [2477,722]   # Bottom-right
+                        ], dtype=np.float32)
+
+        self.dst_pts_center = np.array([
+                            [0,0],  # Top-left
+                            [1357,0],  # Top-right
+                            [0,293],  # Bottom-left
+                            [1355, 293]   # Bottom-right
+                        ], dtype=np.float32)
+
+        self.H_center, _ = cv2.findHomography(self.src_pts_center, self.dst_pts_center, cv2.RANSAC)
+
+        # Define homography for front video
+        src_pts_front = np.array([
+                            [471, 161],  # Top-left
+                            [2001, 27],  # Top-right
+                            [31, 896],  # Bottom-left
+                            [2516, 792]   # Bottom-right
+                        ], dtype=np.float32)
+
+        dst_pts_front = np.array([
+                        [0,293],  # Top-left
+                        [1355, 293],  # Top-right
+                        [3,593],  # Bottom-left
+                        [1353,591]   # Bottom-right
+                    ], dtype=np.float32)
+
+        self.H_front, _ = cv2.findHomography(src_pts_front, dst_pts_front, cv2.RANSAC)
+
+
+    def extend_frame_width(self,frame: np.ndarray, extension: int = 300) -> np.ndarray:
+        """
+        Extends the width of a given frame by adding black padding on both sides.
+
+        Parameters:
+        frame (np.ndarray): The input frame (1920x1080 expected).
+        extension (int): The number of pixels to extend on each side. Default is 500.
+
+        Returns:
+        np.ndarray: The processed frame with extended width.
+        """
+        height, width, channels = frame.shape
+        
+        # Ensure the input frame is 1920x1080
+        if width != 1920 or height != 1080:
+            raise ValueError("Expected a 1920x1080 frame.")
+        
+        # Create a new black frame with extended width
+        new_width = width + (2 * extension)
+        extended_frame = np.zeros((height, new_width, channels), dtype=np.uint8)
+        
+        # Place the original frame in the center
+        extended_frame[:, extension:extension + width] = frame
+        
+        return extended_frame
+
     def write_action_text(self, frame, black_frame, detections, actions):
         """
         Draw bounding boxes with action labels on each frame.
@@ -691,7 +754,33 @@ class SeekingVideoPlayerThread(QThread):
         
         return video_frame, black_frame
     
-    def drawing_classroom_heatmap(self, frame, results):
+    # def drawing_classroom_heatmap(self, frame, results):
+    #     # Use a cached heatmap to avoid recomputing everything
+    #     if self.isFirstFrame:
+    #         self.heatmap_image = self.seat_plan_picture.copy()
+    #         self.isFirstFrame = False
+    #     else:
+    #         self.heatmap_image = frame.copy()
+
+    #     # Process people in parallel
+    #     radius = 150
+    #     gradient_circle = self.create_gradient_circle(radius, (0, 0, 255), 16)  # Precompute once
+
+    #     for person_id, bbox in results.items():
+    #         center = (int((bbox[0] + bbox[2]) / 2), int((bbox[1] + bbox[3]) / 2))
+    #         self.overlay_image_alpha(self.heatmap_image, gradient_circle, (center[0] - radius, center[1] - radius))
+
+    #     self.seat_plan_picture_previous_frame = self.heatmap_image
+    #     return self.heatmap_image
+
+    def drawing_classroom_heatmap(self, frame, results, H_transform):
+        """
+        Uses homography to transform detected person locations onto the heatmap.
+        Then, overlays a gradient heatmap circle at the transformed location.
+
+        - H_transform: Homography matrix for mapping detections to the heatmap.
+        """
+
         # Use a cached heatmap to avoid recomputing everything
         if self.isFirstFrame:
             self.heatmap_image = self.seat_plan_picture.copy()
@@ -699,15 +788,29 @@ class SeekingVideoPlayerThread(QThread):
         else:
             self.heatmap_image = frame.copy()
 
-        # Process people in parallel
+        #Resize in order to make good homography Transformation
+        self.heatmap_image = self.extend_frame_width()
+
+        # Define the radius and precompute the gradient circle
         radius = 150
-        gradient_circle = self.create_gradient_circle(radius, (0, 0, 255), 16)  # Precompute once
+        gradient_circle = self.create_gradient_circle(radius, (0, 0, 255), 16)
 
         for person_id, bbox in results.items():
-            center = (int((bbox[0] + bbox[2]) / 2), int((bbox[1] + bbox[3]) / 2))
-            self.overlay_image_alpha(self.heatmap_image, gradient_circle, (center[0] - radius, center[1] - radius))
+            x1, y1, x2, y2 = bbox  # Bounding box coordinates
 
+            # Compute the center of the whole bounding box
+            center_point = np.array([[[(x1 + x2) / 2, (y1 + y2) / 2]]], dtype=np.float32)
+
+            # Apply homography transformation
+            transformed_point = cv2.perspectiveTransform(center_point, H_transform)
+            mapped_x, mapped_y = transformed_point[0][0]  # Extract transformed coordinates
+
+            # Overlay the heatmap gradient at the transformed location
+            self.overlay_image_alpha(self.heatmap_image, gradient_circle, (int(mapped_x - radius), int(mapped_y - radius)))
+
+        # Cache the last processed heatmap frame
         self.seat_plan_picture_previous_frame = self.heatmap_image
+
         return self.heatmap_image
 
 
@@ -730,6 +833,9 @@ class SeekingVideoPlayerThread(QThread):
 
     # Function to overlay image with alpha
     def overlay_image_alpha(self, img, img_overlay, pos):
+        """
+        Blends an overlay image (e.g., heatmap) onto another image with transparency.
+        """
         x, y = pos
         h, w = img_overlay.shape[:2]
 
@@ -743,11 +849,12 @@ class SeekingVideoPlayerThread(QThread):
         if y1 >= y2 or x1 >= x2 or y1o >= y2o or x1o >= x2o:
             return
 
-        # Vectorized alpha blending
+        # Alpha blending
         img_overlay_crop = img_overlay[y1o:y2o, x1o:x2o]
         alpha = img_overlay_crop[..., 3:4] / 255.0  # Keep alpha as (h, w, 1) for broadcasting
         img[y1:y2, x1:x2, :3] = (alpha * img_overlay_crop[..., :3] +
                                 (1 - alpha) * img[y1:y2, x1:x2, :3]).astype(np.uint8)
+
 
 
 
@@ -839,15 +946,19 @@ class SeekingVideoPlayerThread(QThread):
                                                                                   actions=front_video_actions[int(self.current_frame_index)])
                     heatmap_frame_threshold = 30
                     if self.current_frame_index % heatmap_frame_threshold == 0:
-                        #For heatmap
-                        front_classroom_heatmap = self.drawing_classroom_heatmap(frame=self.seat_plan_picture_previous_frame,
-                                                                                results=front_video_results[int(self.current_frame_index)])
-                        
-                        #For center and whole heatmap
-                        center_classroom_heatmap = self.drawing_classroom_heatmap(frame=front_classroom_heatmap,
-                                                                                results=center_video_results[int(self.current_frame_index)])
+                        front_classroom_heatmap = self.drawing_classroom_heatmap(
+                            frame=self.seat_plan_picture_previous_frame,
+                            results=front_video_results[int(self.current_frame_index)],
+                            H_transform=self.H_front  # Apply front video homography
+                        )
 
-                        #For heatmap (Can be placed anywhere)
+                        center_classroom_heatmap = self.drawing_classroom_heatmap(
+                            frame=front_classroom_heatmap,
+                            results=center_video_results[int(self.current_frame_index)],
+                            H_transform=self.H_center  # Apply center video homography
+                        )
+
+                        # Store the heatmap in the queue
                         self.classroom_heatmap_frames_queue.put(center_classroom_heatmap)
                     else:
                         if self.isFirstFrame:
@@ -948,28 +1059,3 @@ class SeekingVideoPlayerThread(QThread):
         else:
             self.main_window.play_pause_button_video_preview.setText("PAUSE PREVIEW")
 
-
-    def seek_frame(self, frame_index):
-        """Seeks to a specific frame in the video when the slider is moved."""
-        self.paused = True  # Pause while seeking
-
-        # Update the frame index
-        self.current_frame_index = frame_index
-        self.target_frame_index = frame_index
-
-        # Move the video capture to the requested frame
-        self.center_cap.set(cv2.CAP_PROP_POS_FRAMES, frame_index)
-        self.front_cap.set(cv2.CAP_PROP_POS_FRAMES, frame_index)
-
-        # Clear the frame queues to load new frames from the seek position
-        with self.center_video_frame_queue.mutex:
-            self.center_video_frame_queue.queue.clear()
-        with self.front_video_frame_queue.mutex:
-            self.front_video_frame_queue.queue.clear()
-
-        with self.center_video_black_frame_queue.mutex:
-            self.center_video_black_frame_queue.queue.clear()
-        with self.front_video_black_frame_queue.mutex:
-            self.front_video_black_frame_queue.queue.clear()
-
-        self.paused = False  # Resume after seeking

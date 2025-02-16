@@ -505,9 +505,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         center_video_frame_count = int(center_cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
         if front_video_frame_count > center_video_frame_count:
-            self.timeFrameRangeSlider.setMaximum(int(len(self.human_pose_results_front)-1))
-        else:
             self.timeFrameRangeSlider.setMaximum(int(len(self.human_pose_results_center)-1))
+        else:
+            self.timeFrameRangeSlider.setMaximum(int(len(self.human_pose_results_front)-1))
 
         self.play_pause_button_video_preview.setEnabled(activation)
         self.analyze_video_button.setEnabled(activation)
