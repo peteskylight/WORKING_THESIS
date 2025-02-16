@@ -108,7 +108,7 @@ def main():
     model = r"C:\Users\Bennett\Documents\WORKING_THESIS\RESOURCES\history2.h5"
     actionModel = load_model(model)
 
-    actionsList = np.array(['Looking Left','Looking Right','Raising Left', 'Raising Right'])
+    actionsList = np.array(['Looking Left','Looking Right','Raising Left', 'Raising Right', 'Standing'])
     flattenedKeypoints = np.empty((3, 2), dtype=np.float64)
     sequence = []
     sentence = []
