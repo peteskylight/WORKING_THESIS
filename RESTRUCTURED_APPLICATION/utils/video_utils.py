@@ -216,6 +216,32 @@ class VideoProcessorThread(QThread):
         
         return keypoints_dict
 
+    def extend_frame_width(self,frame: np.ndarray, extension: int = 300) -> np.ndarray:
+        """
+        Extends the width of a given frame by adding black padding on both sides.
+
+        Parameters:
+        frame (np.ndarray): The input frame (1920x1080 expected).
+        extension (int): The number of pixels to extend on each side. Default is 500.
+
+        Returns:
+        np.ndarray: The processed frame with extended width.
+        """
+        height, width, channels = frame.shape
+        
+        # Ensure the input frame is 1920x1080
+        if width != 1920 or height != 1080:
+            raise ValueError("Expected a 1920x1080 frame.")
+        
+        # Create a new black frame with extended width
+        new_width = width + (2 * extension)
+        extended_frame = np.zeros((height, new_width, channels), dtype=np.uint8)
+        
+        # Place the original frame in the center
+        extended_frame[:, extension:extension + width] = frame
+        
+        return extended_frame
+    
     #Main function to run in a thread
     def run(self):
         #Get the video
@@ -226,17 +252,20 @@ class VideoProcessorThread(QThread):
         #Variables for the human detection model
         
         while self._running:
-            ret, frame = cap.read() #Get the frame
+            ret, retrieved_frame = cap.read() #Get the frame
 
+            
+            
             #Safety net if there is no frame anymore
             if not ret:
                 break
-
+            
+            #Extend the frame
+            frame = self.extend_frame_width(frame=retrieved_frame,
+                                            extension=300)
+            
             #Get the shape of the frame
             height, width, _ = frame.shape
-
-            if self.resize_frames:
-                frame = cv2.resize(frame, (1088, 608))
 
             #Get the initial row height
             self.initial_row_height = int(height * (1/16))  # Bottom 4 rows (adjust as needed)
@@ -575,8 +604,7 @@ class SeekingVideoPlayerThread(QThread):
         self.running = True
         self.paused = False
 
-        self.max_size = 30
-
+        self.max_size = 15
 
         #Keep preloaded frames here
 
@@ -649,31 +677,7 @@ class SeekingVideoPlayerThread(QThread):
         self.H_front, _ = cv2.findHomography(src_pts_front, dst_pts_front, cv2.RANSAC)
 
 
-    def extend_frame_width(self,frame: np.ndarray, extension: int = 300) -> np.ndarray:
-        """
-        Extends the width of a given frame by adding black padding on both sides.
-
-        Parameters:
-        frame (np.ndarray): The input frame (1920x1080 expected).
-        extension (int): The number of pixels to extend on each side. Default is 500.
-
-        Returns:
-        np.ndarray: The processed frame with extended width.
-        """
-        height, width, channels = frame.shape
-        
-        # Ensure the input frame is 1920x1080
-        if width != 1920 or height != 1080:
-            raise ValueError("Expected a 1920x1080 frame.")
-        
-        # Create a new black frame with extended width
-        new_width = width + (2 * extension)
-        extended_frame = np.zeros((height, new_width, channels), dtype=np.uint8)
-        
-        # Place the original frame in the center
-        extended_frame[:, extension:extension + width] = frame
-        
-        return extended_frame
+    
 
     def write_action_text(self, frame, black_frame, detections, actions):
         """
@@ -789,7 +793,7 @@ class SeekingVideoPlayerThread(QThread):
             self.heatmap_image = frame.copy()
 
         #Resize in order to make good homography Transformation
-        self.heatmap_image = self.extend_frame_width()
+        #self.heatmap_image = self.extend_frame_width()
 
         # Define the radius and precompute the gradient circle
         radius = 150
@@ -857,7 +861,31 @@ class SeekingVideoPlayerThread(QThread):
 
 
 
+    def extend_frame_width(self,frame: np.ndarray, extension: int = 300) -> np.ndarray:
+        """
+        Extends the width of a given frame by adding black padding on both sides.
 
+        Parameters:
+        frame (np.ndarray): The input frame (1920x1080 expected).
+        extension (int): The number of pixels to extend on each side. Default is 500.
+
+        Returns:
+        np.ndarray: The processed frame with extended width.
+        """
+        height, width, channels = frame.shape
+        
+        # Ensure the input frame is 1920x1080
+        if width != 1920 or height != 1080:
+            raise ValueError("Expected a 1920x1080 frame.")
+        
+        # Create a new black frame with extended width
+        new_width = width + (2 * extension)
+        extended_frame = np.zeros((height, new_width, channels), dtype=np.uint8)
+        
+        # Place the original frame in the center
+        extended_frame[:, extension:extension + width] = frame
+        
+        return extended_frame
 
     def preload_frames(self):
         results = None
@@ -881,11 +909,15 @@ class SeekingVideoPlayerThread(QThread):
 
         while self.running:
             if not self.paused and (not self.center_video_frame_queue.full()):
-                front_ret, front_frame = self.front_cap.read()
-                center_ret, center_frame = self.center_cap.read()
+                front_ret, retrieved_front_frame = self.front_cap.read()
+                center_ret, retrieved_center_frame = self.center_cap.read()
 
-
+                front_frame = self.extend_frame_width(frame=retrieved_front_frame,
+                                                      extension=300)
                 
+                center_frame = self.extend_frame_width(frame=retrieved_center_frame,
+                                                       extension=300)
+            
  
                 original_front_frame = front_frame.copy()
                 original_center_frame = center_frame.copy()
