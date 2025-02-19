@@ -19,6 +19,9 @@ class CreateDataset:
     def start_camera(self):
         selected_index = self.main_window.cameraComboBox.currentIndex()
         self.camera_feed_instance.start_camera(selected_index)
+        #Just for testing Cam
+        FRONT_CAMERA_RTSP_URL = "rtsp://admin:Bennett2432@192.168.1.64:554/stream"
+        self.camera_feed_instance.start_camera(FRONT_CAMERA_RTSP_URL)
     
     def stop_camera(self):
         self.camera_feed_instance.stop_camera()
