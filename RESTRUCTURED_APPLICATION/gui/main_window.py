@@ -30,7 +30,7 @@ from gui_commands import (CenterVideo,
                           AnalyticsTab)
 
 #UI Design
-from gui import Ui_MainWindow
+from gui import Ui_MainWindow,DataChart
 
 from PySide6.QtWidgets import QDialog
 
@@ -364,6 +364,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.play_pause_button_video_preview.setText("PLAY PREVIEW")
             self.import_video_button_front.setEnabled(False)
             self.import_video_button_center.setEnabled(False)
+                # Open the action visualization in a new window
+            self.action_chart_window = ActionVisualization(self.action_results_list_front, self.action_results_list_center)
+            self.action_chart_window.show()
             #self.video_player_thread_preview.pause(True)
         else:
             self.show_warning_message(status_title="Error!",
