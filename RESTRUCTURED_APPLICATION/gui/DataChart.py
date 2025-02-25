@@ -1,8 +1,7 @@
 from PySide6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis
-from PySide6.QtWidgets import QGraphicsScene, QSizePolicy
+from PySide6.QtWidgets import QGraphicsScene, QSizePolicy, QVBoxLayout, QPushButton, QWidget
 from PySide6.QtGui import QPainter, QFont
 from PySide6.QtCore import Qt
-import numpy as np
 
 class ActionVisualization:
     def __init__(self, main_window, action_results_list_front, action_results_list_center, min_time, max_time):
@@ -11,100 +10,117 @@ class ActionVisualization:
         self.min_time = min_time  # Start frame
         self.max_time = max_time  # End frame
         self.main_window = main_window
+        self.action_labels = ["Looking Down", "Looking Forward", "Looking Left", "Looking Right", "Looking Up"]
+        self.active_actions = set(self.action_labels)
 
         # Create chart
         self.chart = QChart()
-        self.chart.setTitle("Concurrent Actions Over Time")
+        self.chart.setTitle("Actions Over Time")
         self.chart.setAnimationOptions(QChart.AnimationOption.AllAnimations)
 
-        # Create series
-        self.series = QLineSeries()
-        self.series.setName("Concurrent Actions")
-
-        # Populate series with data
-        self.populate_chart()
-
-        # Add series to chart
-        self.chart.addSeries(self.series)
+        # Create series for each action
+        self.series_dict = {label: QLineSeries() for label in self.action_labels}
+        for label, series in self.series_dict.items():
+            series.setName(label)
+            self.chart.addSeries(series)
 
         # Configure X-axis (Time in Seconds)
         self.axis_x = QValueAxis()
         self.axis_x.setTitleText("Time (seconds)")
         self.axis_x.setLabelFormat("%.1f")
-        self.axis_x.setRange(self.min_time / 30.0, self.max_time / 30.0)  # Convert frames to seconds
-        self.axis_x.setTickCount(min(10, (self.max_time - self.min_time) // 30 + 1))  # Dynamic tick count
-
+        self.axis_x.setRange(self.min_time / 30.0, self.max_time / 30.0)
+        self.axis_x.setTickCount(min(10, (self.max_time - self.min_time) // 30 + 1))
         font = QFont()
         font.setPointSize(12)
         self.axis_x.setLabelsFont(font)
         self.chart.addAxis(self.axis_x, Qt.AlignmentFlag.AlignBottom)
-        self.series.attachAxis(self.axis_x)
+        
+        for series in self.series_dict.values():
+            series.attachAxis(self.axis_x)
 
-        # Configure Y-axis (Concurrent Actions Count)
+        # Configure Y-axis (Action Counts)
         self.axis_y = QValueAxis()
-        self.axis_y.setTitleText("Concurrent Actions")
-        self.axis_y.setRange(0, max(40, max((p.y() for p in self.series.pointsVector()), default=0) + 5))  # Dynamic range
-        self.axis_y.setTickCount(8)
+        self.axis_y.setTitleText("Action Counts")
+        self.axis_y.setRange(0, 40)
+        self.axis_y.setTickCount(2)
         self.axis_y.setLabelsFont(font)
         self.chart.addAxis(self.axis_y, Qt.AlignmentFlag.AlignLeft)
-        self.series.attachAxis(self.axis_y)
+        
+        for series in self.series_dict.values():
+            series.attachAxis(self.axis_y)
 
         # Set up chart in QGraphicsView
         self.scene = QGraphicsScene()
         self.chart_view = QChartView(self.chart)
         self.chart_view.setRenderHint(QPainter.RenderHint.Antialiasing)
         self.chart_view.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        self.chart_view.setMinimumSize(800, 500)  # Increase chart height
+        self.chart_view.setMinimumSize(800, 600)  # Increase chart height
 
         self.scene.addWidget(self.chart_view)
         self.main_window.DataChart.setScene(self.scene)
         self.chart_view.setMinimumSize(self.main_window.DataChart.size())
 
+        # Create action selection buttons
+        self.button_widget = QWidget()
+        self.button_layout = QVBoxLayout()
+        self.buttons = {}
+        for label in self.action_labels:
+            button = QPushButton(label)
+            button.setCheckable(True)
+            button.setChecked(True)
+            button.clicked.connect(lambda checked, lbl=label: self.toggle_action(lbl, checked))
+            self.button_layout.addWidget(button)
+            self.buttons[label] = button
+        self.button_widget.setLayout(self.button_layout)
+        self.main_window.layout().addWidget(self.button_widget)
+
+        # Connect slider to update chart dynamically
+        self.main_window.timeFrameRangeSlider.valueChanged.connect(self.update_chart)
+        self.populate_chart()
+
     def populate_chart(self):
-        self.series.clear()
-        frame_action_counts = {}
+        for series in self.series_dict.values():
+            series.clear()
 
         for frame_index in range(self.min_time, self.max_time + 1):
             time_value = frame_index / 30.0  # Convert frame index to seconds
-            count_front = len(self.action_results_list_front[frame_index]) if frame_index < len(self.action_results_list_front) else 0
-            count_center = len(self.action_results_list_center[frame_index]) if frame_index < len(self.action_results_list_center) else 0
-            total_concurrent_actions = count_front + count_center
-            frame_action_counts[time_value] = total_concurrent_actions
-            self.series.append(time_value, total_concurrent_actions)
+            combined_counts = {label: 0 for label in self.action_labels}
 
-        print("Frame Action Counts:", frame_action_counts)
+            if frame_index < len(self.action_results_list_front):
+                for action in self.action_results_list_front[frame_index].values():
+                    if action in combined_counts:
+                        combined_counts[action] += 1
+
+            if frame_index < len(self.action_results_list_center):
+                for action in self.action_results_list_center[frame_index].values():
+                    if action in combined_counts:
+                        combined_counts[action] += 1
+
+            for label, series in self.series_dict.items():
+                if label in self.active_actions:
+                    series.append(time_value, combined_counts[label])
 
     def update_chart(self):
-        """ Updates the chart based on the current slider values. """
-        self.series.clear()  # Clear previous points
-
-        # Get updated min and max values from the slider
         self.min_time, self.max_time = self.main_window.timeFrameRangeSlider.value()
+        self.populate_chart()
 
-        frame_action_counts = {}
-
-        for frame_index in range(self.min_time, self.max_time + 1):
-            time_value = frame_index / 30.0  # Convert frame index to seconds
-            count_front = len(self.action_results_list_front[frame_index]) if frame_index < len(self.action_results_list_front) else 0
-            count_center = len(self.action_results_list_center[frame_index]) if frame_index < len(self.action_results_list_center) else 0
-            total_concurrent_actions = count_front + count_center
-            frame_action_counts[time_value] = total_concurrent_actions
-            self.series.append(time_value, total_concurrent_actions)
-
-        # Ensure the series is added to the chart again
-        if self.series not in self.chart.series():
-            self.chart.addSeries(self.series)
-            self.series.attachAxis(self.axis_x)
-            self.series.attachAxis(self.axis_y)
-
-        # Update axis ranges
+        # Reconfigure X-axis dynamically
+        self.chart.removeAxis(self.axis_x)
+        self.axis_x = QValueAxis()
+        self.axis_x.setTitleText("Time (seconds)")
+        self.axis_x.setLabelFormat("%.1f")
         self.axis_x.setRange(self.min_time / 30.0, self.max_time / 30.0)
         self.axis_x.setTickCount(min(10, (self.max_time - self.min_time) // 30 + 1))
+        self.chart.addAxis(self.axis_x, Qt.AlignmentFlag.AlignBottom)
+        
+        for series in self.series_dict.values():
+            series.attachAxis(self.axis_x)
 
-        max_y_value = max(40, max((p.y() for p in self.series.pointsVector()), default=0) + 5)
-        self.axis_y.setRange(0, max_y_value)
-
-        print("Updated Frame Action Counts:", frame_action_counts)
-
-        # Force chart to update
         self.chart.update()
+
+    def toggle_action(self, action, checked):
+        if checked:
+            self.active_actions.add(action)
+        else:
+            self.active_actions.discard(action)
+        self.populate_chart()
