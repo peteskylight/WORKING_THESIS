@@ -42,7 +42,9 @@ class CameraFeed:
 
 
     def start_camera(self, index):
-        self.cap = cv2.VideoCapture(index)  
+        self.cap = cv2.VideoCapture(index) 
+        self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 0) 
+
         self.timer.start(10)  # Keep the camera feed timer at 10 milliseconds
         self.countdown_timer.start(1000)  # Set the countdown timer to 1000 milliseconds (1 second)
 

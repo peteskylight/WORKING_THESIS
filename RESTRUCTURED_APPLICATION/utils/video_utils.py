@@ -93,9 +93,14 @@ class VideoProcessorThread(QThread):
        (Inside the loop)
         4. Get the frame
         5. Detect humans in the frame
-        6. Append the results in the human_detect_results_list
+        detected_human = [{Person1: 4 Corners; Person2: 4corners}]
+
+        6. Append the results in the human_detect_results_list - GLOBAL
+
         7. Detect the keypoints in the frame based on the results of the cropped image in the human_detect_results_list
+
         8. Append the results in the human_pose_results_list
+        
         9. Update the progress
     (Outside the loop)
     10. Emit the signals with the results

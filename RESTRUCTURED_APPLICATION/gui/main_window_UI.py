@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'FINAL-DESIGNeDaaiq.ui'
+## Form generated from reading UI file 'MAIN-WINDOW-FINAL-DESIGNQegajL.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.8.1
 ##
@@ -345,14 +345,14 @@ class Ui_MainWindow(object):
         self.label_19.setFont(font7)
         self.label_19.setAutoFillBackground(True)
         self.label_19.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.graphicsView_events_timeline = QGraphicsView(self.analyticsTab)
-        self.graphicsView_events_timeline.setObjectName(u"graphicsView_events_timeline")
-        self.graphicsView_events_timeline.setGeometry(QRect(20, 450, 681, 151))
-        self.graphicsView_events_timeline.setFrameShape(QFrame.Shape.WinPanel)
-        self.graphicsView_events_timeline.setFrameShadow(QFrame.Shadow.Raised)
+        self.DataChart = QGraphicsView(self.analyticsTab)
+        self.DataChart.setObjectName(u"DataChart")
+        self.DataChart.setGeometry(QRect(20, 450, 681, 151))
+        self.DataChart.setFrameShape(QFrame.Shape.WinPanel)
+        self.DataChart.setFrameShadow(QFrame.Shadow.Raised)
         brush = QBrush(QColor(0, 0, 0, 255))
         brush.setStyle(Qt.NoBrush)
-        self.graphicsView_events_timeline.setBackgroundBrush(brush)
+        self.DataChart.setBackgroundBrush(brush)
         self.play_pause_button_analytics = QPushButton(self.analyticsTab)
         self.play_pause_button_analytics.setObjectName(u"play_pause_button_analytics")
         self.play_pause_button_analytics.setEnabled(False)
@@ -400,7 +400,7 @@ class Ui_MainWindow(object):
         self.comboBox.raise_()
         self.front_video_preview_label.raise_()
         self.label_13.raise_()
-        self.graphicsView_events_timeline.raise_()
+        self.DataChart.raise_()
         self.play_pause_button_analytics.raise_()
         self.see_full_data_button.raise_()
         self.heatmap_present_label.raise_()

@@ -22,6 +22,8 @@ from ultralytics import YOLO
 
 from utils.drawing_utils import DrawingUtils
 
+
+
 from trackers import PoseDetection
 from utils import Tools, VideoUtils, VideoPlayerThread, SeekingVideoPlayerThread
 from gui_commands import (CenterVideo,
@@ -30,7 +32,9 @@ from gui_commands import (CenterVideo,
                           AnalyticsTab)
 
 #UI Design
-from gui import Ui_MainWindow,DataChart
+from gui import Ui_MainWindow
+
+
 
 from PySide6.QtWidgets import QDialog
 
@@ -352,8 +356,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         msg_box.setStandardButtons(QMessageBox.Ok)
         msg_box.exec()
 
-    #Switch to analytics tab
     def switch_to_analytics_tab(self):
+        from gui import ActionVisualization
+        
         if (self.is_center_video_ready and self.is_front_video_ready) is not None:
             self.toggle_analytics_tab()
             self.MainTab.setCurrentIndex(1)
@@ -364,10 +369,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.play_pause_button_video_preview.setText("PLAY PREVIEW")
             self.import_video_button_front.setEnabled(False)
             self.import_video_button_center.setEnabled(False)
-                # Open the action visualization in a new window
-            self.action_chart_window = ActionVisualization(self.action_results_list_front, self.action_results_list_center)
-            self.action_chart_window.show()
-            #self.video_player_thread_preview.pause(True)
+
+            min_value, max_value = self.timeFrameRangeSlider.value()
+
+            # Integrate chart into QGraphicsView instead of a separate window
+            self.action_chart = ActionVisualization(main_window=self,
+                                                    action_results_list_front=self.action_results_list_front,
+                                                    action_results_list_center=self.action_results_list_center,
+                                                    min_time=min_value,
+                                                    max_time=max_value)
         else:
             self.show_warning_message(status_title="Error!",
                                       message= "Please import a complete set of footages.")
