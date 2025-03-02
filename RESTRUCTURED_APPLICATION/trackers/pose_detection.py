@@ -16,10 +16,10 @@ class PoseDetection:
         self.human_detection_conf = humanDetectConf
         self.human_pose_model = YOLO(humanPoseModel)
         # if USE_TENSORRT:
-        # self.human_detection_model.to('cuda')  # Move model to GPU
-        # self.human_detection_model.half()
-        # self.human_pose_model.to('cuda')  # Move model to GPU
-        # self.human_pose_model.half()
+        self.human_detection_model.to('cuda')  # Move model to GPU
+        self.human_detection_model.half()
+        self.human_pose_model.to('cuda')  # Move model to GPU
+        self.human_pose_model.half()
         self.human_pose_conf = humanPoseConf
     
         self.drawing_utils = DrawingUtils()
@@ -93,7 +93,7 @@ class HumanDetectionThread(QThread):
     human_track_results = Signal(object)
     human_detection_progress_update = Signal(object)
 
-    def __init__(self, video_frames, isFront=True, humanDetectionModel='yolov8n.pt', humanDetectConf=0.5):
+    def __init__(self, video_frames, isFront=True, humanDetectionModel='yolov8m.pt', humanDetectConf=0.5):
         super().__init__()
         self.video_frames = video_frames  # List of frames to process
         self.isFront = isFront

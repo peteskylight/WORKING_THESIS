@@ -10,7 +10,7 @@ class ActionVisualization:
         self.min_time = min_time  # Start frame
         self.max_time = max_time  # End frame
         self.main_window = main_window
-        self.action_labels = ["Looking Down", "Looking Forward", "Looking Left", "Looking Right", "Looking Up"]
+        self.action_labels = ['Extending Right Arm', 'Standing', 'Sitting']
         self.active_actions = set(self.action_labels)
 
         # Create chart
