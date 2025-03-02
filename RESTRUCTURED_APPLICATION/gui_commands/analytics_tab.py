@@ -2,16 +2,88 @@ import cv2
 import numpy as np
 from PySide6.QtGui import QImage, QPixmap
 from PySide6.QtCore import Qt
-
+from PySide6.QtWidgets import QPushButton, QVBoxLayout, QWidget
 from pathlib import Path
 
 
 class AnalyticsTab:
     def __init__(self, main_window):
-        self.main_window = main_window
-        script_dir = Path(__file__).parent  # Get script's folder
-        image_path = script_dir.parent / "assets" / "SEAT PLAN.png"
-        self.seat_plan_picture = cv2.imread(image_path)
+            self.main_window = main_window
+            script_dir = Path(__file__).parent  # Get script's folder
+            image_path = script_dir.parent / "assets" / "SEAT PLAN.png"
+            self.seat_plan_picture = cv2.imread(str(image_path))
+            
+            self.selected_action = "Extending Right Arm"
+            self.action_labels = ['Extending Right Arm', 'Standing', 'Sitting']
+            
+            # Create UI for action selection
+            self.button_widget = QWidget()
+            self.button_layout = QVBoxLayout()
+            self.buttons = {}
+            
+            for label in self.action_labels:
+                button = QPushButton(label)
+                button.setCheckable(True)
+                button.setChecked(label == self.selected_action)
+                button.clicked.connect(self.create_button_callback(label))
+                self.button_layout.addWidget(button)
+                self.buttons[label] = button
+            
+            self.button_widget.setLayout(self.button_layout)
+            self.main_window.heatmap_controls_layout.addWidget(self.button_widget)
+    
+    def create_button_callback(self, label):
+        def callback():
+            self.update_selected_action(label)
+        return callback
+    
+    def update_selected_action(self, action):
+        self.selected_action = action
+        for label, button in self.buttons.items():
+            button.setChecked(label == action)
+        self.update_heatmap_display()
+    
+    def update_heatmap_display(self):
+        print(f"Updating heatmap for action: {self.selected_action}")
+        heatmap = self.seat_plan_picture.copy()
+        
+        grid_counts = {}
+        
+        for frame in self.main_window.human_detect_results_front:
+            for person_id, action in frame.items():
+                if action == self.selected_action:
+                    if person_id not in grid_counts:
+                        grid_counts[person_id] = 0
+                    grid_counts[person_id] += 1
+        
+        max_count = max(grid_counts.values()) if grid_counts else 1
+        
+        for person_id, count in grid_counts.items():
+            intensity = int((count / max_count) * 255)
+            color = (0, 0, intensity)
+            x, y, w, h = self.get_person_coordinates(person_id)
+            cv2.rectangle(heatmap, (x, y), (x + w, y + h), color, -1)
+        
+        self.update_heatmap(heatmap)
+    
+    def get_person_coordinates(self, person_id):
+        # Placeholder function for getting coordinates based on person_id
+        # Replace this with the actual mapping logic
+        x = (person_id * 20) % self.seat_plan_picture.shape[1]
+        y = (person_id * 15) % self.seat_plan_picture.shape[0]
+        w, h = 50, 50  # Example bounding box size
+        return x, y, w, h
+    
+    def update_heatmap(self, frame):
+        height, width = frame.shape[:2]
+        bytes_per_line = 3 * width
+        q_img = QImage(frame.data, width, height, bytes_per_line, QImage.Format_RGB888).rgbSwapped()
+        
+        # Set the QImage to the QLabel with aspect ratio maintained
+        pixmap = QPixmap.fromImage(q_img)
+        scaled_pixmap = pixmap.scaled(self.main_window.heatmap_present_label.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        self.main_window.heatmap_present_label.setPixmap(scaled_pixmap)
+
     
     def remove_extended_width(self, frame: np.ndarray, extension: int = 500) -> np.ndarray:
         """

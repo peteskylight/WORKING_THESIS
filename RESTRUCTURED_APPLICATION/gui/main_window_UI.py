@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'MAIN-WINDOW-FINAL-DESIGNQegajL.ui'
+## Form generated from reading UI file 'MAIN-WINDOW-FINAL-DESIGNTmrlIR.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.8.1
 ##
@@ -826,6 +826,15 @@ class Ui_MainWindow(object):
         self.label_6.setGeometry(QRect(930, 10, 81, 16))
         self.label_6.setFont(font24)
         self.MainTab.addTab(self.createDatasetTab, "")
+        self.tab = QWidget()
+        self.tab.setObjectName(u"tab")
+        self.MainTab.addTab(self.tab, "")
+        self.tab2 = QWidget()
+        self.tab2.setObjectName(u"tab2")
+        self.MainTab.addTab(self.tab2, "")
+        self.tab_2 = QWidget()
+        self.tab_2.setObjectName(u"tab_2")
+        self.MainTab.addTab(self.tab_2, "")
         self.timeLCD = QLCDNumber(self.centralwidget)
         self.timeLCD.setObjectName(u"timeLCD")
         self.timeLCD.setGeometry(QRect(1090, 10, 161, 41))
@@ -860,22 +869,12 @@ class Ui_MainWindow(object):
         self.line.setLineWidth(2)
         self.line.setFrameShape(QFrame.Shape.HLine)
         self.line.setFrameShadow(QFrame.Shadow.Sunken)
-        self.line_2 = QFrame(self.centralwidget)
-        self.line_2.setObjectName(u"line_2")
-        self.line_2.setGeometry(QRect(463, 10, 51, 51))
-        self.line_2.setFrameShadow(QFrame.Shadow.Raised)
-        self.line_2.setLineWidth(1)
-        self.line_2.setFrameShape(QFrame.Shape.VLine)
         self.line_3 = QFrame(self.centralwidget)
         self.line_3.setObjectName(u"line_3")
         self.line_3.setGeometry(QRect(1240, 10, 41, 51))
         self.line_3.setFrameShadow(QFrame.Shadow.Raised)
         self.line_3.setLineWidth(1)
         self.line_3.setFrameShape(QFrame.Shape.VLine)
-        self.date_label_2 = QLabel(self.centralwidget)
-        self.date_label_2.setObjectName(u"date_label_2")
-        self.date_label_2.setGeometry(QRect(510, 10, 91, 20))
-        self.date_label_2.setFont(font24)
         MainWindow.setCentralWidget(self.centralwidget)
         self.line.raise_()
         self.MainTab.raise_()
@@ -883,9 +882,7 @@ class Ui_MainWindow(object):
         self.label_7.raise_()
         self.date_label.raise_()
         self.day_label.raise_()
-        self.line_2.raise_()
         self.line_3.raise_()
-        self.date_label_2.raise_()
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
         self.menubar.setGeometry(QRect(0, 0, 1280, 26))
@@ -914,7 +911,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.MainTab.setCurrentIndex(1)
+        self.MainTab.setCurrentIndex(3)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -1024,10 +1021,12 @@ class Ui_MainWindow(object):
         self.fps_label.setText(QCoreApplication.translate("MainWindow", u"--", None))
         self.label_6.setText(QCoreApplication.translate("MainWindow", u"RAM Usage", None))
         self.MainTab.setTabText(self.MainTab.indexOf(self.createDatasetTab), QCoreApplication.translate("MainWindow", u"Create Dataset", None))
+        self.MainTab.setTabText(self.MainTab.indexOf(self.tab), QCoreApplication.translate("MainWindow", u"Vis1", None))
+        self.MainTab.setTabText(self.MainTab.indexOf(self.tab2), QCoreApplication.translate("MainWindow", u"Vis2", None))
+        self.MainTab.setTabText(self.MainTab.indexOf(self.tab_2), QCoreApplication.translate("MainWindow", u"Page", None))
         self.label_7.setText(QCoreApplication.translate("MainWindow", u"Time:", None))
         self.date_label.setText(QCoreApplication.translate("MainWindow", u"Today is:", None))
         self.day_label.setText(QCoreApplication.translate("MainWindow", u"--", None))
-        self.date_label_2.setText(QCoreApplication.translate("MainWindow", u"Session Name:", None))
         self.menuARMIS.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
         self.menuView.setTitle(QCoreApplication.translate("MainWindow", u"View", None))
     # retranslateUi

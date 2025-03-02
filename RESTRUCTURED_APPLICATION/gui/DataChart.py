@@ -1,5 +1,5 @@
 from PySide6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis
-from PySide6.QtWidgets import QGraphicsScene, QSizePolicy, QVBoxLayout, QPushButton, QWidget
+from PySide6.QtWidgets import QGraphicsScene, QSizePolicy, QVBoxLayout, QPushButton, QWidget, QHBoxLayout
 from PySide6.QtGui import QPainter, QFont
 from PySide6.QtCore import Qt
 
@@ -54,15 +54,13 @@ class ActionVisualization:
         self.chart_view = QChartView(self.chart)
         self.chart_view.setRenderHint(QPainter.RenderHint.Antialiasing)
         self.chart_view.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        self.chart_view.setMinimumSize(800, 600)  # Increase chart height
-
+        self.chart_view.setFixedSize(681, 120)  # Adjust height to fit buttons
+        
         self.scene.addWidget(self.chart_view)
-        self.main_window.DataChart.setScene(self.scene)
-        self.chart_view.setMinimumSize(self.main_window.DataChart.size())
-
+        
         # Create action selection buttons
         self.button_widget = QWidget()
-        self.button_layout = QVBoxLayout()
+        self.button_layout = QHBoxLayout()
         self.buttons = {}
         for label in self.action_labels:
             button = QPushButton(label)
@@ -72,7 +70,11 @@ class ActionVisualization:
             self.button_layout.addWidget(button)
             self.buttons[label] = button
         self.button_widget.setLayout(self.button_layout)
-        self.main_window.layout().addWidget(self.button_widget)
+        self.button_widget.setFixedSize(681, 30)
+        self.scene.addWidget(self.button_widget)
+        self.button_widget.move(0, 125)  # Position buttons below the chart
+        
+        self.main_window.DataChart.setScene(self.scene)
 
         # Connect slider to update chart dynamically
         self.main_window.timeFrameRangeSlider.valueChanged.connect(self.update_chart)
