@@ -16,10 +16,10 @@ class PoseDetection:
         self.human_detection_conf = humanDetectConf
         self.human_pose_model = YOLO(humanPoseModel)
         # if USE_TENSORRT:
-        self.human_detection_model.to('cuda')  # Move model to GPU
-        self.human_detection_model.half()
-        self.human_pose_model.to('cuda')  # Move model to GPU
-        self.human_pose_model.half()
+        # self.human_detection_model.to('cuda')  # Move model to GPU
+        # self.human_detection_model.half()
+        # self.human_pose_model.to('cuda')  # Move model to GPU
+        # self.human_pose_model.half()
         self.human_pose_conf = humanPoseConf
     
         self.drawing_utils = DrawingUtils()
