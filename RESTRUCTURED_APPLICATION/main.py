@@ -15,6 +15,8 @@ THESIS ADVISER: DR. JEFFREY S. SARMIENTO
 
 '''
 
+# AUTHOR: PETER JUSTIN E. DATINGALING 
+
 import sys
 import cv2
 from PySide6.QtWidgets import QApplication
