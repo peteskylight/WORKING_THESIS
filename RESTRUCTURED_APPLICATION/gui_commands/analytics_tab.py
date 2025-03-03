@@ -2,36 +2,65 @@ import cv2
 import numpy as np
 from PySide6.QtGui import QImage, QPixmap
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QPushButton, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QPushButton, QVBoxLayout, QWidget,QCheckBox
 from pathlib import Path
 
 
 class AnalyticsTab:
     def __init__(self, main_window):
-            self.main_window = main_window
-            script_dir = Path(__file__).parent  # Get script's folder
-            image_path = script_dir.parent / "assets" / "SEAT PLAN.png"
-            self.seat_plan_picture = cv2.imread(str(image_path))
-            
-            self.selected_action = "Extending Right Arm"
-            self.action_labels = ['Extending Right Arm', 'Standing', 'Sitting']
-            
-            # Create UI for action selection
-            self.button_widget = QWidget()
-            self.button_layout = QVBoxLayout()
-            self.buttons = {}
-            
-            for label in self.action_labels:
-                button = QPushButton(label)
-                button.setCheckable(True)
-                button.setChecked(label == self.selected_action)
-                button.clicked.connect(self.create_button_callback(label))
-                self.button_layout.addWidget(button)
-                self.buttons[label] = button
-            
-            self.button_widget.setLayout(self.button_layout)
-            self.main_window.heatmap_controls_layout.addWidget(self.button_widget)
-    
+        self.main_window = main_window
+        script_dir = Path(__file__).parent  # Get script's folder
+        image_path = script_dir.parent / "assets" / "SEAT PLAN.png"
+        self.seat_plan_picture = cv2.imread(str(image_path))
+
+        self.selected_actions = set()  # Store selected actions
+        self.action_labels = ["Sitting", "Standing", "Extending Right Arm"]
+
+        # Create UI for action selection
+        self.button_widget = QWidget()
+        self.button_layout = QVBoxLayout()
+        self.checkboxes = {}
+
+        for label in self.action_labels:
+            checkbox = QCheckBox(label)
+            checkbox.setChecked(False)
+            checkbox.stateChanged.connect(self.create_checkbox_callback(label))
+            self.button_layout.addWidget(checkbox)
+            self.checkboxes[label] = checkbox
+
+        self.button_widget.setLayout(self.button_layout)
+        self.main_window.heatmap_present_label.addWidget(self.button_widget)
+
+    def create_checkbox_callback(self, label):
+        def callback(state):
+            if state == Qt.Checked:
+                self.selected_actions.add(label)
+            else:
+                self.selected_actions.discard(label)
+            self.update_heatmap_display()
+        return callback
+
+    def update_heatmap_display(self):
+        print(f"Updating heatmap for actions: {self.selected_actions}")
+        heatmap = self.seat_plan_picture.copy()
+        grid_counts = {}
+
+        for frame in self.main_window.human_detect_results_front:
+            for person_id, action in frame.items():
+                if action in self.selected_actions:  # Check if action is selected
+                    if person_id not in grid_counts:
+                        grid_counts[person_id] = 0
+                    grid_counts[person_id] += 1
+
+        max_count = max(grid_counts.values()) if grid_counts else 1
+
+        for person_id, count in grid_counts.items():
+            intensity = int((count / max_count) * 255)
+            color = (0, 0, intensity)
+            x, y, w, h = self.get_person_coordinates(person_id)
+            cv2.rectangle(heatmap, (x, y), (x + w, y + h), color, -1)
+
+        self.update_heatmap(heatmap)
     def create_button_callback(self, label):
         def callback():
             self.update_selected_action(label)

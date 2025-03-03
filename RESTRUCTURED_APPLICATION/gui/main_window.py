@@ -357,7 +357,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         msg_box.exec()
 
     def switch_to_analytics_tab(self):
-        from gui import ActionVisualization,Humantracker
+        from gui import ActionVisualization
         
         if (self.is_center_video_ready and self.is_front_video_ready) is not None:
             self.toggle_analytics_tab()
@@ -378,16 +378,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                                     action_results_list_center=self.action_results_list_center,
                                                     min_time=min_value,
                                                     max_time=max_value)
-            self.human_tracking = Humantracker(self.human_detect_results_front,
-                                               self.human_detect_results_center)
-            
-            self.tab = QWidget()
-            self.MainTab.addTab(self.tab, "Vis1")
-
-            self.vis1_layout = QVBoxLayout(self.tab)  # Ensure Vis1 has a layout
-
-            self.human_tracker = (self)  # Instantiate HumanTracker
-            self.vis1_layout.addWidget(self.human_tracker)  # Add it to Vis1
 
         else:
             self.show_warning_message(status_title="Error!",
