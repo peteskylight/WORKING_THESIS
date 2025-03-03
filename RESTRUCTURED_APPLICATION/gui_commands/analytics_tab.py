@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 from PySide6.QtGui import QImage, QPixmap
 from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QComboBox
 
 from pathlib import Path
 
@@ -11,7 +12,65 @@ class AnalyticsTab:
         self.main_window = main_window
         script_dir = Path(__file__).parent  # Get script's folder
         image_path = script_dir.parent / "assets" / "SEAT PLAN.png"
-        self.seat_plan_picture = cv2.imread(image_path)
+        self.seat_plan_picture = cv2.imread(str(image_path))
+        
+        self.action_labels = ['All Actions', 'Extending Right Arm', 'Standing', 'Sitting']
+        
+        # Create combo box for selecting actions
+        self.action_selector = QComboBox()
+        self.action_selector.addItems(self.action_labels)
+        self.action_selector.currentIndexChanged.connect(self.update_selected_action)
+        self.action_selector.currentIndexChanged.connect(self.update_selected_action)
+        self.action_selector.setFixedSize(120, 30) 
+        
+        # Add combo box to the main window
+        self.main_window.layout().addWidget(self.action_selector)
+        
+        self.selected_action = 'All Actions'  # Default selection
+
+    def update_selected_action(self):
+        """Updates the selected action from the combo box."""
+        self.selected_action = self.action_selector.currentText()
+        self.update_heatmap()
+
+    def update_heatmap(self):
+        """Updates the heatmap based on the selected action."""
+        frame = self.generate_heatmap_based_on_action()
+        
+        if frame is None:
+            return
+        
+        height, width = frame.shape[:2]
+        bytes_per_line = 3 * width
+        q_img = QImage(frame.data, width, height, bytes_per_line, QImage.Format_RGB888).rgbSwapped()
+        
+        # Set the QImage to the QLabel with aspect ratio maintained
+        pixmap = QPixmap.fromImage(q_img)
+        scaled_pixmap = pixmap.scaled(
+            self.main_window.heatmap_present_label.size(),
+            Qt.KeepAspectRatio,
+            Qt.SmoothTransformation
+        )
+        self.main_window.heatmap_present_label.setPixmap(scaled_pixmap)
+
+    def generate_heatmap_based_on_action(self):
+        """Generates the heatmap image based on the selected action."""
+        # This function should process data and return the heatmap image
+        # Modify this logic to filter the heatmap based on the selected action
+        if self.selected_action == 'All Actions':
+            return self.generate_full_heatmap()
+        else:
+            return self.generate_filtered_heatmap(self.selected_action)
+
+    def generate_full_heatmap(self):
+        """Returns the heatmap image with all actions visualized."""
+        # Placeholder for heatmap generation logic
+        return np.zeros((480, 640, 3), dtype=np.uint8)  # Example black image
+
+    def generate_filtered_heatmap(self, action):
+        """Returns the heatmap image filtered for the specific action."""
+        # Placeholder for heatmap filtering logic based on action
+        return np.zeros((480, 640, 3), dtype=np.uint8)  # Example black image
     
     def remove_extended_width(self, frame: np.ndarray, extension: int = 500) -> np.ndarray:
         """
