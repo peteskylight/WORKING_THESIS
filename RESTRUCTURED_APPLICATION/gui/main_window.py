@@ -11,10 +11,11 @@ from PySide6.QtWidgets import (QApplication,
                                 QMessageBox,
                                 QTableWidgetItem,
                                 QWidget,
-                                QButtonGroup)
+                                QButtonGroup,QTabWidget)
 
 from PySide6.QtCore import QRect, QCoreApplication, QMetaObject, QTimer, QTime, Qt, QDate
 from PySide6.QtGui import QImage, QPixmap
+from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel
 
 from superqt import QRangeSlider
 
@@ -48,7 +49,7 @@ class RecordingWindow(QDialog):  # ✅ Use QDialog instead of QMainWindow
         self.ui.setupUi(self)  # ✅ Apply UI
 
 
-class MainWindow(QMainWindow, Ui_MainWindow):
+class MainWindow(QMainWindow, Ui_MainWindow,QVBoxLayout):
     def __init__(self):
         super().__init__()
         
@@ -59,7 +60,27 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.CenterVideo = CenterVideo(main_window=self)
         self.FrontVideo = FrontVideo(main_window=self)
         self.CreateDataset = CreateDataset(main_window=self)
-        self.AnalyticsTab = AnalyticsTab(main_window=self)
+         # Main container widget
+        self.central_widget = QWidget(self)
+        self.setCentralWidget(self.central_widget)
+
+            # Main layout
+        self.main_layout = QVBoxLayout(self.central_widget)
+        self.cpu_label = QLabel("CPU Usage: 0%")
+        self.main_layout.addWidget(self.cpu_label) 
+            # Heatmap container (Added before AnalyticsTab is initialized)
+        self.heatmap_container = QWidget()
+        self.heatmap_layout = QVBoxLayout(self.heatmap_container)
+        self.heatmap_present_label = QLabel("Heatmap Display Here")  # Placeholder text
+        self.heatmap_layout.addWidget(self.heatmap_present_label)
+        self.heatmap_container.setLayout(self.heatmap_layout)
+
+        self.main_layout.addWidget(self.heatmap_container)  # Add to main layout
+        self.MainTab = QTabWidget()  # Define MainTab before using it
+        self.main_layout.addWidget(self.MainTab)
+
+            # Initialize AnalyticsTab
+        self.AnalyticsTab = AnalyticsTab(main_window=self)       
         
         self.drawing_utils = DrawingUtils()
         self.tools_utils = Tools()
@@ -230,6 +251,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.timer = QTimer(self) #TIMER FOR ALL!!!
         self.timer.timeout.connect(self.update_all_with_timers) #=======Update all and just have conditional statements
         self.timer.start(10) 
+ 
         
     def update_all_with_timers(self):
         
@@ -367,7 +389,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.play_pause_button_analytics.setText("PLAY")
             self.activate_analytics(activation=True)
             self.play_pause_button_video_preview.setText("PLAY PREVIEW")
-            self.import_video_button_front.setEnabled(False)
+            self.import_video_button_front.setEnabled(False)    
             self.import_video_button_center.setEnabled(False)
 
             min_value, max_value = self.timeFrameRangeSlider.value()
@@ -377,7 +399,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                                     action_results_list_front=self.action_results_list_front,
                                                     action_results_list_center=self.action_results_list_center,
                                                     min_time=min_value,
-                                                    max_time=max_value)
+                                                    max_time=max_value) 
+
         else:
             self.show_warning_message(status_title="Error!",
                                       message= "Please import a complete set of footages.")
