@@ -11,7 +11,8 @@ from PySide6.QtWidgets import (QApplication,
                                 QMessageBox,
                                 QTableWidgetItem,
                                 QWidget,
-                                QButtonGroup)
+                                QButtonGroup,
+                                QComboBox)
 
 from PySide6.QtCore import QRect, QCoreApplication, QMetaObject, QTimer, QTime, Qt, QDate
 from PySide6.QtGui import QImage, QPixmap
@@ -60,7 +61,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.FrontVideo = FrontVideo(main_window=self)
         self.CreateDataset = CreateDataset(main_window=self)
         self.AnalyticsTab = AnalyticsTab(main_window=self)
-        
+        self.action_selector = QComboBox(self)
+        self.action_labels = ['All Actions', 'Extending Right Arm', 'Standing', 'Sitting']
+        self.action_selector.currentIndexChanged.connect(self.update_selected_action)
+
+
         self.drawing_utils = DrawingUtils()
         self.tools_utils = Tools()
         self.video_utils = VideoUtils()
@@ -245,6 +250,32 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.toggle_record_label_counter >= self.toggle_record_label_interval:
             self.toggleLabelVisibility()
             self.toggle_record_label_counter = 0
+
+    def update_selected_action(self):
+        """Updates the selected action from the combo box and refreshes the heatmap."""
+        if self.action_selector:
+            self.selected_action = self.action_selector.currentText()
+            print(f"Selected Action: {self.selected_action}")  # Debugging print
+
+            # Pass the correct frame from the latest available data
+            heatmap_frame = self.get_latest_heatmap_frame()  # Ensure this returns a valid frame
+            if heatmap_frame is not None:
+                self.AnalyticsTab.update_heatmap(
+                    heatmap_frame, 
+                    self.selected_action, 
+                    self.human_detect_results_front,  # Pass front
+                    self.human_detect_results_center  # Pass center
+                )
+            else:
+                print("[DEBUG] No heatmap frame available.")
+
+
+    
+    def get_latest_heatmap_frame(self):
+        """Returns the latest heatmap frame from available data."""
+        if hasattr(self, "heatmap_frame"):
+            return self.heatmap_frame
+        return None
         
     
     def center(self):
@@ -314,6 +345,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.MainTab.addTab(self.analytics_tab, self.analytics_tab_title)
             self.analytics_tab_index = self.MainTab.indexOf(self.analytics_tab)
             self.MainTab.setCurrentIndex(self.analytics_tab_index)
+
+            # Create the action selector combo box
+            self.action_selector = QComboBox()
+            self.action_selector.addItems(self.action_labels)
+            self.action_selector.currentIndexChanged.connect(self.update_selected_action)
+            self.action_selector.setFixedSize(120, 30) 
+
+            # ✅ Fix: Use `self.layout()` instead of `self.main_window.layout()`
+            self.layout().addWidget(self.action_selector)
+
+            self.selected_action = 'All Actions'  # Default selection
         else:
             # Remove the tab
             self.MainTab.removeTab(self.analytics_tab_index)

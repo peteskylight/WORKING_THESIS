@@ -72,7 +72,8 @@ class ActionVisualization:
             self.button_layout.addWidget(button)
             self.buttons[label] = button
         self.button_widget.setLayout(self.button_layout)
-        self.main_window.layout().addWidget(self.button_widget)
+        self.proxy_widget = self.scene.addWidget(self.button_widget)
+        self.proxy_widget.setPos(10, 10)
 
         # Connect slider to update chart dynamically
         self.main_window.timeFrameRangeSlider.valueChanged.connect(self.update_chart)
