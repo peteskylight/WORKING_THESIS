@@ -502,10 +502,10 @@
           </size>
          </property>
          <property name="currentIndex">
-          <number>2</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="page">
-          <widget class="QLabel" name="label">
+          <widget class="QLabel" name="Homepage_label">
            <property name="geometry">
             <rect>
              <x>420</x>
@@ -524,12 +524,393 @@
            </property>
           </widget>
          </widget>
-         <widget class="QWidget" name="page_3"/>
+         <widget class="QWidget" name="page_3">
+          <widget class="QLabel" name="label_5">
+           <property name="geometry">
+            <rect>
+             <x>690</x>
+             <y>10</y>
+             <width>81</width>
+             <height>16</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <family>Segoe UI</family>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>CPU Usage</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="cpu_label">
+           <property name="geometry">
+            <rect>
+             <x>690</x>
+             <y>20</y>
+             <width>91</width>
+             <height>41</height>
+            </rect>
+           </property>
+           <property name="palette">
+            <palette>
+             <active>
+              <colorrole role="WindowText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>0</red>
+                 <green>85</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
+             </active>
+             <inactive>
+              <colorrole role="WindowText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>0</red>
+                 <green>85</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
+             </inactive>
+             <disabled>
+              <colorrole role="WindowText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>120</red>
+                 <green>120</green>
+                 <blue>120</blue>
+                </color>
+               </brush>
+              </colorrole>
+             </disabled>
+            </palette>
+           </property>
+           <property name="font">
+            <font>
+             <family>Segoe UI</family>
+             <pointsize>20</pointsize>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>--</string>
+           </property>
+          </widget>
+          <widget class="QPushButton" name="closeCamera">
+           <property name="geometry">
+            <rect>
+             <x>390</x>
+             <y>20</y>
+             <width>131</width>
+             <height>31</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <family>Segoe UI</family>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>Close Camera</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_Camera">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>20</y>
+             <width>71</width>
+             <height>31</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <family>Segoe UI</family>
+             <pointsize>14</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>Camera</string>
+           </property>
+          </widget>
+          <widget class="QPushButton" name="openCamera">
+           <property name="geometry">
+            <rect>
+             <x>250</x>
+             <y>20</y>
+             <width>131</width>
+             <height>31</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <family>Segoe UI</family>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>Open Camera</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="gpu_label">
+           <property name="geometry">
+            <rect>
+             <x>960</x>
+             <y>20</y>
+             <width>91</width>
+             <height>41</height>
+            </rect>
+           </property>
+           <property name="palette">
+            <palette>
+             <active>
+              <colorrole role="WindowText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>85</red>
+                 <green>170</green>
+                 <blue>0</blue>
+                </color>
+               </brush>
+              </colorrole>
+             </active>
+             <inactive>
+              <colorrole role="WindowText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>85</red>
+                 <green>170</green>
+                 <blue>0</blue>
+                </color>
+               </brush>
+              </colorrole>
+             </inactive>
+             <disabled>
+              <colorrole role="WindowText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>120</red>
+                 <green>120</green>
+                 <blue>120</blue>
+                </color>
+               </brush>
+              </colorrole>
+             </disabled>
+            </palette>
+           </property>
+           <property name="font">
+            <font>
+             <family>Segoe UI</family>
+             <pointsize>20</pointsize>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>--</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="fps_label">
+           <property name="geometry">
+            <rect>
+             <x>570</x>
+             <y>20</y>
+             <width>91</width>
+             <height>41</height>
+            </rect>
+           </property>
+           <property name="palette">
+            <palette>
+             <active>
+              <colorrole role="WindowText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>170</red>
+                 <green>85</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
+             </active>
+             <inactive>
+              <colorrole role="WindowText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>170</red>
+                 <green>85</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
+             </inactive>
+             <disabled>
+              <colorrole role="WindowText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>120</red>
+                 <green>120</green>
+                 <blue>120</blue>
+                </color>
+               </brush>
+              </colorrole>
+             </disabled>
+            </palette>
+           </property>
+           <property name="font">
+            <font>
+             <family>Segoe UI</family>
+             <pointsize>20</pointsize>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>--</string>
+           </property>
+          </widget>
+          <widget class="QComboBox" name="cameraComboBox">
+           <property name="geometry">
+            <rect>
+             <x>80</x>
+             <y>20</y>
+             <width>161</width>
+             <height>31</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <family>Segoe UI</family>
+             <pointsize>14</pointsize>
+            </font>
+           </property>
+           <property name="editable">
+            <bool>true</bool>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_9">
+           <property name="geometry">
+            <rect>
+             <x>960</x>
+             <y>10</y>
+             <width>81</width>
+             <height>16</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <family>Segoe UI</family>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>GPU Usage</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_10">
+           <property name="geometry">
+            <rect>
+             <x>570</x>
+             <y>10</y>
+             <width>51</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <family>Segoe UI</family>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>FPS:</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_6">
+           <property name="geometry">
+            <rect>
+             <x>830</x>
+             <y>10</y>
+             <width>81</width>
+             <height>16</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <family>Segoe UI</family>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>RAM Usage</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="ram_label">
+           <property name="geometry">
+            <rect>
+             <x>830</x>
+             <y>20</y>
+             <width>91</width>
+             <height>41</height>
+            </rect>
+           </property>
+           <property name="palette">
+            <palette>
+             <active>
+              <colorrole role="WindowText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>170</red>
+                 <green>0</green>
+                 <blue>0</blue>
+                </color>
+               </brush>
+              </colorrole>
+             </active>
+             <inactive>
+              <colorrole role="WindowText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>170</red>
+                 <green>0</green>
+                 <blue>0</blue>
+                </color>
+               </brush>
+              </colorrole>
+             </inactive>
+             <disabled>
+              <colorrole role="WindowText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>120</red>
+                 <green>120</green>
+                 <blue>120</blue>
+                </color>
+               </brush>
+              </colorrole>
+             </disabled>
+            </palette>
+           </property>
+           <property name="font">
+            <font>
+             <family>Segoe UI</family>
+             <pointsize>20</pointsize>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>--</string>
+           </property>
+          </widget>
+         </widget>
          <widget class="QWidget" name="page_2">
           <widget class="QLabel" name="FRONT">
            <property name="geometry">
             <rect>
-             <x>40</x>
+             <x>30</x>
              <y>10</y>
              <width>161</width>
              <height>21</height>
@@ -549,8 +930,8 @@
             <rect>
              <x>20</x>
              <y>20</y>
-             <width>520</width>
-             <height>301</height>
+             <width>420</width>
+             <height>250</height>
             </rect>
            </property>
            <property name="font">
@@ -577,7 +958,7 @@
           <widget class="QLabel" name="Center">
            <property name="geometry">
             <rect>
-             <x>560</x>
+             <x>460</x>
              <y>10</y>
              <width>181</width>
              <height>21</height>
@@ -592,13 +973,13 @@
             <string>Video Preview [CENTER]</string>
            </property>
           </widget>
-          <widget class="QLabel" name="label_2">
+          <widget class="QLabel" name="video_preview_label_center">
            <property name="geometry">
             <rect>
-             <x>550</x>
+             <x>440</x>
              <y>20</y>
-             <width>520</width>
-             <height>301</height>
+             <width>420</width>
+             <height>250</height>
             </rect>
            </property>
            <property name="font">
@@ -623,10 +1004,15 @@
            <property name="geometry">
             <rect>
              <x>20</x>
-             <y>330</y>
-             <width>1051</width>
-             <height>331</height>
+             <y>280</y>
+             <width>840</width>
+             <height>381</height>
             </rect>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
            </property>
            <property name="frameShape">
             <enum>QFrame::Shape::WinPanel</enum>
@@ -634,25 +1020,658 @@
            <property name="frameShadow">
             <enum>QFrame::Shadow::Raised</enum>
            </property>
-           <widget class="QLabel" name="label_3">
+           <widget class="QLabel" name="FileLocation_front">
             <property name="geometry">
              <rect>
               <x>20</x>
               <y>10</y>
               <width>211</width>
-              <height>16</height>
+              <height>21</height>
              </rect>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+              <italic>true</italic>
+             </font>
             </property>
             <property name="text">
              <string>Front Video File Location: </string>
             </property>
            </widget>
+           <widget class="QLineEdit" name="videodirectory_front">
+            <property name="geometry">
+             <rect>
+              <x>30</x>
+              <y>50</y>
+              <width>360</width>
+              <height>31</height>
+             </rect>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+              <italic>true</italic>
+             </font>
+            </property>
+            <property name="text">
+             <string>Import a video file to be analyzed</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignmentFlag::AlignCenter</set>
+            </property>
+           </widget>
+           <widget class="QLabel" name="FileLocation_center">
+            <property name="geometry">
+             <rect>
+              <x>440</x>
+              <y>10</y>
+              <width>211</width>
+              <height>21</height>
+             </rect>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+              <italic>true</italic>
+             </font>
+            </property>
+            <property name="text">
+             <string>Center Video File Location:</string>
+            </property>
+           </widget>
+           <widget class="QLineEdit" name="lineEdit_2">
+            <property name="geometry">
+             <rect>
+              <x>460</x>
+              <y>50</y>
+              <width>360</width>
+              <height>31</height>
+             </rect>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+              <italic>true</italic>
+             </font>
+            </property>
+            <property name="inputMask">
+             <string/>
+            </property>
+            <property name="text">
+             <string>Import video file to be analyzed</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignmentFlag::AlignCenter</set>
+            </property>
+           </widget>
+           <widget class="QLabel" name="label_2">
+            <property name="geometry">
+             <rect>
+              <x>20</x>
+              <y>120</y>
+              <width>211</width>
+              <height>21</height>
+             </rect>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>Front Video Progress Bar</string>
+            </property>
+           </widget>
+           <widget class="QProgressBar" name="progressBar_front">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="geometry">
+             <rect>
+              <x>30</x>
+              <y>150</y>
+              <width>360</width>
+              <height>41</height>
+             </rect>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+             </font>
+            </property>
+            <property name="statusTip">
+             <string/>
+            </property>
+            <property name="layoutDirection">
+             <enum>Qt::LayoutDirection::LeftToRight</enum>
+            </property>
+            <property name="autoFillBackground">
+             <bool>false</bool>
+            </property>
+            <property name="value">
+             <number>0</number>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignmentFlag::AlignBottom|Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing</set>
+            </property>
+            <property name="textVisible">
+             <bool>true</bool>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Orientation::Horizontal</enum>
+            </property>
+            <property name="invertedAppearance">
+             <bool>false</bool>
+            </property>
+            <property name="textDirection">
+             <enum>QProgressBar::Direction::TopToBottom</enum>
+            </property>
+            <property name="format">
+             <string>%p%</string>
+            </property>
+           </widget>
+           <widget class="QProgressBar" name="progressBar_center">
+            <property name="geometry">
+             <rect>
+              <x>460</x>
+              <y>150</y>
+              <width>360</width>
+              <height>41</height>
+             </rect>
+            </property>
+            <property name="value">
+             <number>0</number>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignmentFlag::AlignBottom|Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing</set>
+            </property>
+           </widget>
+           <widget class="QLabel" name="label_3">
+            <property name="geometry">
+             <rect>
+              <x>440</x>
+              <y>120</y>
+              <width>211</width>
+              <height>21</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Center Videp Progress Bar</string>
+            </property>
+           </widget>
+           <widget class="QLabel" name="front_frame_count">
+            <property name="geometry">
+             <rect>
+              <x>220</x>
+              <y>220</y>
+              <width>81</width>
+              <height>31</height>
+             </rect>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+              <italic>false</italic>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>--</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+            </property>
+           </widget>
+           <widget class="QLabel" name="somelabelforprogrss_3">
+            <property name="geometry">
+             <rect>
+              <x>30</x>
+              <y>220</y>
+              <width>181</width>
+              <height>31</height>
+             </rect>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+              <italic>true</italic>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Front Video Frame Count:</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+            </property>
+           </widget>
+           <widget class="QLabel" name="somelabelforprogrss_4">
+            <property name="geometry">
+             <rect>
+              <x>30</x>
+              <y>260</y>
+              <width>161</width>
+              <height>31</height>
+             </rect>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+              <italic>true</italic>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Front Video Length:</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+            </property>
+           </widget>
+           <widget class="QPushButton" name="import_video_button_front">
+            <property name="geometry">
+             <rect>
+              <x>260</x>
+              <y>300</y>
+              <width>121</width>
+              <height>41</height>
+             </rect>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>16</pointsize>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="autoFillBackground">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>Browse</string>
+            </property>
+           </widget>
+           <widget class="QLabel" name="front_video_length">
+            <property name="geometry">
+             <rect>
+              <x>220</x>
+              <y>260</y>
+              <width>81</width>
+              <height>31</height>
+             </rect>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+              <italic>false</italic>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>--</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+            </property>
+           </widget>
+           <widget class="QLabel" name="somelabelforprogrss_5">
+            <property name="geometry">
+             <rect>
+              <x>440</x>
+              <y>260</y>
+              <width>161</width>
+              <height>31</height>
+             </rect>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+              <italic>true</italic>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Center Video Length:</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+            </property>
+           </widget>
+           <widget class="QPushButton" name="import_video_button_center">
+            <property name="geometry">
+             <rect>
+              <x>690</x>
+              <y>300</y>
+              <width>121</width>
+              <height>41</height>
+             </rect>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>16</pointsize>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="autoFillBackground">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>Browse</string>
+            </property>
+           </widget>
+           <widget class="QLabel" name="somelabelforprogrss_7">
+            <property name="geometry">
+             <rect>
+              <x>440</x>
+              <y>220</y>
+              <width>191</width>
+              <height>31</height>
+             </rect>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+              <italic>true</italic>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Center Video Frame Count:</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+            </property>
+           </widget>
+           <widget class="QLabel" name="center_video_length">
+            <property name="geometry">
+             <rect>
+              <x>650</x>
+              <y>260</y>
+              <width>71</width>
+              <height>31</height>
+             </rect>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+              <italic>false</italic>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>--</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+            </property>
+           </widget>
+           <widget class="QLabel" name="center_frame_count">
+            <property name="geometry">
+             <rect>
+              <x>650</x>
+              <y>220</y>
+              <width>71</width>
+              <height>31</height>
+             </rect>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+              <italic>false</italic>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>--</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+            </property>
+           </widget>
+          </widget>
+          <widget class="QGroupBox" name="groupBox_2">
+           <property name="geometry">
+            <rect>
+             <x>870</x>
+             <y>10</y>
+             <width>211</width>
+             <height>651</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="title">
+            <string>Analytics Options</string>
+           </property>
+           <widget class="QPushButton" name="play_pause_button_video_preview">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>90</y>
+              <width>191</width>
+              <height>61</height>
+             </rect>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>18</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>PLAY PREVIEW</string>
+            </property>
+           </widget>
+           <widget class="QPushButton" name="recording_window_button">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>40</y>
+              <width>191</width>
+              <height>41</height>
+             </rect>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>16</pointsize>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Record Session</string>
+            </property>
+           </widget>
+           <widget class="QFrame" name="frame_7">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>160</y>
+              <width>191</width>
+              <height>351</height>
+             </rect>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::Shape::Box</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Shadow::Sunken</enum>
+            </property>
+            <property name="lineWidth">
+             <number>1</number>
+            </property>
+            <widget class="QLabel" name="label_16">
+             <property name="geometry">
+              <rect>
+               <x>-20</x>
+               <y>10</y>
+               <width>231</width>
+               <height>61</height>
+              </rect>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>14</pointsize>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Classroom
+Heatmap View</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignmentFlag::AlignCenter</set>
+             </property>
+            </widget>
+            <widget class="QCheckBox" name="behavior_change_freq_chkbox">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>110</y>
+               <width>221</width>
+               <height>31</height>
+              </rect>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>9</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>Behavior Change Frequency</string>
+             </property>
+            </widget>
+            <widget class="QCheckBox" name="tesk_taking_time_chkbox">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>80</y>
+               <width>211</width>
+               <height>21</height>
+              </rect>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>9</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>Test-Taking Time Duration</string>
+             </property>
+            </widget>
+            <widget class="QCheckBox" name="behavior_count_freq_chkbox">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>140</y>
+               <width>211</width>
+               <height>41</height>
+              </rect>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>9</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>Behavior Count Frequency</string>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_20">
+             <property name="geometry">
+              <rect>
+               <x>-20</x>
+               <y>180</y>
+               <width>231</width>
+               <height>61</height>
+              </rect>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>14</pointsize>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Other
+Visualizations</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignmentFlag::AlignCenter</set>
+             </property>
+            </widget>
+            <widget class="QCheckBox" name="behavior_count_link_list_chkbox">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>240</y>
+               <width>181</width>
+               <height>51</height>
+              </rect>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>9</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>Behavior Count
+Frequency [Linked List]</string>
+             </property>
+            </widget>
+            <widget class="QCheckBox" name="event_timeline_chkbox">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>300</y>
+               <width>131</width>
+               <height>31</height>
+              </rect>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>9</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>Event Timeline</string>
+             </property>
+            </widget>
+           </widget>
+           <widget class="QPushButton" name="analyze_video_button">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>530</y>
+              <width>191</width>
+              <height>91</height>
+             </rect>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>20</pointsize>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Analyze
+Footages</string>
+            </property>
+           </widget>
           </widget>
           <zorder>video_preview_label_front</zorder>
-          <zorder>label_2</zorder>
+          <zorder>video_preview_label_center</zorder>
           <zorder>FRONT</zorder>
           <zorder>Center</zorder>
           <zorder>browse_frame</zorder>
+          <zorder>groupBox_2</zorder>
          </widget>
         </widget>
        </item>
