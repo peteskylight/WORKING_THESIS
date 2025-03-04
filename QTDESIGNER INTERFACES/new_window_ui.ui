@@ -65,7 +65,7 @@
        <item>
         <layout class="QVBoxLayout" name="verticalLayout">
          <property name="spacing">
-          <number>0</number>
+          <number>5</number>
          </property>
          <item>
           <widget class="QPushButton" name="HomeIcon_button">
@@ -173,7 +173,7 @@
          <property name="sizeHint" stdset="0">
           <size>
            <width>20</width>
-           <height>481</height>
+           <height>466</height>
           </size>
          </property>
         </spacer>
@@ -249,7 +249,7 @@
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <property name="spacing">
-          <number>0</number>
+          <number>5</number>
          </property>
          <item>
           <widget class="QPushButton" name="Home_button">
@@ -360,7 +360,7 @@
          <property name="sizeHint" stdset="0">
           <size>
            <width>20</width>
-           <height>511</height>
+           <height>496</height>
           </size>
          </property>
         </spacer>
@@ -444,12 +444,18 @@
               <height>14</height>
              </size>
             </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
            </widget>
           </item>
           <item>
            <spacer name="horizontalSpacer">
             <property name="orientation">
              <enum>Qt::Orientation::Horizontal</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Policy::Expanding</enum>
             </property>
             <property name="sizeHint" stdset="0">
              <size>
@@ -461,6 +467,12 @@
           </item>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout">
+            <property name="spacing">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>30</number>
+            </property>
             <item>
              <widget class="QLineEdit" name="lineEdit"/>
             </item>
@@ -489,8 +501,159 @@
            <height>0</height>
           </size>
          </property>
-         <widget class="QWidget" name="page"/>
-         <widget class="QWidget" name="page_2"/>
+         <property name="currentIndex">
+          <number>2</number>
+         </property>
+         <widget class="QWidget" name="page">
+          <widget class="QLabel" name="label">
+           <property name="geometry">
+            <rect>
+             <x>420</x>
+             <y>195</y>
+             <width>411</width>
+             <height>81</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>48</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>HOME PAGE</string>
+           </property>
+          </widget>
+         </widget>
+         <widget class="QWidget" name="page_3"/>
+         <widget class="QWidget" name="page_2">
+          <widget class="QLabel" name="FRONT">
+           <property name="geometry">
+            <rect>
+             <x>40</x>
+             <y>10</y>
+             <width>161</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>Video Preview [FRONT]</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="video_preview_label_front">
+           <property name="geometry">
+            <rect>
+             <x>20</x>
+             <y>20</y>
+             <width>520</width>
+             <height>301</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>16</pointsize>
+            </font>
+           </property>
+           <property name="mouseTracking">
+            <bool>false</bool>
+           </property>
+           <property name="frameShape">
+            <enum>QFrame::Shape::WinPanel</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Shadow::Raised</enum>
+           </property>
+           <property name="text">
+            <string>Import a video to see preview</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignmentFlag::AlignCenter</set>
+           </property>
+          </widget>
+          <widget class="QLabel" name="Center">
+           <property name="geometry">
+            <rect>
+             <x>560</x>
+             <y>10</y>
+             <width>181</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>Video Preview [CENTER]</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_2">
+           <property name="geometry">
+            <rect>
+             <x>550</x>
+             <y>20</y>
+             <width>520</width>
+             <height>301</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>16</pointsize>
+            </font>
+           </property>
+           <property name="frameShape">
+            <enum>QFrame::Shape::WinPanel</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Shadow::Raised</enum>
+           </property>
+           <property name="text">
+            <string>Import a video to see preview</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignmentFlag::AlignCenter</set>
+           </property>
+          </widget>
+          <widget class="QFrame" name="browse_frame">
+           <property name="geometry">
+            <rect>
+             <x>20</x>
+             <y>330</y>
+             <width>1051</width>
+             <height>331</height>
+            </rect>
+           </property>
+           <property name="frameShape">
+            <enum>QFrame::Shape::WinPanel</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Shadow::Raised</enum>
+           </property>
+           <widget class="QLabel" name="label_3">
+            <property name="geometry">
+             <rect>
+              <x>20</x>
+              <y>10</y>
+              <width>211</width>
+              <height>16</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Front Video File Location: </string>
+            </property>
+           </widget>
+          </widget>
+          <zorder>video_preview_label_front</zorder>
+          <zorder>label_2</zorder>
+          <zorder>FRONT</zorder>
+          <zorder>Center</zorder>
+          <zorder>browse_frame</zorder>
+         </widget>
         </widget>
        </item>
       </layout>
@@ -502,5 +665,150 @@
  <resources>
   <include location="icons/resource.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>menuButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>icon_only_widget</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>211</x>
+     <y>16</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>39</x>
+     <y>452</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>menuButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>full_menu_widget</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>201</x>
+     <y>21</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>172</x>
+     <y>291</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>HomeIcon_button</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>Home_button</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>47</x>
+     <y>75</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>97</x>
+     <y>71</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>ImportIcon_button</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>Import_button</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>44</x>
+     <y>104</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>93</x>
+     <y>97</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>CreateIcon_button</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>Create_button</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>43</x>
+     <y>137</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>107</x>
+     <y>123</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>AnalyticsIcon_button</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>Analytics_button</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>56</x>
+     <y>168</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>102</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Home_button</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>HomeIcon_button</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>83</x>
+     <y>62</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>35</x>
+     <y>82</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Import_button</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>ImportIcon_button</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>106</x>
+     <y>88</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>40</x>
+     <y>110</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Create_button</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>CreateIcon_button</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>122</x>
+     <y>112</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>46</x>
+     <y>140</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
