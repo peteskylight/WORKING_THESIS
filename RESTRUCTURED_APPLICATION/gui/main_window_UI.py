@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'MAIN-WINDOW-FINAL-DESIGNQegajL.ui'
+## Form generated from reading UI file 'MAIN-WINDOW-FINAL-DESIGNKktuhg.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.8.1
 ##
@@ -374,6 +374,13 @@ class Ui_MainWindow(object):
         self.timeFrameContainer = QWidget(self.analyticsTab)
         self.timeFrameContainer.setObjectName(u"timeFrameContainer")
         self.timeFrameContainer.setGeometry(QRect(20, 390, 681, 51))
+        self.Action = QComboBox(self.timeFrameContainer)
+        self.Action.addItem("")
+        self.Action.addItem("")
+        self.Action.addItem("")
+        self.Action.addItem("")
+        self.Action.setObjectName(u"Action")
+        self.Action.setGeometry(QRect(40, 10, 121, 41))
         self.originalVideoOnlyChkBox_center_analytics = QCheckBox(self.analyticsTab)
         self.originalVideoOnlyChkBox_center_analytics.setObjectName(u"originalVideoOnlyChkBox_center_analytics")
         self.originalVideoOnlyChkBox_center_analytics.setGeometry(QRect(900, 50, 131, 31))
@@ -981,6 +988,12 @@ class Ui_MainWindow(object):
         self.play_pause_button_analytics.setText(QCoreApplication.translate("MainWindow", u"PAUSE", None))
         self.see_full_data_button.setText(QCoreApplication.translate("MainWindow", u"SEE FULL DATA", None))
         self.heatmap_present_label.setText(QCoreApplication.translate("MainWindow", u"Heatmap Visualization will be presented here.", None))
+        self.Action.setItemText(0, QCoreApplication.translate("MainWindow", u"All Actions", None))
+        self.Action.setItemText(1, QCoreApplication.translate("MainWindow", u"Extending Right Arm", None))
+        self.Action.setItemText(2, QCoreApplication.translate("MainWindow", u"Standing", None))
+        self.Action.setItemText(3, QCoreApplication.translate("MainWindow", u"Sitting", None))
+
+        self.Action.setCurrentText(QCoreApplication.translate("MainWindow", u"All Actions", None))
         self.originalVideoOnlyChkBox_center_analytics.setText(QCoreApplication.translate("MainWindow", u"Original Video Only", None))
         self.originalVideoOnlyChkBox_front_analytics.setText(QCoreApplication.translate("MainWindow", u"Original Video Only", None))
         self.keypointsOnlyChkBox_Center_analytics.setText(QCoreApplication.translate("MainWindow", u"Keypoints Only", None))

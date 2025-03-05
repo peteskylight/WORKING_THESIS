@@ -62,6 +62,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.CreateDataset = CreateDataset(main_window=self)
         self.AnalyticsTab = AnalyticsTab(main_window=self)
 
+        # Ensure `Action` combo box exists and connect signal
+        if hasattr(self, "Action"):
+            self.Action.currentIndexChanged.connect(self.update_selected_action)
+        else:
+            print("[ERROR] Combo box 'Action' not found in UI.")
+
+        self.selected_action = "All Actions"  # Default selection
+
 
         self.drawing_utils = DrawingUtils()
         self.tools_utils = Tools()
@@ -250,28 +258,27 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def update_selected_action(self):
         """Updates the selected action from the combo box and refreshes the heatmap."""
-        if self.action_selector:
-            self.selected_action = self.action_selector.currentText()
-            print(f"Selected Action: {self.selected_action}")  # Debugging print
+        self.selected_action = self.Action.currentText()  # Get from Qt Designer ComboBox
+        print(f"[DEBUG] Selected Action: {self.selected_action}")
 
-            # Pass the correct frame from the latest available data
-            heatmap_frame = self.get_latest_heatmap_frame()  # Ensure this returns a valid frame
-            if heatmap_frame is not None:
-                self.AnalyticsTab.update_heatmap(
-                    heatmap_frame, 
-                    self.selected_action, 
-                    self.human_detect_results_front,  # Pass front
-                    self.human_detect_results_center  # Pass center
-                )
-            else:
-                print("[DEBUG] No heatmap frame available.")
+        # Fetch the latest heatmap frame
+        heatmap_frame = self.get_latest_heatmap_frame()
+        if heatmap_frame is not None:
+            print("[DEBUG] Heatmap frame received, updating...")
+            self.AnalyticsTab.update_heatmap(
+                heatmap_frame, 
+                self.selected_action
+            )
+        else:
+            print("[DEBUG] No heatmap frame available.")
 
 
     
     def get_latest_heatmap_frame(self):
-        """Returns the latest heatmap frame from available data."""
-        if hasattr(self, "heatmap_frame"):
-            return self.heatmap_frame
+        """Retrieves the latest heatmap frame for analysis."""
+        if hasattr(self, "latest_heatmap_frame"):
+            return self.latest_heatmap_frame
+        print("[DEBUG] No stored heatmap frame found.")
         return None
         
     
@@ -511,8 +518,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 whole_classroom_height=self.whole_classroom_height
             )
 
-            # Pass the selected action to update_heatmap
-            self.AnalyticsTab.update_heatmap(frame=heatmap_frame, selected_action=self.selected_action)
+            # 🔍 Debug: Check if detection data exists
+            print("[DEBUG] Current Detection Data (Front):", self.human_detect_results_front)
+            print("[DEBUG] Current Detection Data (Center):", self.human_detect_results_center)
+
+            # ✅ Ensure detection data is available before updating heatmap
+            if self.human_detect_results_front is None or self.human_detect_results_center is None:
+                print("[ERROR] Detection data is missing! Heatmap cannot be updated.")
+                return  # Stop execution if detection data is missing
+
+            # ✅ Now update the heatmap with valid detection data
+            self.AnalyticsTab.update_heatmap(
+                frame=heatmap_frame, 
+                selected_action=self.selected_action,
+                human_detect_results_front=self.human_detect_results_front,
+                human_detect_results_center=self.human_detect_results_center
+            )
+
 
 
 

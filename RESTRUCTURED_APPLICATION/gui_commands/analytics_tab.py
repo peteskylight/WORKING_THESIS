@@ -100,23 +100,29 @@ class AnalyticsTab:
 
 
 
-
     def generate_heatmap_based_on_action(self, frame, selected_action):
-        """Filters the heatmap based on the selected action."""
-        
-        if selected_action == "All Actions":
-            return frame  # No filtering needed, return full heatmap
-        
-        # Reset filtered_data to an empty heatmap (instead of stacking)
-        filtered_data = np.zeros_like(frame)  
-        
-        for person in self.human_detect_results_front + self.human_detect_results_center:
-            for track_id, action in person.items():
-                if action == selected_action:
-                    filtered_data = np.maximum(filtered_data, self.get_person_heatmap(track_id))  
-                    # Use max instead of += to avoid stacking intensity
+        """Generates a heatmap based on the selected action."""
+        filtered_data = []
 
-        return filtered_data if np.any(filtered_data) else frame  # Return filtered if available, otherwise return original frame
+        # Combine detection results
+        all_detections = self.human_detect_results_front + self.human_detect_results_center
+
+        for person in all_detections:
+
+            # ✅ Now it's safe to filter based on action
+            if person["action"] == selected_action or selected_action == "All Actions":
+                filtered_data.append(person)
+
+        print(f"[DEBUG] Filtered Data for action '{selected_action}':", filtered_data)
+
+        if not filtered_data:
+            print("[DEBUG] No data matched the selected action.")
+            return frame  # Return the original frame if no matching data
+
+        # ✅ Generate the heatmap using filtered data
+        return self.generate_heatmap(filtered_data)
+
+
 
 
 
@@ -274,3 +280,19 @@ class AnalyticsTab:
         )
         self.main_window.heatmap_present_label.setPixmap(scaled_pixmap)
 
+    def create_heatmap_from_data(self, filtered_data):
+        """Generates a heatmap image from filtered detection data."""
+        if not filtered_data:
+            print("[DEBUG] No data available for heatmap generation.")
+            return np.zeros((480, 640, 3), dtype=np.uint8)  # Blank heatmap
+
+        heatmap = np.zeros((self.heatmap_height, self.heatmap_width), dtype=np.float32)
+
+        for x, y in filtered_data:
+            if 0 <= x < self.heatmap_width and 0 <= y < self.heatmap_height:
+                heatmap[y, x] += 1  # Increase intensity at detected locations
+
+        heatmap = np.uint8(255 * (heatmap / heatmap.max())) if heatmap.max() > 0 else heatmap
+        heatmap_colored = cv2.applyColorMap(heatmap, cv2.COLORMAP_JET)
+
+        return heatmap_colored

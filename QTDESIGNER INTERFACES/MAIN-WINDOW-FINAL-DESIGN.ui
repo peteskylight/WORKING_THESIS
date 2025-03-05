@@ -1198,6 +1198,39 @@ Footages</string>
         <height>51</height>
        </rect>
       </property>
+      <widget class="QComboBox" name="Action">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>10</y>
+         <width>121</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="currentText">
+        <string>All Actions</string>
+       </property>
+       <item>
+        <property name="text">
+         <string>All Actions</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Extending Right Arm</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Standing</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Sitting</string>
+        </property>
+       </item>
+      </widget>
      </widget>
      <widget class="QCheckBox" name="originalVideoOnlyChkBox_center_analytics">
       <property name="geometry">
