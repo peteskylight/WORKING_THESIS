@@ -16,6 +16,8 @@ class AnalyticsTab:
         self.action_selector = None
         
         self.action_labels = ['All Actions', 'Extending Right Arm', 'Standing', 'Sitting']
+        self.human_detect_results_front = []
+        self.human_detect_results_center = []
     def toggle_analytics_tab(self):
         # Toggle the visibility of the tab
         if self.analytics_tab_index == -1 or not self.MainTab.isTabVisible(self.analytics_tab_index):
@@ -44,12 +46,15 @@ class AnalyticsTab:
         """Updates the selected action from the combo box and refreshes the heatmap."""
         if self.action_selector:
             self.selected_action = self.action_selector.currentText()
-            print(f"[DEBUG] Selected Action: {self.selected_action}")  
+            print(f"Selected Action: {self.selected_action}")  # Debugging print
 
             # Get the latest heatmap frame
             heatmap_frame = self.get_latest_heatmap_frame()  
+
             if heatmap_frame is not None:
                 print("[DEBUG] Heatmap frame received, updating...")
+                
+                # ✅ Pass `human_detect_results_front` and `human_detect_results_center` correctly
                 self.AnalyticsTab.update_heatmap(
                     heatmap_frame, 
                     self.selected_action, 
@@ -59,20 +64,28 @@ class AnalyticsTab:
             else:
                 print("[DEBUG] No heatmap frame available.")
 
-    def update_heatmap(self, frame, selected_action):
+
+    def update_heatmap(self, frame, selected_action, front_data, center_data):
         """Updates the heatmap based on the selected action."""
         print(f"[DEBUG] Updating heatmap for action: {selected_action}")
 
-        filtered_frame = self.generate_heatmap_based_on_action(frame, selected_action)
+        # Generate a filtered heatmap based on the selected action
+        filtered_frame = self.generate_heatmap_based_on_action(frame, selected_action, front_data, center_data)
 
         if filtered_frame is None or not np.any(filtered_frame):
             print("[DEBUG] No valid heatmap generated. Using original frame.")
             filtered_frame = frame  # Ensure at least the original heatmap is displayed
 
-        print("[DEBUG] Displaying new heatmap...")
+        # Print shape to confirm update is happening
+        print(f"[DEBUG] Heatmap shape: {filtered_frame.shape}")
+
+        # Convert to QImage
         height, width = filtered_frame.shape[:2]
         bytes_per_line = 3 * width
         q_img = QImage(filtered_frame.data, width, height, bytes_per_line, QImage.Format_RGB888).rgbSwapped()
+
+        # Print confirmation that heatmap is being updated
+        print("[DEBUG] Heatmap converted to QImage, updating QLabel.")
 
         # Update QLabel with the heatmap
         pixmap = QPixmap.fromImage(q_img)
@@ -82,6 +95,10 @@ class AnalyticsTab:
             Qt.SmoothTransformation
         )
         self.main_window.heatmap_present_label.setPixmap(scaled_pixmap)
+
+        print("[DEBUG] Heatmap display updated successfully.")
+
+
 
 
     def generate_heatmap_based_on_action(self, frame, selected_action):

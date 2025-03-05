@@ -61,9 +61,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.FrontVideo = FrontVideo(main_window=self)
         self.CreateDataset = CreateDataset(main_window=self)
         self.AnalyticsTab = AnalyticsTab(main_window=self)
-        self.action_selector = QComboBox(self)
-        self.action_labels = ['All Actions', 'Extending Right Arm', 'Standing', 'Sitting']
-        self.action_selector.currentIndexChanged.connect(self.update_selected_action)
 
 
         self.drawing_utils = DrawingUtils()
@@ -400,6 +397,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def switch_to_analytics_tab(self):
         from gui import ActionVisualization
+        self.action_selector = QComboBox(self)
+        self.action_labels = ['All Actions', 'Extending Right Arm', 'Standing', 'Sitting']
+        
         
         if (self.is_center_video_ready and self.is_front_video_ready) is not None:
             self.toggle_analytics_tab()
@@ -499,16 +499,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             front_frame = frame_list[1]
             heatmap_frame = frame_list[2]
 
-            self.AnalyticsTab.update_frame_for_center_video_label(frame = center_frame,
-                                                                  center_starting_y=self.center_starting_y,
-                                                                  front_starting_y=self.center_video_height)
-            
-            self.AnalyticsTab.update_frame_for_front_video_label(frame=front_frame,
-                                                                 starting_y=self.front_starting_y,
-                                                                 whole_classroom_height=self.whole_classroom_height
-                                                                 )
+            self.AnalyticsTab.update_frame_for_center_video_label(
+                frame=center_frame,
+                center_starting_y=self.center_starting_y,
+                front_starting_y=self.center_video_height
+            )
 
-            self.AnalyticsTab.update_heatmap(frame=heatmap_frame)
+            self.AnalyticsTab.update_frame_for_front_video_label(
+                frame=front_frame,
+                starting_y=self.front_starting_y,
+                whole_classroom_height=self.whole_classroom_height
+            )
+
+            # Pass the selected action to update_heatmap
+            self.AnalyticsTab.update_heatmap(frame=heatmap_frame, selected_action=self.selected_action)
+
 
 
     '''
