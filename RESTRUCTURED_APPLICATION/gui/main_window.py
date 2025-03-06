@@ -258,8 +258,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def update_selected_action(self):
         """Updates the selected action from the combo box and refreshes the heatmap."""
-        self.selected_action = self.Action.currentText()  # Get from Qt Designer ComboBox
+        self.selected_action = self.Action.currentText()  # Get action from ComboBox
         print(f"[DEBUG] Selected Action: {self.selected_action}")
+
+        # Ensure action detection results exist before using them
+        if self.action_results_list_front is None or self.action_results_list_center is None:
+            print("[DEBUG] Action results are not available yet!")
+            return  # Prevents passing None values
 
         # Fetch the latest heatmap frame
         heatmap_frame = self.get_latest_heatmap_frame()
@@ -267,7 +272,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             print("[DEBUG] Heatmap frame received, updating...")
             self.AnalyticsTab.update_heatmap(
                 heatmap_frame, 
-                self.selected_action
+                self.selected_action,
+                self.action_results_list_front,  # Pass action results
+                self.action_results_list_center
             )
         else:
             print("[DEBUG] No heatmap frame available.")
@@ -519,8 +526,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             )
 
             # 🔍 Debug: Check if detection data exists
-            print("[DEBUG] Current Detection Data (Front):", self.human_detect_results_front)
-            print("[DEBUG] Current Detection Data (Center):", self.human_detect_results_center)
 
             # ✅ Ensure detection data is available before updating heatmap
             if self.human_detect_results_front is None or self.human_detect_results_center is None:
@@ -530,9 +535,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # ✅ Now update the heatmap with valid detection data
             self.AnalyticsTab.update_heatmap(
                 frame=heatmap_frame, 
-                selected_action=self.selected_action,
-                human_detect_results_front=self.human_detect_results_front,
-                human_detect_results_center=self.human_detect_results_center
+                selected_action=self.selected_action
             )
 
 
