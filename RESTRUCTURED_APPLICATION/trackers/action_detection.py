@@ -1,3 +1,4 @@
+from pathlib import Path
 import cv2
 import argparse
 import numpy as np
@@ -9,6 +10,7 @@ from PySide6.QtCore import QThread, Signal
  
 from ultralytics import YOLO
 from ultralytics.utils.plotting import Annotator
+
 
 
 #from ultralytics.yolo.v8.detect.predict import Detections
@@ -35,15 +37,17 @@ class ActionDetectionThread(QThread):
         self.detections = detections
 
         self.detected_actions = []
-
-        self.action_recognition_model = load_model("RESOURCES/action_recognition_model.h5")
+        
+        script_dir = Path(__file__).parent  # Get script's folder
+        model_path = script_dir.parent / "assets" / "action_recognition_model.h5"
+        self.action_recognition_model = load_model(model_path)
 
  # Recompile model (optional but can help)
         ############
 
         self.temp_sequence = []
         self.buffer_size = 30
-        self.actions_list = np.array(['Looking Down', 'Looking Forward', 'Looking Left', 'Looking Right', 'Looking Up']) 
+        self.actions_list = np.array(['Extending Right Arm', 'Standing', 'Sitting'])
         self.recent_action = None
         self.translate_action_results = None
         self.person_keypoints = defaultdict(lambda: [])

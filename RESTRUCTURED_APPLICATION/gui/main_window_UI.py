@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'MAIN-WINDOW-FINAL-DESIGNQegajL.ui'
+## Form generated from reading UI file 'MAIN-WINDOW-FINAL-DESIGNAxVWvo.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.1
+## Created by: Qt User Interface Compiler version 6.8.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -373,7 +373,7 @@ class Ui_MainWindow(object):
         self.heatmap_present_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.timeFrameContainer = QWidget(self.analyticsTab)
         self.timeFrameContainer.setObjectName(u"timeFrameContainer")
-        self.timeFrameContainer.setGeometry(QRect(20, 390, 681, 51))
+        self.timeFrameContainer.setGeometry(QRect(150, 390, 551, 51))
         self.originalVideoOnlyChkBox_center_analytics = QCheckBox(self.analyticsTab)
         self.originalVideoOnlyChkBox_center_analytics.setObjectName(u"originalVideoOnlyChkBox_center_analytics")
         self.originalVideoOnlyChkBox_center_analytics.setGeometry(QRect(900, 50, 131, 31))
@@ -392,6 +392,13 @@ class Ui_MainWindow(object):
         self.keypointsOnlyChkBox_front_analytics.setObjectName(u"keypointsOnlyChkBox_front_analytics")
         self.keypointsOnlyChkBox_front_analytics.setGeometry(QRect(1030, 250, 141, 31))
         self.keypointsOnlyChkBox_front_analytics.setAutoFillBackground(False)
+        self.Action = QComboBox(self.analyticsTab)
+        self.Action.addItem("")
+        self.Action.addItem("")
+        self.Action.addItem("")
+        self.Action.addItem("")
+        self.Action.setObjectName(u"Action")
+        self.Action.setGeometry(QRect(20, 400, 121, 41))
         self.MainTab.addTab(self.analyticsTab, "")
         self.pushButton.raise_()
         self.center_video_preview_label.raise_()
@@ -410,6 +417,7 @@ class Ui_MainWindow(object):
         self.originalVideoOnlyChkBox_front_analytics.raise_()
         self.keypointsOnlyChkBox_Center_analytics.raise_()
         self.keypointsOnlyChkBox_front_analytics.raise_()
+        self.Action.raise_()
         self.createDatasetTab = QWidget()
         self.createDatasetTab.setObjectName(u"createDatasetTab")
         self.cameraComboBox = QComboBox(self.createDatasetTab)
@@ -888,7 +896,7 @@ class Ui_MainWindow(object):
         self.date_label_2.raise_()
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 1280, 26))
+        self.menubar.setGeometry(QRect(0, 0, 1280, 33))
         self.menuARMIS = QMenu(self.menubar)
         self.menuARMIS.setObjectName(u"menuARMIS")
         self.menuARMIS.setStyleSheet(u"border-color: rgb(0, 0, 0);")
@@ -985,6 +993,12 @@ class Ui_MainWindow(object):
         self.originalVideoOnlyChkBox_front_analytics.setText(QCoreApplication.translate("MainWindow", u"Original Video Only", None))
         self.keypointsOnlyChkBox_Center_analytics.setText(QCoreApplication.translate("MainWindow", u"Keypoints Only", None))
         self.keypointsOnlyChkBox_front_analytics.setText(QCoreApplication.translate("MainWindow", u"Keypoints Only", None))
+        self.Action.setItemText(0, QCoreApplication.translate("MainWindow", u"All Actions", None))
+        self.Action.setItemText(1, QCoreApplication.translate("MainWindow", u"Extending Right Arm", None))
+        self.Action.setItemText(2, QCoreApplication.translate("MainWindow", u"Standing", None))
+        self.Action.setItemText(3, QCoreApplication.translate("MainWindow", u"Sitting", None))
+
+        self.Action.setCurrentText(QCoreApplication.translate("MainWindow", u"All Actions", None))
         self.MainTab.setTabText(self.MainTab.indexOf(self.analyticsTab), QCoreApplication.translate("MainWindow", u"Analytics", None))
         self.label_Camera.setText(QCoreApplication.translate("MainWindow", u"Camera", None))
         self.openCamera.setText(QCoreApplication.translate("MainWindow", u"Open Camera", None))

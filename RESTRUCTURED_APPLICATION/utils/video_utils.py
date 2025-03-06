@@ -151,51 +151,46 @@ class VideoProcessorThread(QThread):
     
     #Human Detection
     def human_detect(self, frame):
+        # Declare student_dict early
+        student_dict = {}
 
-        #Just to declare the variables
-        id_name_dict = None
-        student_dict = None
-        results = None
-        #Add conditional to create mask or not
+        # Add conditional to create mask or not
         if self.isFront:
             roi_mask = self.create_roi_mask(frame, self.initial_row_height)
             masked_frame = cv2.bitwise_and(frame, frame, mask=roi_mask)
             results = self.human_detection_model.track(masked_frame,
-                                                conf = self.human_detection_confidence,
-                                                persist=True,
-                                                classes=0,
-                                                iou=0.3,
-                                                agnostic_nms=True)[0]
-            id_name_dict = results.names
-            student_dict = {}
+                                                    conf=self.human_detection_confidence,
+                                                    persist=True,
+                                                    classes=0,
+                                                    iou=0.3,
+                                                    agnostic_nms=True)[0]
         else:
             results = self.human_detection_model.track(frame,
-                                                conf = self.human_detection_confidence,
-                                                persist=True,
-                                                classes=0,
-                                                iou=0.3,
-                                                agnostic_nms=True)[0]
-            id_name_dict = results.names
-            student_dict = {}
+                                                    conf=self.human_detection_confidence,
+                                                    persist=True,
+                                                    classes=0,
+                                                    iou=0.3,
+                                                    agnostic_nms=True)[0]
+
+        id_name_dict = results.names
 
         for result in results:
             boxes = result.boxes
             for box in boxes:
-                #Get the image per person
-                b = box.xyxy[0]
-                c = box.cls
-                
                 if box.id is not None and box.xyxy is not None and box.cls is not None:
                     track_id = int(box.id.tolist()[0])
                     track_result = box.xyxy.tolist()[0]
                     object_cls_id = box.cls.tolist()[0]
                     object_cls_name = id_name_dict.get(object_cls_id, "unknown")
+
                     if object_cls_name == "person":
                         student_dict[track_id] = track_result
                 else:
                     print("One of the attributes is None:", box.id, box.xyxy, box.cls)
-                    student_dict[track_id] = None
-        return student_dict
+                    continue  # Avoids UnboundLocalError
+
+        return student_dict  # ✅ Always return a dictionary
+
     
     #Human Pose Detection
     def human_pose_detect(self, frame, human_results):

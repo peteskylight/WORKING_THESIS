@@ -1,16 +1,17 @@
 from PySide6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis
-from PySide6.QtWidgets import QGraphicsScene, QSizePolicy, QVBoxLayout, QPushButton, QWidget
+from PySide6.QtWidgets import QGraphicsScene, QSizePolicy, QVBoxLayout, QPushButton, QWidget,QFileDialog
 from PySide6.QtGui import QPainter, QFont
 from PySide6.QtCore import Qt
+import pandas as pd
 
 class ActionVisualization:
     def __init__(self, main_window, action_results_list_front, action_results_list_center, min_time, max_time):
         self.action_results_list_front = action_results_list_front
         self.action_results_list_center = action_results_list_center
-        self.min_time = min_time  # Start frame
-        self.max_time = max_time  # End frame
+        self.min_time = min_time
+        self.max_time = max_time
         self.main_window = main_window
-        self.action_labels = ["Looking Down", "Looking Forward", "Looking Left", "Looking Right", "Looking Up"]
+        self.action_labels = ['Extending Right Arm', 'Standing', 'Sitting']
         self.active_actions = set(self.action_labels)
 
         # Create chart
@@ -54,7 +55,7 @@ class ActionVisualization:
         self.chart_view = QChartView(self.chart)
         self.chart_view.setRenderHint(QPainter.RenderHint.Antialiasing)
         self.chart_view.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        self.chart_view.setMinimumSize(800, 600)  # Increase chart height
+        self.chart_view.setMinimumSize(800, 600)
 
         self.scene.addWidget(self.chart_view)
         self.main_window.DataChart.setScene(self.scene)
@@ -72,10 +73,15 @@ class ActionVisualization:
             self.button_layout.addWidget(button)
             self.buttons[label] = button
         self.button_widget.setLayout(self.button_layout)
-        self.main_window.layout().addWidget(self.button_widget)
+        self.proxy_widget = self.scene.addWidget(self.button_widget)
+        self.proxy_widget.setPos(10, 10)
 
         # Connect slider to update chart dynamically
         self.main_window.timeFrameRangeSlider.valueChanged.connect(self.update_chart)
+
+        # Connect button to export function
+        self.main_window.see_full_data_button.clicked.connect(self.export_to_excel)
+
         self.populate_chart()
 
     def populate_chart(self):
@@ -124,3 +130,27 @@ class ActionVisualization:
         else:
             self.active_actions.discard(action)
         self.populate_chart()
+
+    def export_to_excel(self):
+        data = []
+        for frame_index in range(self.min_time, self.max_time + 1):
+            time_value = frame_index / 30.0  # Convert frame index to seconds
+            frame_data = {"Time (s)": time_value}
+
+            if frame_index < len(self.action_results_list_front):
+                for track_id, action in self.action_results_list_front[frame_index].items():
+                    frame_data[f"Front_Cam_Person_{track_id}"] = action
+
+            if frame_index < len(self.action_results_list_center):
+                for track_id, action in self.action_results_list_center[frame_index].items():
+                    frame_data[f"Center_Cam_Person_{track_id}"] = action
+
+            data.append(frame_data)
+
+        # Convert to DataFrame
+        df = pd.DataFrame(data)
+
+        # Save to Excel file
+        file_path, _ = QFileDialog.getSaveFileName(None, "Save Excel File", "", "Excel Files (*.xlsx)")
+        if file_path:
+            df.to_excel(file_path, index=False)

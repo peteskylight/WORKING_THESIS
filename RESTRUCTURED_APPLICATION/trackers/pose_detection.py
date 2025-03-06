@@ -93,7 +93,7 @@ class HumanDetectionThread(QThread):
     human_track_results = Signal(object)
     human_detection_progress_update = Signal(object)
 
-    def __init__(self, video_frames, isFront=True, humanDetectionModel='yolov8n.pt', humanDetectConf=0.5):
+    def __init__(self, video_frames, isFront=True, humanDetectionModel='yolov8m.pt', humanDetectConf=0.5):
         super().__init__()
         self.video_frames = video_frames  # List of frames to process
         self.isFront = isFront

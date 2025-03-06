@@ -11,7 +11,8 @@ from PySide6.QtWidgets import (QApplication,
                                 QMessageBox,
                                 QTableWidgetItem,
                                 QWidget,
-                                QButtonGroup)
+                                QButtonGroup,
+                                QComboBox)
 
 from PySide6.QtCore import QRect, QCoreApplication, QMetaObject, QTimer, QTime, Qt, QDate
 from PySide6.QtGui import QImage, QPixmap
@@ -60,7 +61,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.FrontVideo = FrontVideo(main_window=self)
         self.CreateDataset = CreateDataset(main_window=self)
         self.AnalyticsTab = AnalyticsTab(main_window=self)
-        
+
+        # Ensure `Action` combo box exists and connect signal
+        if hasattr(self, "Action"):
+            self.Action.currentIndexChanged.connect(self.update_selected_action)
+        else:
+            print("[ERROR] Combo box 'Action' not found in UI.")
+
+        self.selected_action = "All Actions"  # Default selection
+
+
         self.drawing_utils = DrawingUtils()
         self.tools_utils = Tools()
         self.video_utils = VideoUtils()
@@ -245,6 +255,38 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.toggle_record_label_counter >= self.toggle_record_label_interval:
             self.toggleLabelVisibility()
             self.toggle_record_label_counter = 0
+
+    def update_selected_action(self):
+        """Updates the selected action from the combo box and refreshes the heatmap."""
+        self.selected_action = self.Action.currentText()  # Get action from ComboBox
+        print(f"[DEBUG] Selected Action: {self.selected_action}")
+
+        # Ensure action detection results exist before using them
+        if self.action_results_list_front is None or self.action_results_list_center is None:
+            print("[DEBUG] Action results are not available yet!")
+            return  # Prevents passing None values
+
+        # Fetch the latest heatmap frame
+        heatmap_frame = self.get_latest_heatmap_frame()
+        if heatmap_frame is not None:
+            print("[DEBUG] Heatmap frame received, updating...")
+            self.AnalyticsTab.update_heatmap(
+                heatmap_frame, 
+                self.selected_action,
+                self.action_results_list_front,  # Pass action results
+                self.action_results_list_center
+            )
+        else:
+            print("[DEBUG] No heatmap frame available.")
+
+
+    
+    def get_latest_heatmap_frame(self):
+        """Retrieves the latest heatmap frame for analysis."""
+        if hasattr(self, "latest_heatmap_frame"):
+            return self.latest_heatmap_frame
+        print("[DEBUG] No stored heatmap frame found.")
+        return None
         
     
     def center(self):
@@ -314,6 +356,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.MainTab.addTab(self.analytics_tab, self.analytics_tab_title)
             self.analytics_tab_index = self.MainTab.indexOf(self.analytics_tab)
             self.MainTab.setCurrentIndex(self.analytics_tab_index)
+
+            # Create the action selector combo box
+            self.action_selector = QComboBox()
+            self.action_selector.addItems(self.action_labels)
+            self.action_selector.currentIndexChanged.connect(self.update_selected_action)
+            self.action_selector.setFixedSize(120, 30) 
+
+            # ✅ Fix: Use `self.layout()` instead of `self.main_window.layout()`
+            self.layout().addWidget(self.action_selector)
+
+            self.selected_action = 'All Actions'  # Default selection
         else:
             # Remove the tab
             self.MainTab.removeTab(self.analytics_tab_index)
@@ -358,6 +411,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def switch_to_analytics_tab(self):
         from gui import ActionVisualization
+        self.action_selector = QComboBox(self)
+        self.action_labels = ['All Actions', 'Extending Right Arm', 'Standing', 'Sitting']
+        
         
         if (self.is_center_video_ready and self.is_front_video_ready) is not None:
             self.toggle_analytics_tab()
@@ -457,16 +513,32 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             front_frame = frame_list[1]
             heatmap_frame = frame_list[2]
 
-            self.AnalyticsTab.update_frame_for_center_video_label(frame = center_frame,
-                                                                  center_starting_y=self.center_starting_y,
-                                                                  front_starting_y=self.center_video_height)
-            
-            self.AnalyticsTab.update_frame_for_front_video_label(frame=front_frame,
-                                                                 starting_y=self.front_starting_y,
-                                                                 whole_classroom_height=self.whole_classroom_height
-                                                                 )
+            self.AnalyticsTab.update_frame_for_center_video_label(
+                frame=center_frame,
+                center_starting_y=self.center_starting_y,
+                front_starting_y=self.center_video_height
+            )
 
-            self.AnalyticsTab.update_heatmap(frame=heatmap_frame)
+            self.AnalyticsTab.update_frame_for_front_video_label(
+                frame=front_frame,
+                starting_y=self.front_starting_y,
+                whole_classroom_height=self.whole_classroom_height
+            )
+
+            # 🔍 Debug: Check if detection data exists
+
+            # ✅ Ensure detection data is available before updating heatmap
+            if self.human_detect_results_front is None or self.human_detect_results_center is None:
+                print("[ERROR] Detection data is missing! Heatmap cannot be updated.")
+                return  # Stop execution if detection data is missing
+
+            # ✅ Now update the heatmap with valid detection data
+            self.AnalyticsTab.update_heatmap(
+                frame=heatmap_frame, 
+                selected_action=self.selected_action
+            )
+
+
 
 
     '''
