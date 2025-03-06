@@ -1192,45 +1192,12 @@ Footages</string>
      <widget class="QWidget" name="timeFrameContainer" native="true">
       <property name="geometry">
        <rect>
-        <x>20</x>
+        <x>150</x>
         <y>390</y>
-        <width>681</width>
+        <width>551</width>
         <height>51</height>
        </rect>
       </property>
-      <widget class="QComboBox" name="Action">
-       <property name="geometry">
-        <rect>
-         <x>40</x>
-         <y>10</y>
-         <width>121</width>
-         <height>41</height>
-        </rect>
-       </property>
-       <property name="currentText">
-        <string>All Actions</string>
-       </property>
-       <item>
-        <property name="text">
-         <string>All Actions</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Extending Right Arm</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Standing</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Sitting</string>
-        </property>
-       </item>
-      </widget>
      </widget>
      <widget class="QCheckBox" name="originalVideoOnlyChkBox_center_analytics">
       <property name="geometry">
@@ -1302,6 +1269,39 @@ Footages</string>
        <string>Keypoints Only</string>
       </property>
      </widget>
+     <widget class="QComboBox" name="Action">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>400</y>
+        <width>121</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="currentText">
+       <string>All Actions</string>
+      </property>
+      <item>
+       <property name="text">
+        <string>All Actions</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Extending Right Arm</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Standing</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Sitting</string>
+       </property>
+      </item>
+     </widget>
      <zorder>pushButton</zorder>
      <zorder>center_video_preview_label</zorder>
      <zorder>label_14</zorder>
@@ -1319,6 +1319,7 @@ Footages</string>
      <zorder>originalVideoOnlyChkBox_front_analytics</zorder>
      <zorder>keypointsOnlyChkBox_Center_analytics</zorder>
      <zorder>keypointsOnlyChkBox_front_analytics</zorder>
+     <zorder>Action</zorder>
     </widget>
     <widget class="QWidget" name="createDatasetTab">
      <attribute name="title">
@@ -3055,7 +3056,7 @@ border-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0,
      <x>0</x>
      <y>0</y>
      <width>1280</width>
-     <height>26</height>
+     <height>33</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuARMIS">
