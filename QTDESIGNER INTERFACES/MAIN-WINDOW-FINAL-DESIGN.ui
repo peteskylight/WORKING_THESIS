@@ -50,7 +50,7 @@
      <enum>QTabWidget::TabShape::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <property name="iconSize">
      <size>
@@ -1023,7 +1023,7 @@ Footages</string>
       <property name="geometry">
        <rect>
         <x>710</x>
-        <y>250</y>
+        <y>240</y>
         <width>551</width>
         <height>291</height>
        </rect>
