@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="icons">
+    <file>info-256 (1).png</file>
+    <file>info-256.png</file>
     <file>user-256 (1).png</file>
     <file>user-256.png</file>
     <file>menu-4-256 (1).png</file>
