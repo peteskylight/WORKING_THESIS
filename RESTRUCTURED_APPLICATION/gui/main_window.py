@@ -33,7 +33,7 @@ from gui_commands import (CenterVideo,
                           AnalyticsTab)
 
 #UI Design
-from gui import Ui_MainWindow
+from gui import Ui_MainWindow, LogsTab
 
 
 
@@ -61,6 +61,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.FrontVideo = FrontVideo(main_window=self)
         self.CreateDataset = CreateDataset(main_window=self)
         self.AnalyticsTab = AnalyticsTab(main_window=self)
+        self.LogsVis = LogsTab(parent=self)  
+        self.MainTab.addTab(self.LogsVis, "Logs") 
+       
+        
+        
 
         # Ensure `Action` combo box exists and connect signal
         if hasattr(self, "Action"):
@@ -89,6 +94,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         self.analyticsTab_index = 1
         self.createDatasetTab_index = 2
+        self
 
         self.createDataset_tab = self.MainTab.widget(self.createDatasetTab_index)  # Index of the tab you want to hide
         self.createDataset_tab_index = self.createDatasetTab_index  # Index of the tab you want to hide
@@ -104,8 +110,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Initially hide the tab
         self.MainTab.removeTab(self.analytics_tab_index)
         
+       
         # Connect the QAction's triggered signal to the toggle_createDataset_tab method
         self.actionviewCreateDataset.triggered.connect(self.toggle_createDataset_tab)
+      
+
 
         #============ FOR IMPORTING VIDEO TAB ===========
         
@@ -414,6 +423,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_selector = QComboBox(self)
         self.action_labels = ['All Actions', 'Extending Right Arm', 'Standing', 'Sitting']
         
+        self.LogsVis.play_pause_button_analytics_2.clicked.connect(self.toggle_play_pause_analytics_2)
+        
         
         if (self.is_center_video_ready and self.is_front_video_ready) is not None:
             self.toggle_analytics_tab()
@@ -538,8 +549,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 selected_action=self.selected_action
             )
 
+    def update_camera_previews(self, frame_list):
+        """ Updates the camera previews in the Logs tab. """
+        if frame_list is not None:
+            center_frame = frame_list[0]
+            front_frame = frame_list[1]
 
+            # Send the frames to the Logs tab
+            self.LogsVis.display_video_frame(self.main_window.center_vieo_preview_label_2, center_frame)
+            self.LogsVis.display_video_frame(self.main_widnow.front_video_preview_label_2, front_frame)
 
+    def toggle_play_pause_analytics_2(self):
+        """ Toggles play/pause for the logs in the Logs tab. """
+        self.logs.toggle_play_pause_logs()
+    
 
     '''
     THIS AREA IS FOR VIDEO PLAYER THREAD
@@ -596,6 +619,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.play_pause_button_video_preview.setEnabled(activation)
         self.analyze_video_button.setEnabled(activation)
+
     
     def open_recording_window(self):
         self.recording_window_button.setDisabled(True)

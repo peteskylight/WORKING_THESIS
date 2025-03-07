@@ -359,7 +359,11 @@
           <enum>QFrame::Shadow::Raised</enum>
          </property>
          <property name="currentIndex">
+<<<<<<< Updated upstream
           <number>4</number>
+=======
+          <number>2</number>
+>>>>>>> Stashed changes
          </property>
          <widget class="QWidget" name="TutorialPage">
           <widget class="QFrame" name="frame_10">

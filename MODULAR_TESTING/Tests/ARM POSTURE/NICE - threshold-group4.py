@@ -132,9 +132,9 @@ def export_angles_to_pdf(angle_data, filename):
 
 
 
-process_video(r"C:\Users\peter\Desktop\WORKING THESIS FILES\RESOURCES\ACTUAL SURVEY\MARCH 1\TestIndiv2.mp4",
-              r"C:\Users\peter\Desktop\WORKING THESIS FILES\MODULAR_TESTING\Tests\Thresholding 2\outputs\nicesana.mp4",
-              r"C:\Users\peter\Desktop\WORKING THESIS FILES\MODULAR_TESTING\Tests\Thresholding 2\outputs\angles_report_2_nice.pdf")
+process_video(r"C:\Users\Bennett\Documents\WORKING_THESIS\RESOURCES\ACTUAL SURVEY\MARCH 1\test.mp4",
+              r"C:\Users\Bennett\Documents\WORKING_THESIS\MODULAR_TESTING\Tests\ARM POSTURE\outputs\CHECKING.mp4",
+              r"C:\Users\Bennett\Documents\WORKING_THESIS\MODULAR_TESTING\Tests\ARM POSTURE\outputs\CHECKING.pdf")
 
 
 
