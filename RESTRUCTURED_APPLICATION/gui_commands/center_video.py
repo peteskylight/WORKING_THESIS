@@ -143,6 +143,9 @@ class CenterVideo:
         
         print("CENTER VIDEO READY: ", self.main_window.is_center_video_ready)
         print("FRONT VIDEO READY: ", self.main_window.is_front_video_ready)
+
+        print("ACTION_RESULT_LIST_FRONT:, ", self.main_window.action_result_list_front)
+        print("ACTION_RESULT_LIST_CENTER:, ", self.main_window.action_result_list_center)
         
         self.video_processor.stop()
         self.video_processor = None
