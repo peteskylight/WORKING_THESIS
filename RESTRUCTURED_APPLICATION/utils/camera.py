@@ -12,9 +12,9 @@ from utils.cvfpscalc import CvFpsCalc
 
 class CameraFeed:
     def __init__(self, label, white_frame_label, main_window):
-        self.pose_detection = PoseDetection(humanDetectionModel='yolov8n.pt',
+        self.pose_detection = PoseDetection(humanDetectionModel='yolov8m.pt',
                                             humanDetectConf=0.4,
-                                            humanPoseModel='yolov8n-pose.pt',
+                                            humanPoseModel='yolov8m-pose.pt',
                                             humanPoseConf=0.4
                                             )
         

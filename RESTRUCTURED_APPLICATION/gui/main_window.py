@@ -33,7 +33,7 @@ from gui_commands import (CenterVideo,
                           AnalyticsTab)
 
 #UI Design
-from gui import Ui_MainWindow, LogsTab
+from gui import Ui_MainWindow
 
 
 
@@ -61,8 +61,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.FrontVideo = FrontVideo(main_window=self)
         self.CreateDataset = CreateDataset(main_window=self)
         self.AnalyticsTab = AnalyticsTab(main_window=self)
-        self.LogsVis = LogsTab(parent=self)  
-        self.MainTab.addTab(self.LogsVis, "Logs") 
+        
        
         
         
@@ -419,9 +418,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         msg_box.exec()
 
     def switch_to_analytics_tab(self):
-        from gui import ActionVisualization
+        from gui import ActionVisualization, LogsTab
         self.action_selector = QComboBox(self)
         self.action_labels = ['All Actions', 'Extending Right Arm', 'Standing', 'Sitting']
+        self.LogsVis = LogsTab(parent=self) 
         
         self.LogsVis.play_pause_button_analytics_2.clicked.connect(self.toggle_play_pause_analytics_2)
         
