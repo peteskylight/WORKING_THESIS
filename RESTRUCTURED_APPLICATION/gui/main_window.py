@@ -30,10 +30,11 @@ from utils import Tools, VideoUtils, VideoPlayerThread, SeekingVideoPlayerThread
 from gui_commands import (CenterVideo,
                           FrontVideo,
                           CreateDataset,
-                          AnalyticsTab)
+                          AnalyticsTab,)
 
 #UI Design
-from gui import Ui_MainWindow
+from gui import Ui_MainWindow 
+from gui.LogVis import LogsTab
 
 
 
@@ -61,6 +62,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.FrontVideo = FrontVideo(main_window=self)
         self.CreateDataset = CreateDataset(main_window=self)
         self.AnalyticsTab = AnalyticsTab(main_window=self)
+        self.LogsVis = LogsTab(main_window=self)
+
         
        
         
@@ -92,12 +95,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         self.analyticsTab_index = 1
         self.createDatasetTab_index = 2
-        self
+        self.tab_index = 3
 
         self.createDataset_tab = self.MainTab.widget(self.createDatasetTab_index)  # Index of the tab you want to hide
         self.createDataset_tab_index = self.createDatasetTab_index  # Index of the tab you want to hide
         self.createDataset_tab_title = self.MainTab.tabText(self.createDataset_tab_index)
 
+        self.tab_index = self.tab_index
         # Initially hide the tab
         self.MainTab.removeTab(self.createDataset_tab_index)
         
@@ -161,7 +165,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.front_starting_y = 0
         self.center_starting_y = 0
 
-        self.analyze_video_button.clicked.connect(self.switch_to_analytics_tab)
+        self.analyze_video_button.clicked.connect(self.handle_analyze_button_click)
 
         self.play_pause_button_analytics.clicked.connect(self.toggle_play_pause_analytics)
 
@@ -370,7 +374,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.action_selector.currentIndexChanged.connect(self.update_selected_action)
             self.action_selector.setFixedSize(120, 30) 
 
-            # ✅ Fix: Use `self.layout()` instead of `self.main_window.layout()`
+         
             self.layout().addWidget(self.action_selector)
 
             self.selected_action = 'All Actions'  # Default selection
@@ -378,6 +382,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # Remove the tab
             self.MainTab.removeTab(self.analytics_tab_index)
             self.analytics_tab_index = -1
+    def toggle_logs_tab(self): 
+
+        if self.tab_index == -1:  
+            self.MainTab.addTab(self.tab, "Logs")
+            self.tab_index = self.MainTab.indexOf(self.tab)  
+            self.MainTab.setCurrentIndex(self.tab_index)  
+        else:  # If already present, remove it
+            self.MainTab.removeTab(self.tab_index)
+            self.tab_index = -1  
+    def handle_analyze_button_click(self):
+        self.switch_to_analytics_tab()  
+        self.toggle_logs_tab()          
+
 
     def toggle_button(self):
         if self.recording_button.text() == "START\nRECORDING":
@@ -417,12 +434,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         msg_box.exec()
 
     def switch_to_analytics_tab(self):
-        from gui import ActionVisualization, LogsTab
+        from gui import ActionVisualization
         self.action_selector = QComboBox(self)
         self.action_labels = ['All Actions', 'Extending Right Arm', 'Standing', 'Sitting']
-        self.LogsVis = LogsTab(parent=self) 
-        
-        self.LogsVis.play_pause_button_analytics_2.clicked.connect(self.toggle_play_pause_analytics_2)
+    
         
         
         if (self.is_center_video_ready and self.is_front_video_ready) is not None:
@@ -560,7 +575,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def toggle_play_pause_analytics_2(self):
         """ Toggles play/pause for the logs in the Logs tab. """
-        self.logs.toggle_play_pause_logs()
+        self.LogsVis.toggle_play_pause_logs()
     
 
     '''

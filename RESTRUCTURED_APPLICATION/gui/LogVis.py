@@ -3,8 +3,9 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap, QImage
 
 class LogsTab(QWidget):
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def __init__(self, main_window=None):
+        super().__init__()
+        self.main_window = main_window
         self.setWindowTitle("Action Recognition Logs")
         
         self.layout = QVBoxLayout()

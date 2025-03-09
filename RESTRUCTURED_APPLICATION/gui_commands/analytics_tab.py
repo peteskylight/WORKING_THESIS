@@ -20,6 +20,8 @@ class AnalyticsTab:
         self.human_detect_results_center = []
         self.action_results_front = []  # New list to store detected actions
         self.action_results_center = []  # New list to store detected actions
+        self.action_results_list_front = []  # Initialize as empty list
+        self.action_results_list_center = []  # Initialize as empty list
 
         
 
