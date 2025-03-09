@@ -18,9 +18,6 @@ from ultralytics.utils.plotting import Annotator
 import tensorflow as tf
 from tensorflow.keras.models import load_model
 
-
-
-
 import torch #========================================> GPU IMPORTANT <========
 
 

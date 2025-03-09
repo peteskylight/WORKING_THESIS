@@ -86,8 +86,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.returned_frames_from_browsed_center_video = None
         self.returned_frames_from_browsed_front_video = None
 
-        
-
+    
         self.cropped_frame_for_front_video_analytics_preview = None
         self.cropped_frame_for_center_video_analytics_preview = None
         
