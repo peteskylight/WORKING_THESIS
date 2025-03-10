@@ -218,7 +218,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.timeFrameRangeSlider_2 = QRangeSlider(Qt.Horizontal)
         self.timeFrameRangeSlider_2 .setMinimum(0)  # Example duration
         self.timeFrameRangeSlider_2 .setMaximum(100)  # Example duration                #double check
-        self.timeFrameRangeSlider_2 .setValue((0, 100))  # Default selected range
+        self.timeFrameRangeSlider_2 .setValue((20, 40))  # Default selected range
         self.timeFrameRangeSlider_2 .setFixedHeight(40)
 
         
@@ -462,12 +462,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.are_videos_ready = True
             self.play_pause_button_analytics.setEnabled(True)    
             self.play_pause_button_analytics.setText("PLAY")
-            self.activate_analytics(activation=True)             ##!!!!
+            self.activate_analytics(activation=True)
+            self.activate_Log           ##!!!!
             self.play_pause_button_video_preview.setText("PLAY PREVIEW")
             self.import_video_button_front.setEnabled(False)
             self.import_video_button_center.setEnabled(False)
 
-            self.play_pause_button_analytics_2.setEnabled(True)   ### Bennett : if ever there is ram issue seperate the function.  
+            self.play_pause_button_analytics_2.setEnabled(True)   
             self.play_pause_button_analytics_2.setText("PLAY")
 
 
@@ -555,6 +556,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.video_player_thread_analytics.pause(not self.video_player_thread_analytics.paused) 
     
     def update_frame_for_analytics(self, frame_list):
+        if frame_list is None or len(frame_list) < 3:
+            print("[ERROR] Frame list is None or incomplete!")
+            return  # Avoid further errors
         if frame_list is not None:
             center_frame = frame_list[0]
             front_frame = frame_list[1]
@@ -583,7 +587,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             )
 
     def update_frame_for_logs(self, frame_list):
-        if frame_list is not None:                                                       ### double check function
+         if frame_list is None or len(frame_list) < 3:
+            print("[ERROR] Frame list is None or incomplete!")
+            return  # Avoid further errors
+
+         if frame_list is not None:                                                       ### double check function
             center_frame = frame_list[0]
             front_frame = frame_list[1]
 
@@ -602,26 +610,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def toggle_play_pause_logs(self):
         center_video_directory = self.videoDirectory_center.text()
         front_video_directory = self.videoDirectory_front.text()
-        
-        #Just to make sure that the frames that will be shown is not black frames
 
+        # Stop preview thread to save CPU usage
         if self.video_player_thread_preview_2 is not None:
             if self.video_player_thread_preview_2.isRunning():
                 self.video_player_thread_preview_2.running = False
                 self.video_player_thread_preview_2.stop()
-                
-            else:
-                self.video_player_thread_preview_2 = None
-                                                                                                                        #Double check
-        #Just to stop the thread in viewing in order to save some CPU USAGE
-        #self.video_player_thread_preview.stop()
+            self.video_player_thread_preview_2 = None  
+
+        # If the log thread is None, initialize it and start playback
         if self.video_player_thread_logs is None:
-            self.video_player_thread_logs = SeekingVideoPlayerThread(center_video_path=center_video_directory,
-                                                                           front_video_path=front_video_directory,
-                                                                           main_window=self
-                                                                            )
-        # if self.video_player_thread_analytics is not None or self.video_player_thread_analytics.isRunning():
-            self.play_pause_button_analytics_2.setText("PLAY")
+            self.video_player_thread_logs = SeekingVideoPlayerThread(
+                center_video_path=center_video_directory,
+                front_video_path=front_video_directory,
+                main_window=self
+            )
+
             self.video_player_thread_logs.frames_signal.connect(self.update_frame_for_logs)
             self.video_player_thread_logs.start()
 
@@ -629,9 +633,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.video_player_thread_logs.current_frame_index = min_value
             self.video_player_thread_logs.target_frame_index = min_value
 
+            self.play_pause_button_analytics_2.setText("PAUSE")  # Change button text to indicate it's playing
+
         else:
-            self.play_pause_button_analytics_2.setText("PAUSE")
-            self.video_player_thread_logs.pause(not self.video_player_thread_analytics.paused) 
+            # Toggle between pause and resume
+            if self.video_player_thread_logs.paused:
+                self.video_player_thread_logs.pause(False)  # Resume playback
+                self.play_pause_button_analytics_2.setText("PAUSE")
+            else:
+                self.video_player_thread_logs.pause(True)  # Pause playback
+                self.play_pause_button_analytics_2.setText("PLAY")
+
+
 
     def toggle_play_pause_analytics_2(self):
         """ Toggles play/pause for the logs in the Logs tab. """    ## i think this is useless?
@@ -675,24 +688,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     THIS AREA IS FOR VIDEO PLAYER THREAD
     '''
 
-    def activate_analytics(self, activation):
-        front_video_directory = self.videoDirectory_front.text()
-        center_video_directory = self.videoDirectory_center.text()
-        
-        front_cap = cv2.VideoCapture(front_video_directory)
-        center_cap = cv2.VideoCapture(center_video_directory)
+    def activate_Log(self):
+            front_video_directory = self.videoDirectory_front.text()
+            center_video_directory = self.videoDirectory_center.text()
+            
+            front_cap = cv2.VideoCapture(front_video_directory)
+            center_cap = cv2.VideoCapture(center_video_directory)
 
-        front_video_frame_count = int(front_cap.get(cv2.CAP_PROP_FRAME_COUNT))
+            front_video_frame_count = int(front_cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
-        center_video_frame_count = int(center_cap.get(cv2.CAP_PROP_FRAME_COUNT))
+            center_video_frame_count = int(center_cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
-        if front_video_frame_count > center_video_frame_count:
-            self.timeFrameRangeSlider.setMaximum(int(len(self.human_pose_results_center)-1)) ##!!
-        else:
-            self.timeFrameRangeSlider.setMaximum(int(len(self.human_pose_results_front)-1))
-
-        self.play_pause_button_video_preview.setEnabled(activation)
-        self.analyze_video_button.setEnabled(activation)
+            if front_video_frame_count > center_video_frame_count:
+                self.timeFrameRangeSlider_2.setMaximum(int(len(self.human_pose_results_center)-1)) ### double check function
+            else:
+                self.timeFrameRangeSlider_2.setMaximum(int(len(self.human_pose_results_front)-1))
 
 
     def activate_analytics(self, activation):
