@@ -86,12 +86,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.videoHeight = None
 
         self.fps_flider_value = 30
-        self.returned_frames_from_browsed_center_video = None
-        self.returned_frames_from_browsed_front_video = None
+        self.returned_frames_from_browsed_center_video = None       ####
+        self.returned_frames_from_browsed_front_video = None        ####
 
     
-        self.cropped_frame_for_front_video_analytics_preview = None
-        self.cropped_frame_for_center_video_analytics_preview = None
+        self.cropped_frame_for_front_video_analytics_preview = None   ####    
+        self.cropped_frame_for_center_video_analytics_preview = None  ####
         
         self.analyticsTab_index = 1
         self.createDatasetTab_index = 2
@@ -168,7 +168,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.analyze_video_button.clicked.connect(self.handle_analyze_button_click)
 
         self.play_pause_button_analytics.clicked.connect(self.toggle_play_pause_analytics)
-
+        self.play_pause_button_analytics_2.clicked.connect(self.toggle_play_pause_logs)
+        
         # self.video_seek_slider.sliderPressed.connect(self.on_slider_clicked)
         # self.video_seek_slider.sliderReleased.connect(self.on_slider_moved)
 
@@ -199,6 +200,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Locate the QWidget placeholder
         self.sliderContainer = self.findChild(QWidget, "timeFrameContainer")
+        self.sliderContainer_2 = self.findChild(QWidget, "timeFrameContainer_2")  ##
         
 
         # THIS IS FOR TIME RANGE VIDEO SEEKER
@@ -208,11 +210,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.timeFrameRangeSlider.setValue((20, 80))  # Default selected range
         self.timeFrameRangeSlider.setFixedHeight(40)
 
+        self.timeFrameRangeSlider_2 = QRangeSlider(Qt.Horizontal)
+        self.timeFrameRangeSlider_2 .setMinimum(0)  # Example duration
+        self.timeFrameRangeSlider_2 .setMaximum(100)  # Example duration
+        self.timeFrameRangeSlider_2 .setValue((0, 100))  # Default selected range
+        self.timeFrameRangeSlider_2 .setFixedHeight(40)
+
         
 
         # Replace placeholder with actual QRangeSlider
-        layout = QVBoxLayout(self.sliderContainer)
+        layout = QVBoxLayout(self.sliderContainer) ##
         layout.addWidget(self.timeFrameRangeSlider)
+
+        layout = QVBoxLayout(self.sliderContainer_2) ##
+        layout.addWidget(self.timeFrameRangeSlider_2)
 
         #self.timeFrameRangeSlider.valueChanged.connect(self.update_time_range)
 
@@ -234,8 +245,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.CreateDataset.populate_camera_combo_box()
 
         # Slider Value Change
-        self.interval_slider.valueChanged.connect(self.updateIntervalLabel)
-        self.sequence_slider.valueChanged.connect(self.updateSequenceLabel)
+        self.interval_slider.valueChanged.connect(self.updateIntervalLabel) ##!
+        self.sequence_slider.valueChanged.connect(self.updateSequenceLabel) ##!
         
         # Set Column Names
         self.action_table.setHorizontalHeaderLabels(["Actions", "# of Recordings"])
@@ -343,10 +354,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.status_label.setVisible(not self.status_label.isVisible())
         
     def updateIntervalLabel(self, value):
-        self.interval_label.setText(str(value))
+        self.interval_label.setText(str(value))   ##!
         
     def updateSequenceLabel(self, value):
-        self.sequence_label.setText(str(value))
+        self.sequence_label.setText(str(value))   ##!
         
     def toggle_createDataset_tab(self):
         # Toggle the visibility of the tab
@@ -444,14 +455,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.toggle_analytics_tab()
             self.MainTab.setCurrentIndex(1)
             self.are_videos_ready = True
-            self.play_pause_button_analytics.setEnabled(True)
+            self.play_pause_button_analytics.setEnabled(True)    
             self.play_pause_button_analytics.setText("PLAY")
-            self.activate_analytics(activation=True)
+            self.activate_analytics(activation=True)             ##!!!!
             self.play_pause_button_video_preview.setText("PLAY PREVIEW")
             self.import_video_button_front.setEnabled(False)
             self.import_video_button_center.setEnabled(False)
 
-            min_value, max_value = self.timeFrameRangeSlider.value()
+            self.play_pause_button_analytics_2.setEnabled(True)   ### Bennett : if ever there is ram issue seperate the function.  
+            self.play_pause_button_analytics_2.setText("PLAY")
+
+
+
+            min_value, max_value = self.timeFrameRangeSlider.value()   ##!!
+            min_value, max_value = self.timeFrameRangeSlider_2.value()  
 
             # Integrate chart into QGraphicsView instead of a separate window
             self.action_chart = ActionVisualization(main_window=self,
@@ -511,7 +528,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 
             else:
                 self.video_player_thread_preview = None
-
+                                                                                                                        # FInal final?
         #Just to stop the thread in viewing in order to save some CPU USAGE
         #self.video_player_thread_preview.stop()
         if self.video_player_thread_analytics is None:
@@ -540,7 +557,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             self.AnalyticsTab.update_frame_for_center_video_label(
                 frame=center_frame,
-                center_starting_y=self.center_starting_y,
+                center_starting_y=self.center_starting_y,                              ### 2nd to the last final
                 front_starting_y=self.center_video_height
             )
 
@@ -550,18 +567,66 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 whole_classroom_height=self.whole_classroom_height
             )
 
-            # 🔍 Debug: Check if detection data exists
 
-            # ✅ Ensure detection data is available before updating heatmap
             if self.human_detect_results_front is None or self.human_detect_results_center is None:
                 print("[ERROR] Detection data is missing! Heatmap cannot be updated.")
                 return  # Stop execution if detection data is missing
 
-            # ✅ Now update the heatmap with valid detection data
             self.AnalyticsTab.update_heatmap(
                 frame=heatmap_frame, 
                 selected_action=self.selected_action
             )
+
+    def update_frame_for_logs(self, frame_list):
+        if frame_list is not None:
+            center_frame = frame_list[0]
+            front_frame = frame_list[1]
+
+            self.LogsVis.update_frame_for_center_video_label(
+                frame=center_frame,
+                center_starting_y=self.center_starting_y,                              ### double check
+                front_starting_y=self.center_video_height
+            )
+
+            self.LogsVis.update_frame_for_front_video_label(
+                frame=front_frame,
+                starting_y=self.front_starting_y,
+                whole_classroom_height=self.whole_classroom_height
+            ) 
+
+    def toggle_play_pause_logs(self):
+        center_video_directory = self.videoDirectory_center.text()
+        front_video_directory = self.videoDirectory_front.text()
+        
+        #Just to make sure that the frames that will be shown is not black frames
+
+        if self.video_player_thread_preview is not None:
+            if self.video_player_thread_preview.isRunning():
+                self.video_player_thread_preview.running = False
+                self.video_player_thread_preview.stop()
+                
+            else:
+                self.video_player_thread_preview = None
+                                                                                                                        #Double check
+        #Just to stop the thread in viewing in order to save some CPU USAGE
+        #self.video_player_thread_preview.stop()
+        if self.video_player_thread_analytics is None:
+            self.video_player_thread_analytics = SeekingVideoPlayerThread(center_video_path=center_video_directory,
+                                                                           front_video_path=front_video_directory,
+                                                                           main_window=self
+                                                                            )
+        # if self.video_player_thread_analytics is not None or self.video_player_thread_analytics.isRunning():
+            self.play_pause_button_analytics_2.setText("PLAY")
+            self.video_player_thread_analytics.frames_signal.connect(self.update_frame_for_logs)
+            self.video_player_thread_analytics.start()
+
+            min_value, max_value = self.timeFrameRangeSlider_2.value()
+            self.video_player_thread_analytics.current_frame_index = min_value
+            self.video_player_thread_analytics.target_frame_index = min_value
+
+        else:
+            self.play_pause_button_analytics_2.setText("PAUSE")
+            self.video_player_thread_analytics.pause(not self.video_player_thread_analytics.paused) 
 
     def update_camera_previews(self, frame_list):
         """ Updates the camera previews in the Logs tab. """
@@ -627,12 +692,33 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         center_video_frame_count = int(center_cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
         if front_video_frame_count > center_video_frame_count:
-            self.timeFrameRangeSlider.setMaximum(int(len(self.human_pose_results_center)-1))
+            self.timeFrameRangeSlider.setMaximum(int(len(self.human_pose_results_center)-1)) ##!!
         else:
             self.timeFrameRangeSlider.setMaximum(int(len(self.human_pose_results_front)-1))
 
         self.play_pause_button_video_preview.setEnabled(activation)
         self.analyze_video_button.setEnabled(activation)
+
+
+    def activate_analytics(self, activation):
+            front_video_directory = self.videoDirectory_front.text()
+            center_video_directory = self.videoDirectory_center.text()
+                                                                                            #### Intimidate
+            front_cap = cv2.VideoCapture(front_video_directory)
+            center_cap = cv2.VideoCapture(center_video_directory)
+
+            front_video_frame_count = int(front_cap.get(cv2.CAP_PROP_FRAME_COUNT))
+
+            center_video_frame_count = int(center_cap.get(cv2.CAP_PROP_FRAME_COUNT))
+
+            if front_video_frame_count > center_video_frame_count:
+                self.timeFrameRangeSlider.setMaximum(int(len(self.human_pose_results_center)-1)) ##!!
+            else:
+                self.timeFrameRangeSlider.setMaximum(int(len(self.human_pose_results_front)-1))
+
+            self.play_pause_button_video_preview.setEnabled(activation)
+            self.analyze_video_button.setEnabled(activation)
+
 
     
     def open_recording_window(self):
