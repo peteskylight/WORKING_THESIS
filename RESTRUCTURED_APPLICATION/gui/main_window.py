@@ -34,7 +34,7 @@ from gui_commands import (CenterVideo,
 
 #UI Design
 from gui import Ui_MainWindow 
-from gui.LogVis import LogsTab
+from gui.LogVis import LogsTab               ## Double check : kapag walang .LogVis import circuit with MainWindow  // but this method works fine   
 
 
 
@@ -86,8 +86,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.videoHeight = None
 
         self.fps_flider_value = 30
-        self.returned_frames_from_browsed_center_video = None       ####
-        self.returned_frames_from_browsed_front_video = None        ####
+        self.returned_frames_from_browsed_center_video = None       
+        self.returned_frames_from_browsed_front_video = None        
 
     
         self.cropped_frame_for_front_video_analytics_preview = None   ####    
@@ -173,7 +173,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.analyze_video_button.clicked.connect(self.handle_analyze_button_click)
 
         self.play_pause_button_analytics.clicked.connect(self.toggle_play_pause_analytics)
-        self.play_pause_button_analytics_2.clicked.connect(self.toggle_play_pause_logs)
+        self.play_pause_button_analytics_2.clicked.connect(self.toggle_play_pause_logs)             #double check
+        
         
         # self.video_seek_slider.sliderPressed.connect(self.on_slider_clicked)
         # self.video_seek_slider.sliderReleased.connect(self.on_slider_moved)
@@ -215,19 +216,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.timeFrameRangeSlider.setValue((20, 80))  # Default selected range
         self.timeFrameRangeSlider.setFixedHeight(40)
 
-        self.timeFrameRangeSlider_2 = QRangeSlider(Qt.Horizontal)
+        self.timeFrameRangeSlider_2 = QRangeSlider(Qt.Horizontal)                       #double check
         self.timeFrameRangeSlider_2 .setMinimum(0)  # Example duration
-        self.timeFrameRangeSlider_2 .setMaximum(100)  # Example duration
+        self.timeFrameRangeSlider_2 .setMaximum(100)  # Example duration                    
         self.timeFrameRangeSlider_2 .setValue((0, 100))  # Default selected range
         self.timeFrameRangeSlider_2 .setFixedHeight(40)
 
+        self.timeFrameRangeSlider_2.valueChanged.connect(self.on_slider_changed)
         
 
         # Replace placeholder with actual QRangeSlider
-        layout = QVBoxLayout(self.sliderContainer) ##
+        layout = QVBoxLayout(self.sliderContainer) 
         layout.addWidget(self.timeFrameRangeSlider)
 
-        layout = QVBoxLayout(self.sliderContainer_2) ##
+        layout = QVBoxLayout(self.sliderContainer_2) # double check
         layout.addWidget(self.timeFrameRangeSlider_2)
 
         #self.timeFrameRangeSlider.valueChanged.connect(self.update_time_range)
@@ -462,7 +464,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.are_videos_ready = True
             self.play_pause_button_analytics.setEnabled(True)    
             self.play_pause_button_analytics.setText("PLAY")
-            self.activate_analytics(activation=True)             ##!!!!
+            self.activate_analytics(activation=True)
+            self.activate_Log                                                            ##double check this whole function
             self.play_pause_button_video_preview.setText("PLAY PREVIEW")
             self.import_video_button_front.setEnabled(False)
             self.import_video_button_center.setEnabled(False)
@@ -472,7 +475,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
 
-            min_value, max_value = self.timeFrameRangeSlider.value()   ##!!
+            min_value, max_value = self.timeFrameRangeSlider.value()   
             min_value, max_value = self.timeFrameRangeSlider_2.value()  
 
             # Integrate chart into QGraphicsView instead of a separate window
@@ -520,7 +523,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.video_player_thread_preview.pause(not self.video_player_thread_preview.paused)
 
 
-    def toggle_play_pause_analytics(self):
+    def toggle_play_pause_analytics(self):                                  
         center_video_directory = self.videoDirectory_center.text()
         front_video_directory = self.videoDirectory_front.text()
         
@@ -582,14 +585,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 selected_action=self.selected_action
             )
 
-    def update_frame_for_logs(self, frame_list):
+    def update_frame_for_logs(self, frame_list):                        
         if frame_list is not None:
             center_frame = frame_list[0]
             front_frame = frame_list[1]
 
             self.LogsVis.update_frame_for_center_video_label(
                 frame=center_frame,
-                center_starting_y=self.center_starting_y,                              ### double check
+                center_starting_y=self.center_starting_y,                              ### double check function
                 front_starting_y=self.center_video_height
             )
 
@@ -612,7 +615,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 
             else:
                 self.video_player_thread_preview_2 = None
-                                                                                                                        #Double check
+                                                                                                                        ### double check function
         #Just to stop the thread in viewing in order to save some CPU USAGE
         #self.video_player_thread_preview.stop()
         if self.video_player_thread_logs is None:
@@ -636,7 +639,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def toggle_play_pause_analytics_2(self):
         """ Toggles play/pause for the logs in the Logs tab. """    ## i think this is useless?
         self.LogsVis.toggle_play_pause_logs()
-    
+
+    def activate_Log(self):
+            front_video_directory = self.videoDirectory_front.text()
+            center_video_directory = self.videoDirectory_center.text()
+            
+            front_cap = cv2.VideoCapture(front_video_directory)
+            center_cap = cv2.VideoCapture(center_video_directory)
+
+            front_video_frame_count = int(front_cap.get(cv2.CAP_PROP_FRAME_COUNT))
+
+            center_video_frame_count = int(center_cap.get(cv2.CAP_PROP_FRAME_COUNT))
+
+            if front_video_frame_count > center_video_frame_count:
+                self.timeFrameRangeSlider_2.setMaximum(int(len(self.human_pose_results_center)-1)) ### double check function
+            else:
+                self.timeFrameRangeSlider_2.setMaximum(int(len(self.human_pose_results_front)-1))
+
+
 
     '''
     THIS AREA IS FOR VIDEO PLAYER THREAD
@@ -698,7 +718,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def activate_analytics(self, activation):
             front_video_directory = self.videoDirectory_front.text()
             center_video_directory = self.videoDirectory_center.text()
-                                                                                            #### Intimidate
+                                                                                            #### Intimidated
             front_cap = cv2.VideoCapture(front_video_directory)
             center_cap = cv2.VideoCapture(center_video_directory)
 
@@ -724,3 +744,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     
     def reenable_recording_button(self):
         self.recording_window_button.setDisabled(False)
+
+    def on_slider_changed(self):
+        if self.video_player_thread_logs is not None:
+            min_value, max_value = self.timeFrameRangeSlider_2.value()
+            self.video_player_thread_logs.current_frame_index = min_value
+            self.video_player_thread_logs.target_frame_index = min_value
+            self.video_player_thread_logs.seek_to_frame(min_value)
+
+    def seek_to_frame(self, frame_index, front_video_directory, center_video_directory):
+            """Seeks both videos to the given frame index."""
+            self.center_cap.set(cv2.VideoCapture(front_video_directory), frame_index)
+            self.front_cap.set(cv2.VideoCapture(center_video_directory), frame_index)
+            self.current_frame_index = frame_index
+            self.target_frame_index = frame_index
