@@ -149,6 +149,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.video_player_thread_preview = None
         self.video_player_thread_analytics = None
+
+        self.video_player_thread_preview_2 = None
+        self.video_player_thread_logs = None               ## double check
+
+
         
         self.import_video_button_center.clicked.connect(self.CenterVideo.browse_video)
 
@@ -600,46 +605,36 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         #Just to make sure that the frames that will be shown is not black frames
 
-        if self.video_player_thread_preview is not None:
-            if self.video_player_thread_preview.isRunning():
-                self.video_player_thread_preview.running = False
-                self.video_player_thread_preview.stop()
+        if self.video_player_thread_preview_2 is not None:
+            if self.video_player_thread_preview_2.isRunning():
+                self.video_player_thread_preview_2.running = False
+                self.video_player_thread_preview_2.stop()
                 
             else:
-                self.video_player_thread_preview = None
+                self.video_player_thread_preview_2 = None
                                                                                                                         #Double check
         #Just to stop the thread in viewing in order to save some CPU USAGE
         #self.video_player_thread_preview.stop()
-        if self.video_player_thread_analytics is None:
-            self.video_player_thread_analytics = SeekingVideoPlayerThread(center_video_path=center_video_directory,
+        if self.video_player_thread_logs is None:
+            self.video_player_thread_logs = SeekingVideoPlayerThread(center_video_path=center_video_directory,
                                                                            front_video_path=front_video_directory,
                                                                            main_window=self
                                                                             )
         # if self.video_player_thread_analytics is not None or self.video_player_thread_analytics.isRunning():
             self.play_pause_button_analytics_2.setText("PLAY")
-            self.video_player_thread_analytics.frames_signal.connect(self.update_frame_for_logs)
-            self.video_player_thread_analytics.start()
+            self.video_player_thread_logs.frames_signal.connect(self.update_frame_for_logs)
+            self.video_player_thread_logs.start()
 
             min_value, max_value = self.timeFrameRangeSlider_2.value()
-            self.video_player_thread_analytics.current_frame_index = min_value
-            self.video_player_thread_analytics.target_frame_index = min_value
+            self.video_player_thread_logs.current_frame_index = min_value
+            self.video_player_thread_logs.target_frame_index = min_value
 
         else:
             self.play_pause_button_analytics_2.setText("PAUSE")
-            self.video_player_thread_analytics.pause(not self.video_player_thread_analytics.paused) 
-
-    def update_camera_previews(self, frame_list):
-        """ Updates the camera previews in the Logs tab. """
-        if frame_list is not None:
-            center_frame = frame_list[0]
-            front_frame = frame_list[1]
-
-            # Send the frames to the Logs tab
-            self.LogsVis.display_video_frame(self.main_window.center_vieo_preview_label_2, center_frame)
-            self.LogsVis.display_video_frame(self.main_widnow.front_video_preview_label_2, front_frame)
+            self.video_player_thread_logs.pause(not self.video_player_thread_analytics.paused) 
 
     def toggle_play_pause_analytics_2(self):
-        """ Toggles play/pause for the logs in the Logs tab. """
+        """ Toggles play/pause for the logs in the Logs tab. """    ## i think this is useless?
         self.LogsVis.toggle_play_pause_logs()
     
 
