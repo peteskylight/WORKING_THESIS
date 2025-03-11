@@ -1,6 +1,10 @@
-from PySide6.QtWidgets import QGraphicsView, QGraphicsScene, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget, QPushButton, QLabel
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QPixmap, QImage
+from PySide6.QtWidgets import (
+    QWidget, QVBoxLayout, QGraphicsView, QGraphicsScene, 
+    QTableWidget, QTableWidgetItem, QPushButton, QLabel, QSizePolicy
+)
+from PySide6.QtCharts import QChartView, QChart  
+from PySide6.QtGui import QPainter, QPixmap, QImage  
+from PySide6.QtCore import Qt, QTimer
 import numpy as np
 
 class LogsTab(QWidget):
@@ -10,43 +14,81 @@ class LogsTab(QWidget):
         self.setWindowTitle("Action Recognition Logs")
         
         self.layout = QVBoxLayout()
-        
-        # Create a QGraphicsView and Scene for the log table
-        self.graphics_view = QGraphicsView()
-        self.scene = QGraphicsScene()
-        self.graphics_view.setScene(self.scene)
-        
-        # Create a table widget inside QGraphicsView
+
+        # Chart setup
+        self.chart = QChart()
+        self.chart_view = QChartView(self.chart)
+        self.chart_view.setRenderHint(QPainter.RenderHint.Antialiasing)
+
+        scene = QGraphicsScene()
+        scene.addWidget(self.chart_view)
+        self.main_window.DataChart_2.setScene(scene)
+
+        # Log table setup
         self.log_table = QTableWidget()
         self.log_table.setColumnCount(3)
-        self.log_table.setHorizontalHeaderLabels(["Person ID", "Action", "Timestamp (s)"])
-        self.log_table.setEditTriggers(QTableWidget.NoEditTriggers)  # Make table read-only
-        
-        self.scene.addWidget(self.log_table)
-        self.layout.addWidget(self.graphics_view)
-        
-        # Camera preview labels
-        self.center_video_preview_label_2 = QLabel("Center Camera Preview")
-        self.front_video_preview_label_2 = QLabel("Front Camera Preview")
-        
-        self.center_video_preview_label_2.setAlignment(Qt.AlignCenter)
-        self.front_video_preview_label_2.setAlignment(Qt.AlignCenter)
+        self.log_table.setHorizontalHeaderLabels(["Person ID", "Action", "Timestamp"])
+        self.layout.addWidget(self.log_table)
+        self.log_table.setMinimumHeight(300)  # Adjust height as needed
+        self.log_table.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding) 
 
-        self.layout.addWidget(self.center_video_preview_label_2)
-        self.layout.addWidget(self.front_video_preview_label_2)
+        # Camera preview labels
+        self.center_video_preview_label_2 = self.main_window.findChild(QLabel, "center_video_preview_label_2")
+        self.front_video_preview_label_2 = self.main_window.findChild(QLabel, "front_video_preview_label_2")
+        self.play_pause_button_analytics_2 = self.main_window.findChild(QPushButton, "play_pause_button_analytics_2")
         
         # Play/Pause button for logs
-        self.play_pause_button_analytics_2 = QPushButton("Play")
         self.play_pause_button_analytics_2.clicked.connect(self.toggle_play_pause_logs)
-        self.layout.addWidget(self.play_pause_button_analytics_2)
-        
-        self.setLayout(self.layout)
-        
+
         # Variables for controlling log updates
         self.is_playing = False
-        self.log_update_interval = 1  # Placeholder for future update frequency adjustments
+        self.log_update_interval = 1000  # 1 second interval for updating logs
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.update_logs_periodically)
+
+    def toggle_play_pause_logs(self):
+        """Toggle play/pause for log updates."""
+        self.is_playing = not self.is_playing
+        self.play_pause_button_analytics_2.setText("Pause" if self.is_playing else "Play")
+        
+        if self.is_playing:
+            self.timer.start(self.log_update_interval)  # Start updating logs
+        else:
+            self.timer.stop()  # Stop updating logs
+
+    def update_logs_from_list(self, logs):
+        """Update the log table with new log entries."""
+        self.log_table.setRowCount(len(logs))
+        for row, (person_id, action, timestamp) in enumerate(logs):
+            self.log_table.setItem(row, 0, QTableWidgetItem(str(person_id)))
+            self.log_table.setItem(row, 1, QTableWidgetItem(action))
+            self.log_table.setItem(row, 2, QTableWidgetItem(str(timestamp)))
+
+    def update_logs_periodically(self):
+        """Fetch logs from `main_window` and update the table periodically."""
+        if self.main_window:
+            combined_logs = []
+
+            # Extract data from action_results_list_front
+            fps = 18  # Video frame rate
+            for frame_idx, action_dict in enumerate(self.main_window.action_results_list_front):
+                timestamp = frame_idx / fps  # Convert frame index to seconds
+                for person_id, action in action_dict.items():
+                    combined_logs.append((person_id, action, f"{timestamp:.2f} s"))
+
+            # Extract data from action_results_list_center
+            for frame_idx, action_dict in enumerate(self.main_window.action_results_list_center):
+                timestamp = frame_idx / fps
+                for person_id, action in action_dict.items():
+                    combined_logs.append((person_id, action, f"{timestamp:.2f} s"))
+
+            # Update the table
+            self.update_logs_from_list(combined_logs)
+        
+        # Implement logic to start or stop log updates based on self.is_playing
+
     
-    def update_logs(self, action_results_list, camera_source):
+    def update_logs(self, action_results_list ):
         """
         Updates the log table with new entries from detected actions.
         :param action_results_list: List of dictionaries containing track ID and detected action per frame.
@@ -68,16 +110,6 @@ class LogsTab(QWidget):
     def clear_logs(self):
         """Clears all logs from the table."""
         self.log_table.setRowCount(0)
-    
-    def toggle_play_pause_logs(self):
-        """Toggles play/pause for logs."""
-        self.is_playing = not self.is_playing
-        if self.is_playing:
-            self.play_pause_button_analytics_2.setText("Pause")
-            # Future implementation: Start updating logs based on video playback
-        else:
-            self.play_pause_button_analytics_2.setText("Play")
-            # Future implementation: Pause log updates
 
     def display_video_frame(self, label, frame):
         """ Converts OpenCV frame to QPixmap and updates QLabel """
