@@ -62,7 +62,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.FrontVideo = FrontVideo(main_window=self)
         self.CreateDataset = CreateDataset(main_window=self)
         self.AnalyticsTab = AnalyticsTab(main_window=self)
-        self.LogsVis = LogsTab(main_window=self)
 
         
        
@@ -152,6 +151,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.video_player_thread_preview_2 = None
         self.video_player_thread_logs = None               ## double check
+
+
+        self.LogsVis = LogsTab(main_window=self, 
+                                action_results_list_front=self.action_results_list_front or [], 
+                                action_results_list_center=self.action_results_list_center or [], 
+                              )
 
 
         

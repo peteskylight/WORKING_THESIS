@@ -8,35 +8,45 @@ from PySide6.QtCore import Qt, QTimer
 import numpy as np
 
 class LogsTab(QWidget):
-    def __init__(self, main_window=None):
+    def __init__(self, main_window, action_results_list_front, action_results_list_center):
         super().__init__()
+        self.action_results_list_front = action_results_list_front
+        self.action_results_list_center = action_results_list_center
         self.main_window = main_window
         self.setWindowTitle("Action Recognition Logs")
-        
-        self.layout = QVBoxLayout()
+
+        # Create Graphics Scene
+        scene = QGraphicsScene()
 
         # Chart setup
         self.chart = QChart()
         self.chart_view = QChartView(self.chart)
         self.chart_view.setRenderHint(QPainter.RenderHint.Antialiasing)
 
-        scene = QGraphicsScene()
+        # Add chart view to scene
         scene.addWidget(self.chart_view)
-        self.main_window.DataChart_2.setScene(scene)
 
         # Log table setup
         self.log_table = QTableWidget()
         self.log_table.setColumnCount(3)
         self.log_table.setHorizontalHeaderLabels(["Person ID", "Action", "Timestamp"])
-        self.layout.addWidget(self.log_table)
-        self.log_table.setMinimumHeight(300)  # Adjust height as needed
-        self.log_table.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding) 
+        self.log_table.setMinimumHeight(300)
+        self.log_table.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+
+        # Add log table to scene inside a proxy widget
+        from PySide6.QtWidgets import QGraphicsProxyWidget
+        table_proxy = QGraphicsProxyWidget()
+        table_proxy.setWidget(self.log_table)
+        scene.addItem(table_proxy)
+
+        # Set scene to QGraphicsView
+        self.main_window.DataChart_2.setScene(scene)
 
         # Camera preview labels
         self.center_video_preview_label_2 = self.main_window.findChild(QLabel, "center_video_preview_label_2")
         self.front_video_preview_label_2 = self.main_window.findChild(QLabel, "front_video_preview_label_2")
         self.play_pause_button_analytics_2 = self.main_window.findChild(QPushButton, "play_pause_button_analytics_2")
-        
+
         # Play/Pause button for logs
         self.play_pause_button_analytics_2.clicked.connect(self.toggle_play_pause_logs)
 
@@ -71,13 +81,13 @@ class LogsTab(QWidget):
 
             # Extract data from action_results_list_front
             fps = 18  # Video frame rate
-            for frame_idx, action_dict in enumerate(self.main_window.action_results_list_front):
+            for frame_idx, action_dict in enumerate(self.action_results_list_front):
                 timestamp = frame_idx / fps  # Convert frame index to seconds
                 for person_id, action in action_dict.items():
                     combined_logs.append((person_id, action, f"{timestamp:.2f} s"))
 
             # Extract data from action_results_list_center
-            for frame_idx, action_dict in enumerate(self.main_window.action_results_list_center):
+            for frame_idx, action_dict in enumerate(self.action_results_list_center):
                 timestamp = frame_idx / fps
                 for person_id, action in action_dict.items():
                     combined_logs.append((person_id, action, f"{timestamp:.2f} s"))
