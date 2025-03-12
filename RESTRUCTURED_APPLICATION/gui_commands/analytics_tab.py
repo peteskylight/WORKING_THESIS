@@ -8,7 +8,7 @@ from pathlib import Path
 
 
 class AnalyticsTab:
-    def __init__(self, main_window):
+    def __init__(self, main_window, action_results_front, action_results_center):
         self.main_window = main_window
         script_dir = Path(__file__).parent  # Get script's folder
         image_path = script_dir.parent / "assets" / "SEAT PLAN.png"
@@ -18,8 +18,8 @@ class AnalyticsTab:
         self.action_labels = ['All Actions', 'Extending Right Arm', 'Standing', 'Sitting']
         self.human_detect_results_front = []
         self.human_detect_results_center = []
-        self.action_results_front = []  # New list to store detected actions
-        self.action_results_center = []  # New list to store detected actions
+        self.action_results_front = action_results_front
+        self.action_results_center = action_results_center
         self.action_results_list_front = []  # Initialize as empty list
         self.action_results_list_center = []  # Initialize as empty list
 

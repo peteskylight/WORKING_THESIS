@@ -61,7 +61,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.CenterVideo = CenterVideo(main_window=self)
         self.FrontVideo = FrontVideo(main_window=self)
         self.CreateDataset = CreateDataset(main_window=self)
-        self.AnalyticsTab = AnalyticsTab(main_window=self)
+
 
         
        
@@ -152,11 +152,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.video_player_thread_preview_2 = None
         self.video_player_thread_logs = None               ## double check
 
-
-        self.LogsVis = LogsTab(main_window=self, 
-                                action_results_list_front=self.action_results_list_front or [], 
-                                action_results_list_center=self.action_results_list_center or [], 
-                              )
 
 
         
@@ -487,6 +482,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                                     action_results_list_center=self.action_results_list_center,
                                                     min_time=min_value,
                                                     max_time=max_value)
+            self.AnalyticsTab = AnalyticsTab(
+                                            main_window=self,
+                                            action_results_front=self.action_results_list_front,
+                                            action_results_center=self.action_results_list_center
+                                            )    
+            
+            self.LogsVis = LogsTab(main_window=self, 
+                                action_results_list_front=self.action_results_list_front or [], 
+                                action_results_list_center=self.action_results_list_center or [], 
+                              )
+
+
         else:
             self.show_warning_message(status_title="Error!",
                                       message= "Please import a complete set of footages.")
