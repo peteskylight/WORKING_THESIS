@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QGraphicsView, QGraphicsScene, 
-    QTableWidget, QTableWidgetItem, QPushButton, QLabel, QSizePolicy
+    QTableWidget, QTableWidgetItem, QPushButton, QLabel, QSizePolicy, 
+    QGraphicsProxyWidget
 )
 from PySide6.QtCharts import QChartView, QChart  
 from PySide6.QtGui import QPainter, QPixmap, QImage  
@@ -13,34 +14,49 @@ class LogsTab(QWidget):
         self.action_results_list_front = action_results_list_front
         self.action_results_list_center = action_results_list_center
         self.main_window = main_window
+
+        # Track last processed frame index for incremental updates
+        self.last_processed_frame_front = -1  
+        self.last_processed_frame_center = -1  
+
+        # Timer setup for periodic log updates
+        self.is_playing = False
+        self.log_update_interval = 1000  # Update every 1 second
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.update_logs_periodically)
         self.setWindowTitle("Action Recognition Logs")
 
         # Create Graphics Scene
         scene = QGraphicsScene()
 
-        # Chart setup
-        self.chart = QChart()
-        self.chart_view = QChartView(self.chart)
-        self.chart_view.setRenderHint(QPainter.RenderHint.Antialiasing)
-
-        # Add chart view to scene
-        scene.addWidget(self.chart_view)
+       # Create a widget container for layout management
+        container_widget = QWidget()
+        layout = QVBoxLayout()
+        container_widget.setLayout(layout)
 
         # Log table setup
         self.log_table = QTableWidget()
         self.log_table.setColumnCount(3)
         self.log_table.setHorizontalHeaderLabels(["Person ID", "Action", "Timestamp"])
-        self.log_table.setMinimumHeight(300)
         self.log_table.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        layout.addWidget(self.log_table)
 
-        # Add log table to scene inside a proxy widget
-        from PySide6.QtWidgets import QGraphicsProxyWidget
+        # Set container size to match QGraphicsView dimensions
+        container_widget.setMinimumSize(461, 191)  
+        container_widget.setMaximumSize(461, 191)  
+
+        # Add widget inside a QGraphicsProxyWidget
         table_proxy = QGraphicsProxyWidget()
-        table_proxy.setWidget(self.log_table)
+        table_proxy.setWidget(container_widget)
+        table_proxy.setPos(0, 0)  # Align to top-left corner
+
+        # Add to scene
         scene.addItem(table_proxy)
 
-        # Set scene to QGraphicsView
+        # Ensure QGraphicsView uses this scene
         self.main_window.DataChart_2.setScene(scene)
+        self.main_window.DataChart_2.setRenderHint(QPainter.RenderHint.Antialiasing)
+
 
         # Camera preview labels
         self.center_video_preview_label_2 = self.main_window.findChild(QLabel, "center_video_preview_label_2")
@@ -75,27 +91,41 @@ class LogsTab(QWidget):
             self.log_table.setItem(row, 2, QTableWidgetItem(str(timestamp)))
 
     def update_logs_periodically(self):
-        """Fetch logs from `main_window` and update the table periodically."""
-        if self.main_window:
-            combined_logs = []
+        """Fetch new logs every second and append them in descending order (newest first)."""
+        if not self.is_playing or not self.main_window:
+            return  
 
-            # Extract data from action_results_list_front
-            fps = 18  # Video frame rate
-            for frame_idx, action_dict in enumerate(self.action_results_list_front):
-                timestamp = frame_idx / fps  # Convert frame index to seconds
-                for person_id, action in action_dict.items():
-                    combined_logs.append((person_id, action, f"{timestamp:.2f} s"))
+        new_logs = []
+        fps = 18  # Video frame rate
 
-            # Extract data from action_results_list_center
-            for frame_idx, action_dict in enumerate(self.action_results_list_center):
-                timestamp = frame_idx / fps
-                for person_id, action in action_dict.items():
-                    combined_logs.append((person_id, action, f"{timestamp:.2f} s"))
+        # Process new frames from front camera
+        while self.last_processed_frame_front + 1 < len(self.action_results_list_front):
+            self.last_processed_frame_front += 1
+            frame_idx = self.last_processed_frame_front
+            timestamp = frame_idx / fps  # Correct timestamp calculation
+            action_dict = self.action_results_list_front[frame_idx]
+            for person_id, action in action_dict.items():
+                new_logs.append((person_id, action, f"{timestamp:.2f} s"))
 
-            # Update the table
-            self.update_logs_from_list(combined_logs)
-        
-        # Implement logic to start or stop log updates based on self.is_playing
+        # Process new frames from center camera
+        while self.last_processed_frame_center + 1 < len(self.action_results_list_center):
+            self.last_processed_frame_center += 1
+            frame_idx = self.last_processed_frame_center
+            timestamp = frame_idx / fps
+            action_dict = self.action_results_list_center[frame_idx]
+            for person_id, action in action_dict.items():
+                new_logs.append((person_id, action, f"{timestamp:.2f} s"))
+
+        # Append new logs and keep newest at the top
+        self.append_logs(new_logs)
+
+    def append_logs(self, new_logs):
+        """Insert new logs at the top so the newest logs appear first."""
+        for person_id, action, timestamp in reversed(new_logs):  # Reverse order (newest first)
+            self.log_table.insertRow(0)  # Insert at the top
+            self.log_table.setItem(0, 0, QTableWidgetItem(f"Person {person_id}"))
+            self.log_table.setItem(0, 1, QTableWidgetItem(action))
+            self.log_table.setItem(0, 2, QTableWidgetItem(timestamp))
 
     
     def update_logs(self, action_results_list ):

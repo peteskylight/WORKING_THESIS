@@ -8,7 +8,7 @@ from pathlib import Path
 
 
 class AnalyticsTab:
-    def __init__(self, main_window, action_results_front, action_results_center):
+    def __init__(self, main_window, action_results_front, action_results_center, human_detect_results_front, human_detect_results_center):
         self.main_window = main_window
         script_dir = Path(__file__).parent  # Get script's folder
         image_path = script_dir.parent / "assets" / "SEAT PLAN.png"
@@ -16,8 +16,8 @@ class AnalyticsTab:
         self.action_selector = None
         
         self.action_labels = ['All Actions', 'Extending Right Arm', 'Standing', 'Sitting']
-        self.human_detect_results_front = []
-        self.human_detect_results_center = []
+        self.human_detect_results_front = human_detect_results_front
+        self.human_detect_results_center = human_detect_results_center
         self.action_results_front = action_results_front
         self.action_results_center = action_results_center
         self.action_results_list_front = []  # Initialize as empty list
@@ -67,52 +67,57 @@ class AnalyticsTab:
                     self.selected_action, 
                     self.human_detect_results_front,  
                     self.human_detect_results_center,
-                    self.action_results_front,  # Pass action results
-                    self.action_results_center
+                    self.action_results_list_front,  # Pass action results
+                    self.action_results_list_center
                 )
             else:
-                print("[DEBUG] No heatmap frame available.")
+                print("[DEBUG] No heatmap frame available, generating a new one.")
+                new_heatmap = self.generate_full_heatmap()
+                self.update_heatmap(
+                new_heatmap,
+                self.selected_action,
+                self.human_detect_results_front,
+                self.human_detect_results_center,
+                self.action_results_list_front,
+                self.action_results_list_center
+            )
 
 
-    def update_heatmap(self, frame, selected_action=None):
+    def update_heatmap(self, frame, selected_action, action_results_front, action_results_center, human_detect_results_front, human_detect_results_center):
+        self.human_detect_results_center = human_detect_results_center
+        self.human_detect_results_front = human_detect_results_front
+       
         """Updates the heatmap based on the selected action and integrates action detection results."""
-        
         if frame is None:
             print("[DEBUG] No frame provided for heatmap update.")
             return
 
-        # Debugging: Check stored action results before filtering
-        print(f"[DEBUG] Stored action_results_list_front before update: {self.action_results_list_front}")
-        print(f"[DEBUG] Stored action_results_list_center before update: {self.action_results_list_center}")
-
         # Ensure action results are valid lists before proceeding
-        if self.action_results_list_front is None:
-            self.action_results_list_front = []
-        
-        if self.action_results_list_center is None:
-            self.action_results_list_center = []
+        if action_results_front is None:
+            action_results_front = []
+
+        if action_results_center is None:
+            action_results_center = []
 
         # Filter data based on the selected action
         filtered_data = []
-        if selected_action:
-            for frame_results in self.action_results_list_front:
+
+        if selected_action and selected_action != "All Actions":
+            for frame_results in action_results_front:
                 for track_id, action in frame_results.items():
                     if action == selected_action:
                         filtered_data.append(track_id)
 
-            for frame_results in self.action_results_list_center:
+            for frame_results in action_results_center:
                 for track_id, action in frame_results.items():
                     if action == selected_action:
                         filtered_data.append(track_id)
 
-            print(f"[DEBUG] Filtered Data for action '{selected_action}': {filtered_data}")
-
-        # If no data matches the selected action, show debug message
         if not filtered_data:
-            print(f"[DEBUG] No data matched the selected action.")
-
-        # Generate heatmap based on the selected action
-        frame = self.generate_heatmap_based_on_action(frame, selected_action)
+            print(f"[DEBUG] No data found for action: {selected_action}, displaying unfiltered heatmap.")
+            frame = self.generate_heatmap(self.human_detect_results_front + self.human_detect_results_center)
+        else:
+            frame = self.generate_heatmap_based_on_action(frame, selected_action)
 
         # Store the latest heatmap frame
         self.main_window.heatmap_frame = frame.copy()
@@ -133,27 +138,30 @@ class AnalyticsTab:
 
 
 
-
-
     def generate_heatmap_based_on_action(self, frame, selected_action):
         """Generates a heatmap based on the selected action."""
-        print("[DEBUG] Action Results (Front):", self.action_results_list_front)
-        print("[DEBUG] Action Results (Center):", self.action_results_list_center)
-
+        
         filtered_data = []
 
-        # Combine detection and action results
-        if self.human_detect_results_front and self.action_results_list_front:
-            for detection, action in zip(self.human_detect_results_front, self.action_results_list_front):
-                if action and action.get("action") and (action["action"].lower() == selected_action.lower() or selected_action == "All Actions"):
-                    detection["action"] = action["action"]  # Ensure action is linked
-                    filtered_data.append(detection)
+        # Extract track IDs matching the selected action
+        matching_track_ids = set()
 
-        if self.human_detect_results_center and self.action_results_list_center:
-            for detection, action in zip(self.human_detect_results_center, self.action_results_list_center):
-                if action and action.get("action") and (action["action"].lower() == selected_action.lower() or selected_action == "All Actions"):
-                    detection["action"] = action["action"]  # Ensure action is linked
-                    filtered_data.append(detection)
+        if selected_action != "All Actions":
+            for frame_results in self.action_results_list_front:
+                for track_id, action in frame_results.items():
+                    if action.lower() == selected_action.lower():
+                        matching_track_ids.add(track_id)
+
+            for frame_results in self.action_results_list_center:
+                for track_id, action in frame_results.items():
+                    if action.lower() == selected_action.lower():
+                        matching_track_ids.add(track_id)
+
+        # Filter human detection results based on matching track IDs
+        for detection in self.human_detect_results_front + self.human_detect_results_center:
+            track_id = detection.get("track_id")
+            if selected_action == "All Actions" or track_id in matching_track_ids:
+                filtered_data.append(detection)
 
         print(f"[DEBUG] Filtered Data for action '{selected_action}':", filtered_data)
 
@@ -161,7 +169,8 @@ class AnalyticsTab:
             print("[DEBUG] No data matched the selected action.")
             return frame  # Return original frame if no matches
 
-        return self.generate_heatmap(filtered_data)
+        return self.create_heatmap_from_data(filtered_data)
+
 
 
 
@@ -287,65 +296,6 @@ class AnalyticsTab:
             scaled_pixmap = pixmap.scaled(self.main_window.front_video_preview_label.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
             self.main_window.front_video_preview_label.setPixmap(scaled_pixmap)
 
-
-    def update_heatmap(self, frame, selected_action=None):
-        """Updates the heatmap based on the selected action and integrates action detection results."""
-        
-        if frame is None:
-            print("[DEBUG] No frame provided for heatmap update.")
-            return
-
-        # Debugging: Check stored action results before filtering
-        print(f"[DEBUG] Stored action_results_list_front before update: {self.action_results_list_front}")
-        print(f"[DEBUG] Stored action_results_list_center before update: {self.action_results_list_center}")
-
-        # Ensure action results are valid lists before proceeding
-        if self.action_results_list_front is None:
-            self.action_results_list_front = []
-        
-        if self.action_results_list_center is None:
-            self.action_results_list_center = []
-
-        # Filter data based on the selected action
-        filtered_data = []
-        if selected_action:
-            for frame_results in self.action_results_list_front:
-                for track_id, action in frame_results.items():
-                    if action == selected_action:
-                        filtered_data.append(track_id)
-
-            for frame_results in self.action_results_list_center:
-                for track_id, action in frame_results.items():
-                    if action == selected_action:
-                        filtered_data.append(track_id)
-
-            print(f"[DEBUG] Filtered Data for action '{selected_action}': {filtered_data}")
-
-        # If no data matches the selected action, show debug message
-        if not filtered_data:
-            print(f"[DEBUG] No data matched the selected action.")
-
-        # Generate heatmap based on the selected action
-        frame = self.generate_heatmap_based_on_action(frame, selected_action)
-
-        # Store the latest heatmap frame
-        self.main_window.heatmap_frame = frame.copy()
-
-        # Convert frame to QImage for displaying in QLabel
-        height, width = frame.shape[:2]
-        bytes_per_line = 3 * width
-        q_img = QImage(frame.data, width, height, bytes_per_line, QImage.Format_RGB888).rgbSwapped()
-
-        # Set the QImage to the QLabel with aspect ratio maintained
-        pixmap = QPixmap.fromImage(q_img)
-        scaled_pixmap = pixmap.scaled(
-            self.main_window.heatmap_present_label.size(),
-            Qt.KeepAspectRatio,
-            Qt.SmoothTransformation
-        )
-        self.main_window.heatmap_present_label.setPixmap(scaled_pixmap)
-
-
     def create_heatmap_from_data(self, filtered_data):
         """Generates a heatmap image from filtered detection data."""
         if not filtered_data:
@@ -355,10 +305,45 @@ class AnalyticsTab:
         heatmap = np.zeros((480, 640), dtype=np.float32)
 
         for person in filtered_data:
-            x, y, _, _ = person.get("bbox", [0, 0, 0, 0])
-            if 0 <= x < 640 and 0 <= y < 480:
+            bbox = person.get("bbox")
+            if bbox:
+                x, y, _, _ = bbox
+                x = max(0, min(x, 639))
+                y = max(0, min(y, 479))
                 heatmap[y, x] += 1  # Increase intensity at detected locations
 
-        heatmap = np.uint8(255 * (heatmap / heatmap.max())) if heatmap.max() > 0 else heatmap
+        if heatmap.max() > 0:
+            heatmap = np.uint8(255 * (heatmap / heatmap.max()))
+        else:
+            heatmap = np.uint8(heatmap)
+
         heatmap_colored = cv2.applyColorMap(heatmap, cv2.COLORMAP_JET)
+        return heatmap_colored
+
+    
+    def get_latest_heatmap_frame(self):
+        """Returns the most recent heatmap frame if available."""
+        if hasattr(self.main_window, "heatmap_frame") and self.main_window.heatmap_frame is not None:
+            return self.main_window.heatmap_frame
+        else:
+            print("[DEBUG] No heatmap frame available, generating a new one.")
+            return self.generate_full_heatmap()
+        
+    def generate_heatmap(self, detection_results):
+        """Generates a heatmap from detected human positions."""
+        heatmap = np.zeros((480, 640), dtype=np.float32)  # Create a blank heatmap
+
+        for detection in detection_results:
+            if isinstance(detection, dict) and "bbox" in detection:
+                x, y, _, _ = detection["bbox"]
+                if 0 <= x < 640 and 0 <= y < 480:
+                    heatmap[y, x] += 1  # Increase intensity at detected positions
+
+        # Normalize and apply colormap
+        if heatmap.max() > 0:
+            heatmap = np.uint8(255 * (heatmap / heatmap.max()))
+            heatmap_colored = cv2.applyColorMap(heatmap, cv2.COLORMAP_JET)  # Apply color mapping
+        else:
+            heatmap_colored = np.zeros((480, 640, 3), dtype=np.uint8)  # Black image if no detections
+
         return heatmap_colored

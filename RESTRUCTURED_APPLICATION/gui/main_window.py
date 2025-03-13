@@ -485,7 +485,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.AnalyticsTab = AnalyticsTab(
                                             main_window=self,
                                             action_results_front=self.action_results_list_front,
-                                            action_results_center=self.action_results_list_center
+                                            action_results_center=self.action_results_list_center,
+                                            human_detect_results_front = self.human_detect_results_front,
+                                            human_detect_results_center = self.human_detect_results_center 
                                             )    
             
             self.LogsVis = LogsTab(main_window=self, 
@@ -595,7 +597,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             self.AnalyticsTab.update_heatmap(
                 frame=heatmap_frame, 
-                selected_action=self.selected_action
+                selected_action=self.selected_action,
+                human_detect_results_front=self.human_detect_results_front,
+                human_detect_results_center=self.human_detect_results_center,
+                action_results_front=self.action_results_list_front,  # Ensure this exists
+                action_results_center=self.action_results_list_center
             )
 
     def update_frame_for_logs(self, frame_list):
