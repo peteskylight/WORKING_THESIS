@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QGraphicsView, QGraphicsScene, 
     QTableWidget, QTableWidgetItem, QPushButton, QLabel, QSizePolicy, 
-    QGraphicsProxyWidget
+    QGraphicsProxyWidget, QSlider
 )
 from PySide6.QtCharts import QChartView, QChart  
 from PySide6.QtGui import QPainter, QPixmap, QImage  
@@ -18,7 +18,26 @@ class LogsTab(QWidget):
         self.max_time = max_time
         self.min_frame = 0
         self.max_frame = 0
+
         
+      
+        self.TimeLabel = self.main_window.findChild(QLabel, "TimeLabel")
+
+        # If QLabel doesn't exist, create one and add it
+        if not self.TimeLabel:
+            self.TimeLabel = QLabel("Time Range: 0.00s - 0.00s")
+            if not self.layout():
+                layout = QVBoxLayout()
+                self.setLayout(layout)
+            else:
+                layout = self.layout()
+
+            layout.addWidget(self.TimeLabel)
+            self.TimeLabel.setFixedSize(200, 30)  # Adjust height if needed
+
+        # Connect slider movement to update time label
+        self.main_window.timeFrameRangeSlider_2.valueChanged.connect(self.update_time_label)
+                
 
         # Track last processed frame index for incremental updates
         self.last_processed_frame_front = -1  
@@ -240,3 +259,15 @@ class LogsTab(QWidget):
             pixmap = QPixmap.fromImage(q_img)
             scaled_pixmap = pixmap.scaled(self.main_window.front_video_preview_label_2.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
             self.main_window.front_video_preview_label_2.setPixmap(scaled_pixmap)
+
+    def update_time_label(self):
+        """Update QLabel with the current time range from the slider."""
+        if self.main_window.timeFrameRangeSlider_2:
+            min_time, max_time = self.main_window.timeFrameRangeSlider_2.value()  # Get slider values
+            fps = 20  # Adjust based on actual FPS
+            min_time_sec = min_time / fps
+            max_time_sec = max_time / fps
+            self.TimeLabel.setText(f"Time Range: {min_time_sec:.2f}s - {max_time_sec:.2f}s")
+            self.TimeLabel.repaint()
+            print(self.TimeLabel.text())  # Debugging
+
