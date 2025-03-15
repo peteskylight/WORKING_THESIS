@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'MAIN-WINDOW-FINAL-DESIGNhvpcfO.ui'
+## Form generated from reading UI file 'MAIN-WINDOW-FINAL-DESIGNqohLLw.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.8.1
 ##
@@ -442,19 +442,25 @@ class Ui_MainWindow(object):
         self.play_pause_button_analytics_2 = QPushButton(self.tab)
         self.play_pause_button_analytics_2.setObjectName(u"play_pause_button_analytics_2")
         self.play_pause_button_analytics_2.setEnabled(False)
-        self.play_pause_button_analytics_2.setGeometry(QRect(630, 380, 261, 51))
+        self.play_pause_button_analytics_2.setGeometry(QRect(640, 320, 261, 51))
         self.play_pause_button_analytics_2.setFont(font13)
         self.tableWidget = QTableWidget(self.tab)
         self.tableWidget.setObjectName(u"tableWidget")
-        self.tableWidget.setGeometry(QRect(20, 370, 481, 211))
+        self.tableWidget.setGeometry(QRect(20, 380, 361, 211))
         self.TimeLabel = QLabel(self.tab)
         self.TimeLabel.setObjectName(u"TimeLabel")
-        self.TimeLabel.setGeometry(QRect(30, 320, 541, 41))
+        self.TimeLabel.setGeometry(QRect(30, 340, 541, 21))
         self.TimeLabel.setFont(font11)
         self.TimeLabel.setFrameShape(QFrame.Shape.Panel)
         self.TimeLabel.setFrameShadow(QFrame.Shadow.Raised)
         self.TimeLabel.setLineWidth(2)
         self.TimeLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.tableWidget_2 = QTableWidget(self.tab)
+        self.tableWidget_2.setObjectName(u"tableWidget_2")
+        self.tableWidget_2.setGeometry(QRect(400, 380, 361, 211))
+        self.tableWidget_3 = QTableWidget(self.tab)
+        self.tableWidget_3.setObjectName(u"tableWidget_3")
+        self.tableWidget_3.setGeometry(QRect(790, 380, 311, 211))
         self.MainTab.addTab(self.tab, "")
         self.createDatasetTab = QWidget()
         self.createDatasetTab.setObjectName(u"createDatasetTab")

@@ -1403,8 +1403,8 @@ Footages</string>
       </property>
       <property name="geometry">
        <rect>
-        <x>630</x>
-        <y>380</y>
+        <x>640</x>
+        <y>320</y>
         <width>261</width>
         <height>51</height>
        </rect>
@@ -1422,8 +1422,8 @@ Footages</string>
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>370</y>
-        <width>481</width>
+        <y>380</y>
+        <width>361</width>
         <height>211</height>
        </rect>
       </property>
@@ -1457,6 +1457,26 @@ Footages</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignmentFlag::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QTableWidget" name="tableWidget_2">
+      <property name="geometry">
+       <rect>
+        <x>400</x>
+        <y>380</y>
+        <width>361</width>
+        <height>211</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QTableWidget" name="tableWidget_3">
+      <property name="geometry">
+       <rect>
+        <x>790</x>
+        <y>380</y>
+        <width>311</width>
+        <height>211</height>
+       </rect>
       </property>
      </widget>
     </widget>

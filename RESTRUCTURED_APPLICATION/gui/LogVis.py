@@ -21,6 +21,7 @@ class LogsTab(QWidget):
         self.min_frame = 0
         self.max_frame = 0
         self.main_window = main_window  # Store reference to main window
+
         
       
         self.TimeLabel = self.main_window.findChild(QLabel, "TimeLabel")
@@ -55,9 +56,32 @@ class LogsTab(QWidget):
 
         # Log table setup
         self.log_table = self.main_window.findChild(QTableWidget, "tableWidget")
+        self.log_table_2 = self.main_window.findChild(QTableWidget, "tableWidget_2")  # Turning Around
+        self.log_table_3  = self.main_window.findChild(QTableWidget, "tableWidget_3")
         self.log_table.setColumnCount(3)
         self.log_table.setHorizontalHeaderLabels(["Person ID", "Action", "Timestamp"])
         self.log_table.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+
+
+        # Setup tableWidget (Sitting, Leaning on Desk)
+        if self.log_table:
+            self.log_table.setColumnCount(3)
+            self.log_table.setHorizontalHeaderLabels(["Person ID", "Action", "Timestamp"])
+            self.log_table.setSortingEnabled(True)
+
+        # Setup tableWidget_2 (Turning Around)
+        if self.log_table_2:
+            self.log_table_2.setColumnCount(3)
+            self.log_table_2.setHorizontalHeaderLabels(["Person ID", "Action", "Timestamp"])
+            self.log_table_2.setSortingEnabled(True)
+
+        # Setup tableWidget_3 (Standing, Extending Arm)
+        if self.log_table_3:
+            self.log_table_3.setColumnCount(3)
+            self.log_table_3.setHorizontalHeaderLabels(["Person ID", "Action", "Timestamp"])
+            self.log_table_3.setSortingEnabled(True)
+
+
 
         # Camera preview labels
         self.center_video_preview_label_2 = self.main_window.findChild(QLabel, "center_video_preview_label_2")
@@ -68,7 +92,18 @@ class LogsTab(QWidget):
         self.play_pause_button_analytics_2.clicked.connect(self.toggle_play_pause_logs)
         self.main_window.timeFrameRangeSlider_2.valueChanged.connect(self.update_logs_periodically)
         self.log_table.cellDoubleClicked.connect(self.on_row_double_clicked)
+        self.log_table_2.cellDoubleClicked.connect(self.on_row_double_clicked)
+        self.log_table_3.cellDoubleClicked.connect(self.on_row_double_clicked)
         self.row_selected.connect(self.main_window.update_video_position)
+
+    def setup_table(self, table):
+        """Configures the table's headers and settings."""
+        if table:  # Ensure table exists before setting properties
+            table.setColumnCount(3)
+            table.setHorizontalHeaderLabels(["Person ID", "Action", "Timestamp"])
+        table.setRowCount(0)
+        table.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        table.setSortingEnabled(True)
 
     def toggle_play_pause_logs(self):
         """Toggle play/pause for log updates."""
@@ -81,68 +116,106 @@ class LogsTab(QWidget):
             self.log_update_timer.stop()
 
     def update_logs_from_list(self, logs):
-        """Update the log table with new log entries."""
-        self.log_table.setRowCount(len(logs))
-        for row, (person_id, action, timestamp) in enumerate(logs):
-            self.log_table.setItem(row, 0, QTableWidgetItem(str(person_id)))
-            self.log_table.setItem(row, 1, QTableWidgetItem(action))
-            self.log_table.setItem(row, 2, QTableWidgetItem(str(timestamp)))
+            """Update the tables dynamically based on action type."""
+            # Clear previous logs
+            self.log_table.setRowCount(0)
+            self.log_table_2.setRowCount(0)
+            self.log_table_3.setRowCount(0)
+
+            for person_id, action, timestamp in logs:
+                if action in ["Sitting", "Leaning on desk"]:
+                    self.add_row(self.log_table, person_id, action, timestamp)
+                elif action == "Turning Around":
+                    self.add_row(self.log_table_2, person_id, action, timestamp)
+                elif action in ["Standing", "Extending right arm", "Extending left arm"]:
+                    self.add_row(self.log_table_3, person_id, action, timestamp)
+
+    def add_row(self, table, person_id, action, timestamp):
+        """Adds a new row to the specified table."""
+        if timestamp is None:
+    
+            return
+        if not isinstance(timestamp, (int, float)):
+           
+            return
+      
+        
+        row_position = table.rowCount()
+        table.insertRow(row_position)
+        table.setItem(row_position, 0, QTableWidgetItem(f"Person {person_id}"))
+        table.setItem(row_position, 1, QTableWidgetItem(action))
+        table.setItem(row_position, 2, QTableWidgetItem(f"{timestamp:.2f} s"))
 
     def update_logs_periodically(self):
-        """Fetch new logs every 0.5 seconds and update dynamically while filtering logs within the selected time range."""
+        """Fetch new logs every 0.5 seconds while filtering logs within the selected time range."""
         if not self.is_playing or not self.main_window:
             return  
-        # Get the new time range from the slider
 
         value = self.main_window.timeFrameRangeSlider_2.value()
-        if isinstance(value, tuple):
-            min_time, max_time = value
-        else:
-            min_time, max_time = value, value 
+        min_time, max_time = value if isinstance(value, tuple) else (value, value)
         
         fps = 20  # Assuming 20 FPS
         self.min_time = min_time / fps  # Convert frames to seconds
-        self.max_time = max_time / fps 
+        self.max_time = max_time / fps  
         new_logs = []
-        # Reset processing index since we want to re-evaluate logs in the new time range
+
+        # Reset processing index
         self.last_processed_frame_front = -1
         self.last_processed_frame_center = -1
 
         # Process front camera frames
         for frame_idx in range(len(self.action_results_list_front)):
-            timestamp = frame_idx / fps  # Convert frame index to time
-            current_time = self.get_current_video_time()  # Get current playback time
+            timestamp = frame_idx / fps  
+            current_time = self.get_current_video_time()
             if timestamp < self.min_time or timestamp > current_time:
                 continue 
-            action_dict = self.action_results_list_front[frame_idx]
-            for person_id, action in action_dict.items():
-                if action and action.lower() != "no action":  # Filter out "No Action"
-                    new_logs.append((person_id, action, f"({timestamp:.2f})"))
+            for person_id, action in self.action_results_list_front[frame_idx].items():
+                if action and action.lower() != "no action":
+                    new_logs.append((person_id, action, timestamp))
 
         # Process center camera frames
         for frame_idx in range(len(self.action_results_list_center)):
             timestamp = frame_idx / fps
-            current_time = self.get_current_video_time()  # Get current playback time
+            current_time = self.get_current_video_time()
             if timestamp < self.min_time or timestamp > current_time:
                 continue 
-            action_dict = self.action_results_list_center[frame_idx]
-            for person_id, action in action_dict.items():
-                if action and action.lower() != "no action":  # Filter out "No Action"
-                    new_logs.append((person_id, action, f"({timestamp:.2f})"))
+            for person_id, action in self.action_results_list_center[frame_idx].items():
+                if action and action.lower() != "no action":
+                    new_logs.append((person_id, action, timestamp))
 
         # Sort logs by timestamp (newest first)
-        new_logs.sort(reverse=True, key=lambda log: float(log[2][1:-1]))
+        new_logs.sort(reverse=True, key=lambda log: log[2])
 
-        # Update table dynamically
+        # Update tables dynamically
         self.update_logs_from_list(new_logs)
 
     def append_logs(self, new_logs):
         """Insert new logs at the top so the newest logs appear first."""
-        for person_id, action, timestamp in reversed(new_logs):  # Reverse order (newest first)
-            self.log_table.insertRow(0)  # Insert at the top
-            self.log_table.setItem(0, 0, QTableWidgetItem(f"Person {person_id}"))
-            self.log_table.setItem(0, 1, QTableWidgetItem(action))
-            self.log_table.setItem(0, 2, QTableWidgetItem(timestamp))
+        for person_id, action, timestamp in reversed(new_logs):
+            if action in ["Sitting", "Leaning on desk"]:
+                self.add_row(self.log_table, person_id, action, timestamp)
+            elif action == "Turning Around":
+                self.add_row(self.log_table_2, person_id, action, timestamp)
+            elif action in ["Standing", "Extending right arm", "Extending left arm"]:
+                self.add_row(self.log_table_3, person_id, action, timestamp)
+
+    def update_logs(self, action_results_list):
+        """Updates tables with new entries from detected actions."""
+        self.log_table.setRowCount(0)
+        self.log_table_2.setRowCount(0)
+        self.log_table_3.setRowCount(0)
+
+        fps = 20  # Video frame rate
+        
+        for frame_idx, action_dict in enumerate(action_results_list):
+            timestamp = frame_idx / fps  
+            for person_id, action in action_dict.items():
+                if action in ["Sitting", "Leaning on desk"]:
+                    self.add_row(self.log_table, person_id, action, timestamp)
+                elif action == "Turning Around":
+                    self.add_row(self.log_table_2, person_id, action, timestamp)
+                elif action in ["Standing", "Extending right arm", "Extending left arm"]:
+                    self.add_row(self.log_table_3, person_id, action, timestamp)
 
 
     def display_video_frame(self, label, frame):
@@ -153,32 +226,11 @@ class LogsTab(QWidget):
             q_img = QImage(frame.data, width, height, bytes_per_line, QImage.Format_BGR888)
             label.setPixmap(QPixmap.fromImage(q_img))
 
-    def update_logs(self, action_results_list ):
-            """
-            Updates the log table with new entries from detected actions.
-            :param action_results_list: List of dictionaries containing track ID and detected action per frame.
-            :param camera_source: String indicating which camera (Front/Center) the actions came from.
-            """
-            self.log_table.setRowCount(0)  # Clear previous logs
-            
-            fps = 20  # Video frame rate
-            
-            for frame_idx, action_dict in enumerate(action_results_list):
-                timestamp = frame_idx / fps  # Convert frame index to seconds
-                for person_id, action in action_dict.items():
-                    row_position = self.log_table.rowCount()
-                    self.log_table.insertRow(row_position)
-                    self.log_table.setItem(row_position, 0, QTableWidgetItem(f"Person {person_id}"))
-                    self.log_table.setItem(row_position, 1, QTableWidgetItem(action))
-                    self.log_table.setItem(row_position, 2, QTableWidgetItem(f"{timestamp:.2f} s"))
-
     def get_current_video_time(self):
         """Estimate the current playback time using the time range slider."""
         current_frame = self.main_window.timeFrameRangeSlider_2.value()[1]  # Get max slider value (assuming it's in frames)
         fps = 20  # Adjust based on actual FPS
         return current_frame / fps  # Convert frames to seconds
-
-
 
     def update_frame_for_center_video_label(self, frame, center_starting_y, front_starting_y):
         if frame is not None:
@@ -277,18 +329,29 @@ class LogsTab(QWidget):
             self.TimeLabel.repaint()
 
     def on_row_double_clicked(self, row, column):
-        timestamp_item = self.log_table.item(row, 2)  # Assuming timestamp is in the 3rd column
+        sender_table = self.sender()  # Identify which table triggered the event
+
+        if sender_table == self.log_table:
+            timestamp_item = self.log_table.item(row, 2)
+        elif sender_table == self.log_table_2:
+            timestamp_item = self.log_table_2.item(row, 2)
+        elif sender_table == self.log_table_3:
+            timestamp_item = self.log_table_3.item(row, 2)
+        else:
+            print("Unknown table clicked")
+            return  # Exit if sender table is not recognized
+
         if timestamp_item:
             try:
-                raw_timestamp = timestamp_item.text().strip("()")  # Remove parentheses
-                timestamp_seconds = float(raw_timestamp)  # Convert to float (seconds)
-                
+                raw_timestamp = timestamp_item.text().strip("()s ") 
+                timestamp_seconds = float(raw_timestamp)  # Convert to float
                 print(f"Double-clicked row {row}, emitting timestamp {timestamp_seconds} seconds")
 
                 self.row_selected.emit(timestamp_seconds)  # Emit in seconds
                 self.highlight_row(row)
             except ValueError:
                 print(f"Invalid timestamp format: {timestamp_item.text()}")  # Debugging
+
 
 
 
