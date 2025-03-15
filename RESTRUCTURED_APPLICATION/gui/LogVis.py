@@ -4,11 +4,13 @@ from PySide6.QtWidgets import (
     QGraphicsProxyWidget, QSlider
 )
 from PySide6.QtCharts import QChartView, QChart  
-from PySide6.QtGui import QPainter, QPixmap, QImage  
-from PySide6.QtCore import Qt, QTimer
+from PySide6.QtGui import QPainter, QPixmap, QImage, QColor
+from PySide6.QtCore import Qt, QTimer, Signal
 import numpy as np
 
 class LogsTab(QWidget):
+    row_selected = Signal(int)  # Signal to notify video player of timestamp
+
     def __init__(self, main_window, action_results_list_front, action_results_list_center, min_time, max_time):
         super().__init__()
         self.action_results_list_front = action_results_list_front
@@ -18,7 +20,7 @@ class LogsTab(QWidget):
         self.max_time = max_time
         self.min_frame = 0
         self.max_frame = 0
-
+        self.main_window = main_window  # Store reference to main window
         
       
         self.TimeLabel = self.main_window.findChild(QLabel, "TimeLabel")
@@ -65,6 +67,8 @@ class LogsTab(QWidget):
         # Play/Pause button for logs
         self.play_pause_button_analytics_2.clicked.connect(self.toggle_play_pause_logs)
         self.main_window.timeFrameRangeSlider_2.valueChanged.connect(self.update_logs_periodically)
+        self.log_table.cellDoubleClicked.connect(self.on_row_double_clicked)
+        self.row_selected.connect(self.main_window.update_video_position)
 
     def toggle_play_pause_logs(self):
         """Toggle play/pause for log updates."""
@@ -88,16 +92,18 @@ class LogsTab(QWidget):
         """Fetch new logs every 0.5 seconds and update dynamically while filtering logs within the selected time range."""
         if not self.is_playing or not self.main_window:
             return  
-
         # Get the new time range from the slider
-        self.min_time, self.max_time = self.main_window.timeFrameRangeSlider_2.value()
+
+        value = self.main_window.timeFrameRangeSlider_2.value()
+        if isinstance(value, tuple):
+            min_time, max_time = value
+        else:
+            min_time, max_time = value, value 
         
         fps = 20  # Assuming 20 FPS
-        self.min_time = self.min_time / fps  # Convert frames to seconds
-        self.max_time = self.max_time / fps  # Convert frames to seconds
-
+        self.min_time = min_time / fps  # Convert frames to seconds
+        self.max_time = max_time / fps 
         new_logs = []
-
         # Reset processing index since we want to re-evaluate logs in the new time range
         self.last_processed_frame_front = -1
         self.last_processed_frame_center = -1
@@ -155,7 +161,7 @@ class LogsTab(QWidget):
             """
             self.log_table.setRowCount(0)  # Clear previous logs
             
-            fps = 18  # Video frame rate
+            fps = 20  # Video frame rate
             
             for frame_idx, action_dict in enumerate(action_results_list):
                 timestamp = frame_idx / fps  # Convert frame index to seconds
@@ -269,5 +275,37 @@ class LogsTab(QWidget):
             max_time_sec = max_time / fps
             self.TimeLabel.setText(f"Time Range: {min_time_sec:.2f}s - {max_time_sec:.2f}s")
             self.TimeLabel.repaint()
-            print(self.TimeLabel.text())  # Debugging
+
+    def on_row_double_clicked(self, row, column):
+        timestamp_item = self.log_table.item(row, 2)  # Assuming timestamp is in the 3rd column
+        if timestamp_item:
+            try:
+                raw_timestamp = timestamp_item.text().strip("()")  # Remove parentheses
+                timestamp_seconds = float(raw_timestamp)  # Convert to float (seconds)
+                
+                print(f"Double-clicked row {row}, emitting timestamp {timestamp_seconds} seconds")
+
+                self.row_selected.emit(timestamp_seconds)  # Emit in seconds
+                self.highlight_row(row)
+            except ValueError:
+                print(f"Invalid timestamp format: {timestamp_item.text()}")  # Debugging
+
+
+
+
+    def highlight_row(self, row):
+        for r in range(self.log_table.rowCount()):
+            for c in range(self.log_table.columnCount()):
+                item = self.log_table.item(r, c)
+                if item:
+                    item.setBackground(Qt.white)  # Reset all rows
+        
+        for c in range(self.log_table.columnCount()):
+            item = self.log_table.item(row, c)
+            if item:
+                item.setBackground(Qt.yellow)  # Highlight selecte
+
+
+            
+
 

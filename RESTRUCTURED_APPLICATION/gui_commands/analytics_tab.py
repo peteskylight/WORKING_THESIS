@@ -34,15 +34,11 @@ class AnalyticsTab:
             self.analytics_tab_index = self.MainTab.indexOf(self.analytics_tab)
             self.MainTab.setCurrentIndex(self.analytics_tab_index)
 
-            # Create QComboBox only if it doesn't exist
-            if self.action_selector is None:
-                self.action_selector = QComboBox()
-                self.action_selector.addItems(self.action_labels)  # Now this works
-                self.action_selector.currentIndexChanged.connect(self.update_selected_action)
-                self.action_selector.setFixedSize(120, 30)
-                
-                # Add combo box to the main window
-                self.main_window.layout().addWidget(self.action_selector)
+            self.action_selector = QComboBox()
+            self.action_selector.addItems(self.action_labels)  # Now this works
+            self.action_selector.currentIndexChanged.connect(self.update_selected_action)
+            self.action_selector.setFixedSize(120, 30)
+            
             
             self.selected_action = 'All Actions'  # Default selection
         else:

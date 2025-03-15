@@ -61,6 +61,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.CenterVideo = CenterVideo(main_window=self)
         self.FrontVideo = FrontVideo(main_window=self)
         self.CreateDataset = CreateDataset(main_window=self)
+        self.fps = 20
 
 
         
@@ -248,6 +249,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.recording_button.clicked.connect(self.toggle_button)
         self.refresh_action_list.clicked.connect(self.CreateDataset.showActionsToTable)
         self.CreateDataset.populate_camera_combo_box()
+        
 
         # Slider Value Change
         self.interval_slider.valueChanged.connect(self.updateIntervalLabel) ##!
@@ -496,6 +498,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                 min_time = min_value,
                                 max_time = max_value 
                               )
+            self.LogsVis.row_selected.connect(self.update_video_position)
 
 
         else:
@@ -754,3 +757,44 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     
     def reenable_recording_button(self):
         self.recording_window_button.setDisabled(False)
+
+    def update_video_position(self, timestamp):
+        print(f"Double-clicked row, emitting timestamp {timestamp} seconds")  # Already in seconds ✅
+
+        timestamp_seconds = float(timestamp)  # Ensure it's a float
+
+        # Get current slider range
+        slider_value = self.timeFrameRangeSlider_2.value()
+        print(f"Slider current value: {slider_value}, Type: {type(slider_value)}")
+
+        if isinstance(slider_value, tuple):  # If it's a range slider
+            min_time, max_time = slider_value
+            print(f"Slider current range: {min_time} - {max_time}")
+
+            # Convert timestamp (seconds) to a frame index
+            new_slider_value = int(timestamp_seconds * self.fps)
+
+            # Ensure it stays within valid range
+            new_slider_value = max(min_time, min(new_slider_value, max_time))
+
+            # Update only the minimum time of the range slider
+            self.timeFrameRangeSlider_2.setValue((new_slider_value, max_time))
+        else:  # If it's a single-value slider
+            min_time = self.timeFrameRangeSlider_2.minimum()
+            max_time = self.timeFrameRangeSlider_2.maximum()
+
+            # Convert timestamp to a valid slider position
+            new_slider_value = int(timestamp_seconds * self.fps)
+
+            # Clamp value within valid slider range
+            new_slider_value = max(min_time, min(new_slider_value, max_time))
+
+            self.timeFrameRangeSlider_2.setValue(new_slider_value)  # Set integer value
+
+        print(f"✅ Slider updated to: {self.timeFrameRangeSlider_2.value()} (converted from {timestamp_seconds} sec)")
+
+
+
+
+
+

@@ -1432,9 +1432,9 @@ Footages</string>
       <property name="geometry">
        <rect>
         <x>30</x>
-        <y>320</y>
+        <y>340</y>
         <width>541</width>
-        <height>41</height>
+        <height>21</height>
        </rect>
       </property>
       <property name="font">
