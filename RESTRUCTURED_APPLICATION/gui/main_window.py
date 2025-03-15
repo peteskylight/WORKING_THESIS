@@ -492,7 +492,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             
             self.LogsVis = LogsTab(main_window=self, 
                                 action_results_list_front=self.action_results_list_front or [], 
-                                action_results_list_center=self.action_results_list_center or [], 
+                                action_results_list_center=self.action_results_list_center or [],
+                                min_time = min_value,
+                                max_time = max_value 
                               )
 
 
