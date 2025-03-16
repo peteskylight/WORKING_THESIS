@@ -81,6 +81,7 @@ class ActionVisualization:
 
         # Connect button to export function
         self.main_window.see_full_data_button.clicked.connect(self.export_to_excel)
+        self.main_window.see_full_data_button.clicked.connect(self.export_to_jpeg)
 
         self.populate_chart()
 
@@ -154,3 +155,9 @@ class ActionVisualization:
         file_path, _ = QFileDialog.getSaveFileName(None, "Save Excel File", "", "Excel Files (*.xlsx)")
         if file_path:
             df.to_excel(file_path, index=False)
+
+    def export_to_jpeg(self):
+        file_path, _ = QFileDialog.getSaveFileName(None, "Save Chart as Image", "", "JPEG Files (*.jpg)")
+        if file_path:
+            pixmap = self.chart_view.grab()  # Capture the chart view
+            pixmap.save(file_path, "JPG")
