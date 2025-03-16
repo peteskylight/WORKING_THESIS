@@ -1,12 +1,17 @@
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QGraphicsView, QGraphicsScene, 
     QTableWidget, QTableWidgetItem, QPushButton, QLabel, QSizePolicy, 
-    QGraphicsProxyWidget, QSlider
+    QGraphicsProxyWidget, QSlider, QTableWidget
+
 )
 from PySide6.QtCharts import QChartView, QChart  
-from PySide6.QtGui import QPainter, QPixmap, QImage, QColor
-from PySide6.QtCore import Qt, QTimer, Signal
+from PySide6.QtGui import QPainter, QPixmap, QImage, QColor, QImage, QPainter
+from PySide6.QtCore import Qt, QTimer, Signal, QPoint, QRect
 import numpy as np
+from reportlab.lib.pagesizes import landscape, A4
+from reportlab.lib import colors
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Spacer, Paragraph
+from reportlab.lib.styles import getSampleStyleSheet
 
 class LogsTab(QWidget):
     row_selected = Signal(int)  # Signal to notify video player of timestamp
@@ -57,10 +62,7 @@ class LogsTab(QWidget):
         # Log table setup
         self.log_table = self.main_window.findChild(QTableWidget, "tableWidget")
         self.log_table_2 = self.main_window.findChild(QTableWidget, "tableWidget_2")  # Turning Around
-        self.log_table_3  = self.main_window.findChild(QTableWidget, "tableWidget_3")
-        self.log_table.setColumnCount(3)
-        self.log_table.setHorizontalHeaderLabels(["Person ID", "Action", "Timestamp"])
-        self.log_table.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        self.log_table_3  = self.main_window.findChild(QTableWidget, "tableWidget_3") 
 
 
         # Setup tableWidget (Sitting, Leaning on Desk)
@@ -81,7 +83,7 @@ class LogsTab(QWidget):
             self.log_table_3.setHorizontalHeaderLabels(["Person ID", "Action", "Timestamp"])
             self.log_table_3.setSortingEnabled(True)
 
-
+        self.export_2 = self.main_window.findChild(QPushButton, "export_2")
 
         # Camera preview labels
         self.center_video_preview_label_2 = self.main_window.findChild(QLabel, "center_video_preview_label_2")
@@ -95,6 +97,8 @@ class LogsTab(QWidget):
         self.log_table_2.cellDoubleClicked.connect(self.on_row_double_clicked)
         self.log_table_3.cellDoubleClicked.connect(self.on_row_double_clicked)
         self.row_selected.connect(self.main_window.update_video_position)
+        self.export_2.clicked.connect(self.handle_export_logs)
+
 
     def setup_table(self, table):
         """Configures the table's headers and settings."""
@@ -366,9 +370,80 @@ class LogsTab(QWidget):
         for c in range(self.log_table.columnCount()):
             item = self.log_table.item(row, c)
             if item:
-                item.setBackground(Qt.yellow)  # Highlight selecte
+                item.setBackground(Qt.yellow)  # Highlight selected
+                
+    def export_logs_to_pdf(self, tables, filename="logs_export.pdf"):
+        """
+        Extracts data from multiple QTableWidget tables and generates a properly formatted
+        PDF with section titles and tables in landscape mode.
+        """
+        if not tables:
+            print("No tables to export.")
+            return
 
+        doc = SimpleDocTemplate(filename, pagesize=landscape(A4))
+        elements = []
+        styles = getSampleStyleSheet()
 
+        # Define table titles
+        table_titles = [
+            "Sitting and Leaning on Desk",
+            "Turning Around",
+            "Standing, Extending Arm"
+        ]
+
+        # Convert QTableWidget data to a list of lists
+        for i, table in enumerate(tables):
+            if not table:
+                continue
+
+            num_rows = table.rowCount()
+            num_cols = table.columnCount()
+
+            # Extract headers
+            headers = [table.horizontalHeaderItem(col).text() for col in range(num_cols)]
+            data = [headers]  # Start with headers
+
+            # Extract table data
+            for row in range(num_rows):
+                row_data = []
+                for col in range(num_cols):
+                    item = table.item(row, col)
+                    row_data.append(item.text() if item else "")
+                data.append(row_data)
+
+            # Create a section title
+            section_title = Paragraph(f"<b>{table_titles[i]}</b>", styles["Heading2"])
+            elements.append(section_title)
+            elements.append(Spacer(1, 10))  # Space below the title
+
+            # Create a PDF table
+            col_widths = [A4[0] / num_cols] * num_cols  # Equal width for all columns
+            pdf_table = Table(data, colWidths=col_widths)
+
+            # Apply table styles
+            pdf_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONTSIZE', (0, 0), (-1, -1), 10),
+                ('BOTTOMPADDING', (0, 0), (-1, 0), 8),
+                ('BACKGROUND', (0, 1), (-1, -1), colors.whitesmoke),
+                ('GRID', (0, 0), (-1, -1), 1, colors.black)
+            ]))
+
+            # Append table with spacing
+            elements.append(pdf_table)
+            elements.append(Spacer(1, 20))  # Add space before the next table
+
+        doc.build(elements)
+        print(f"PDF saved as {filename}")
+
+    def handle_export_logs(self):
+        tables = [self.log_table, self.log_table_2, self.log_table_3]
+        tables = [table for table in tables if table]  # Ensure no NoneType tables are passed
+        self.export_logs_to_pdf(tables, "logs_export.pdf")
             
 
 

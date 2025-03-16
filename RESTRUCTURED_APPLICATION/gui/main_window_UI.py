@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'MAIN-WINDOW-FINAL-DESIGNqohLLw.ui'
+## Form generated from reading UI file 'MAIN-WINDOW-FINAL-DESIGNqHdTxA.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.8.1
 ##
@@ -461,6 +461,11 @@ class Ui_MainWindow(object):
         self.tableWidget_3 = QTableWidget(self.tab)
         self.tableWidget_3.setObjectName(u"tableWidget_3")
         self.tableWidget_3.setGeometry(QRect(790, 380, 311, 211))
+        self.export_2 = QPushButton(self.tab)
+        self.export_2.setObjectName(u"export_2")
+        self.export_2.setEnabled(True)
+        self.export_2.setGeometry(QRect(940, 320, 151, 51))
+        self.export_2.setFont(font13)
         self.MainTab.addTab(self.tab, "")
         self.createDatasetTab = QWidget()
         self.createDatasetTab.setObjectName(u"createDatasetTab")
@@ -1048,6 +1053,7 @@ class Ui_MainWindow(object):
         self.front_video_preview_label_2.setText(QCoreApplication.translate("MainWindow", u"Import an Examination Footage First", None))
         self.play_pause_button_analytics_2.setText(QCoreApplication.translate("MainWindow", u"PAUSE", None))
         self.TimeLabel.setText("")
+        self.export_2.setText(QCoreApplication.translate("MainWindow", u"EXPORT", None))
         self.MainTab.setTabText(self.MainTab.indexOf(self.tab), QCoreApplication.translate("MainWindow", u"Logs", None))
         self.label_Camera.setText(QCoreApplication.translate("MainWindow", u"Camera", None))
         self.openCamera.setText(QCoreApplication.translate("MainWindow", u"Open Camera", None))
