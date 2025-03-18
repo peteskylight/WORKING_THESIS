@@ -12,7 +12,7 @@ from reportlab.lib.pagesizes import landscape, A4, letter
 from reportlab.lib import colors
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Spacer, Paragraph
 from reportlab.lib.styles import getSampleStyleSheet
-
+from collections import defaultdict
 class LogsTab(QWidget):
     row_selected = Signal(int)  # Signal to notify video player of timestamp
 
@@ -325,7 +325,7 @@ class LogsTab(QWidget):
         """Update QLabel with the current time range from the slider."""
         if self.main_window.timeFrameRangeSlider_2:
             min_time, max_time = self.main_window.timeFrameRangeSlider_2.value()  # Get slider values
-            fps = 30  # Adjust based on actual FPS
+            fps = 18  # Adjust based on actual FPS ADJUST HERE PETER 
             self.min_time_sec = min_time / fps
             self.max_time_sec = max_time / fps
             self.TimeLabel.setText(f"Time Range: {self.min_time_sec:.2f}s - {self.max_time_sec:.2f}s")
@@ -372,56 +372,61 @@ class LogsTab(QWidget):
             if item:
                 item.setBackground(Qt.yellow)  # Highlight selected
                 
-    def export_logs_to_pdf(self, tables, summary_data, filename="logs_export.pdf"):
+    def export_logs_to_pdf(self, tables, filename="logs_export.pdf"):
         """
-        Exports log tables to a PDF file with a summary section.
+        Exports log tables to a PDF file with a summary section, including instances of detected actions.
         """
-        if not isinstance(summary_data, list) or not all(isinstance(row, list) for row in summary_data):
-            raise TypeError("summary_data must be a list of lists")
-
-        doc = SimpleDocTemplate(filename, pagesize=landscape(letter))
+        if not tables:
+            print("No data to export.")
+            return
+        
+        doc = SimpleDocTemplate(filename, pagesize=letter)  # Portrait mode
         elements = []
         styles = getSampleStyleSheet()
         
         # Add Title
         elements.append(Paragraph("Log Summary Report", styles['Title']))
         elements.append(Spacer(1, 12))
-        
-        # Summary Table
-        summary_headers = ["Person ID", "Action", "Total Length"]
-        summary_table_data = [summary_headers] + summary_data
-        summary_table = Table(summary_table_data, colWidths=[100, 150, 150])
-        summary_table.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
-            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-            ('GRID', (0, 0), (-1, -1), 1, colors.black),
-            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold')
-        ]))
-        elements.append(summary_table)
-        elements.append(Spacer(1, 24))
-        
-        # Process Each Log Table
+
+        summary_dict = defaultdict(lambda: {"instances": 0, "total_time": 0.0})
+
         table_titles = [
             "Sitting and Leaning on Desk",
             "Turning Around",
             "Standing, Extending Arm"
         ]
+
         for table, title in zip(tables, table_titles):
             if table.rowCount() == 0:
                 continue
             
             elements.append(Paragraph(title, styles['Heading2']))
-            
-            # Extract Data
+
+            # Extract Headers
             headers = [table.horizontalHeaderItem(i).text() if table.horizontalHeaderItem(i) else f"Column {i+1}" for i in range(table.columnCount())]
             data = [headers]
+
             for row in range(table.rowCount()):
+                person_id = table.item(row, 0).text().strip() if table.item(row, 0) else "Unknown"
+                action = table.item(row, 1).text().strip() if table.item(row, 1) else "Unknown"
+                duration_text = table.item(row, 2).text().strip() if table.item(row, 2) else "0.0"
+
+                try:
+                    duration = float(duration_text.replace("s", "").strip())  
+                except ValueError:
+                    print(f"Warning: Invalid duration '{duration_text}' for {person_id}, {action}. Skipping.")
+                    duration = 0.0  # Handle invalid numeric values
+
+                # Update summary dictionary
+                key = (person_id, action)
+                summary_dict[key]["instances"] += 1
+                summary_dict[key]["total_time"] += duration
+
                 row_data = [table.item(row, col).text() if table.item(row, col) else "" for col in range(table.columnCount())]
                 data.append(row_data)
-            
-            # Create Table
-            log_table = Table(data, colWidths=[100] * len(headers))
+
+            # Create Log Table
+            log_table = Table(data, colWidths=[80] * len(headers))
             log_table.setStyle(TableStyle([
                 ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
                 ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
@@ -430,8 +435,32 @@ class LogsTab(QWidget):
                 ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold')
             ]))
             elements.append(log_table)
-            elements.append(Spacer(1, 24))
+            elements.append(Spacer(1, 18))
+
+        # Convert summary dictionary to sorted list
+        summary_headers = ["Person ID", "Action", "Instances", "Total Length (s)"]
         
+        def extract_person_number(entry):
+            return int("".join(filter(str.isdigit, entry[0])))  # Extract number from "Person X"
+
+        summary_data = sorted(
+            [[pid, action, str(data["instances"]), f"{data['total_time']:.2f} s"] for (pid, action), data in summary_dict.items()],
+            key=extract_person_number
+        )
+
+        # Create Summary Table
+        summary_table = Table([summary_headers] + summary_data, colWidths=[80, 120, 80, 120])
+        summary_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('GRID', (0, 0), (-1, -1), 1, colors.black),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold')
+        ]))
+        
+        elements.insert(2, summary_table)  # Insert summary before log tables
+        elements.insert(3, Spacer(1, 18))
+
         doc.build(elements)
         print(f"PDF saved as {filename}")
 
@@ -448,43 +477,66 @@ class LogsTab(QWidget):
             for row in range(table.rowCount()):
                 person = table.item(row, 0).text().strip() if table.item(row, 0) else "Unknown Person"
                 action = table.item(row, 1).text().strip() if table.item(row, 1) else "Unknown Action"
-                time_offset = table.item(row, 2).text().strip() if table.item(row, 2) else "0"
+                duration_text = table.item(row, 2).text().strip() if table.item(row, 2) else "0"
 
                 # Convert time to float
                 try:
-                    time_offset = float(time_offset.replace("s", ""))
+                    duration = float(duration_text.replace("s", "").strip())
                 except ValueError:
                     continue  # Skip invalid time values
 
-                # Compute absolute start and end times
-                start_time = self.min_time_sec + time_offset
-                end_time = self.max_time_sec  # Assume action extends to the max time unless overwritten
-
-                key = (person, action)  # Unique identifier for merging
+                key = (person, action)
 
                 if key in summary_dict:
-                    # Update the earliest start time and latest end time
-                    summary_dict[key]["start"] = min(summary_dict[key]["start"], start_time)
-                    summary_dict[key]["end"] = max(summary_dict[key]["end"], end_time)
+                    summary_dict[key]["instances"] += 1  # Count occurrences
+                    summary_dict[key]["total_duration"] += duration  # Accumulate total duration
                 else:
-                    summary_dict[key] = {"start": start_time, "end": end_time}
-        # Convert to list
-        summary_data = []
-        for (person, action), times in summary_dict.items():
-            start_time = times["start"]
-            end_time = times["end"]
-            time_range = f"{start_time:.2f}s - {end_time:.2f}s"
-            summary_data.append([person, action, time_range])
+                    summary_dict[key] = {"instances": 1, "total_duration": duration}
 
-        # Sort "Person 1" to "Person 10" manually
-        def person_sort_key(entry):
-            num = int("".join(filter(str.isdigit, entry[0])))  # Extract number from "Person X"
-            return num
+        # Ensure sorting works even when person IDs contain non-numeric characters
+        def extract_person_number(person_id):
+            digits = "".join(filter(str.isdigit, person_id))
+            return int(digits) if digits else float("inf")  # Assign infinity if no digits found (e.g., "Unknown Person")
 
-        summary_data = sorted(summary_data, key=person_sort_key)
+        # Convert dictionary to sorted list
+        summary_data = sorted(
+            [[person, action, data["instances"], f"{data['total_duration']:.2f} s"] for (person, action), data in summary_dict.items()],
+            key=lambda x: extract_person_number(x[0])  # Sort by numeric part of Person ID
+        )
+        self.export_logs_to_pdf(tables, "logs_export.pdf")
+        print(summary_data) 
 
-        # Call the export function
-        self.export_logs_to_pdf(tables, summary_data, "logs_export.pdf")
+    def summarize_actions(self, log_data):
+        """
+        Processes raw logs and generates a summary with action instances and time ranges.
+        """
+        summary = defaultdict(list)
+
+        # Group actions per person & action
+        for person_id, action, duration_text in log_data:
+            try:
+                duration = float(duration_text.replace("s", "").strip())  
+            except ValueError:
+                print(f"Warning: Invalid duration '{duration_text}' for {person_id}, {action}. Skipping.")
+                continue
+
+            summary[(person_id, action)].append(duration)
+
+        # Sort by Person ID numerically
+        sorted_summary = sorted(summary.items(), key=lambda x: int("".join(filter(str.isdigit, x[0][0]))))
+
+        result = []
+        for (person_id, action), durations in sorted_summary:
+            durations.sort()
+            start_time = 0
+            instances = len(durations)
+
+            for duration in durations:
+                end_time = start_time + duration
+                result.append([person_id, action, instances, f"{start_time:.2f} s → {end_time:.2f} s"])
+                start_time = end_time
+
+        return result
 
 
        

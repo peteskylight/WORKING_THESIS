@@ -41,12 +41,14 @@ class ActionVisualization:
 
         # Configure Y-axis (Action Counts)
         self.axis_y = QValueAxis()
-        self.axis_y.setTitleText("Action Counts")
+        self.axis_y.setTitleText("Students")
         self.axis_y.setRange(0, 40)
-        self.axis_y.setTickCount(2)
+        self.axis_y.setTickCount(9)  # Ensures labels are evenly spaced
+        self.axis_y.setLabelFormat("%d")  # Ensures integer values
         self.axis_y.setLabelsFont(font)
+        font.setPointSize(8)
         self.chart.addAxis(self.axis_y, Qt.AlignmentFlag.AlignLeft)
-        
+                
         for series in self.series_dict.values():
             series.attachAxis(self.axis_y)
 
