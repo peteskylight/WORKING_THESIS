@@ -1405,7 +1405,7 @@ Footages</string>
        <rect>
         <x>640</x>
         <y>320</y>
-        <width>261</width>
+        <width>121</width>
         <height>51</height>
        </rect>
       </property>
@@ -1485,7 +1485,28 @@ Footages</string>
       </property>
       <property name="geometry">
        <rect>
-        <x>940</x>
+        <x>790</x>
+        <y>320</y>
+        <width>151</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>22</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>EXPORT</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="export_3">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>950</x>
         <y>320</y>
         <width>151</width>
         <height>51</height>

@@ -3,6 +3,7 @@ from PySide6.QtWidgets import QGraphicsScene, QSizePolicy, QVBoxLayout, QPushBut
 from PySide6.QtGui import QPainter, QFont
 from PySide6.QtCore import Qt
 import pandas as pd
+import os
 
 class ActionVisualization:
     def __init__(self, main_window, action_results_list_front, action_results_list_center, min_time, max_time):
@@ -159,7 +160,36 @@ class ActionVisualization:
             df.to_excel(file_path, index=False)
 
     def export_to_jpeg(self):
-        file_path, _ = QFileDialog.getSaveFileName(None, "Save Chart as Image", "", "JPEG Files (*.jpg)")
-        if file_path:
-            pixmap = self.chart_view.grab()  # Capture the chart view
-            pixmap.save(file_path, "JPG")
+        # Define the output directory
+        output_dir = os.path.join(os.path.dirname(__file__), "..", "outputs")
+        os.makedirs(output_dir, exist_ok=True)  # Ensure the directory exists
+
+        original_active_actions = self.active_actions.copy()  # Save current active actions
+
+        # Export separate charts for each action
+        for action in self.action_labels:
+            self.active_actions = {action}  # Enable only the current action
+            self.populate_chart()
+            self.chart.update()
+
+            # Save the individual action chart
+            action_filename = f"{action.replace(' ', '_')}.jpg"
+            action_path = os.path.join(output_dir, action_filename)
+            pixmap = self.chart_view.grab()
+            pixmap.save(action_path, "JPG")
+
+        # Export a chart with all actions
+        self.active_actions = set(self.action_labels)  # Enable all actions
+        self.populate_chart()
+        self.chart.update()
+
+        all_actions_path = os.path.join(output_dir, "All_Actions.jpg")
+        pixmap = self.chart_view.grab()
+        pixmap.save(all_actions_path, "JPG")
+
+        # Restore original active actions
+        self.active_actions = original_active_actions
+        self.populate_chart()
+        self.chart.update()
+
+        print(f"Charts saved in: {output_dir}")

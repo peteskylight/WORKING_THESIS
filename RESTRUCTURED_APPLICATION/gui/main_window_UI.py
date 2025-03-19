@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'MAIN-WINDOW-FINAL-DESIGNqHdTxA.ui'
+## Form generated from reading UI file 'MAIN-WINDOW-FINAL-DESIGNQMcpmI.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.8.1
 ##
@@ -442,7 +442,7 @@ class Ui_MainWindow(object):
         self.play_pause_button_analytics_2 = QPushButton(self.tab)
         self.play_pause_button_analytics_2.setObjectName(u"play_pause_button_analytics_2")
         self.play_pause_button_analytics_2.setEnabled(False)
-        self.play_pause_button_analytics_2.setGeometry(QRect(640, 320, 261, 51))
+        self.play_pause_button_analytics_2.setGeometry(QRect(640, 320, 121, 51))
         self.play_pause_button_analytics_2.setFont(font13)
         self.tableWidget = QTableWidget(self.tab)
         self.tableWidget.setObjectName(u"tableWidget")
@@ -464,8 +464,13 @@ class Ui_MainWindow(object):
         self.export_2 = QPushButton(self.tab)
         self.export_2.setObjectName(u"export_2")
         self.export_2.setEnabled(True)
-        self.export_2.setGeometry(QRect(940, 320, 151, 51))
+        self.export_2.setGeometry(QRect(790, 320, 151, 51))
         self.export_2.setFont(font13)
+        self.export_3 = QPushButton(self.tab)
+        self.export_3.setObjectName(u"export_3")
+        self.export_3.setEnabled(True)
+        self.export_3.setGeometry(QRect(950, 320, 151, 51))
+        self.export_3.setFont(font13)
         self.MainTab.addTab(self.tab, "")
         self.createDatasetTab = QWidget()
         self.createDatasetTab.setObjectName(u"createDatasetTab")
@@ -1054,6 +1059,7 @@ class Ui_MainWindow(object):
         self.play_pause_button_analytics_2.setText(QCoreApplication.translate("MainWindow", u"PAUSE", None))
         self.TimeLabel.setText("")
         self.export_2.setText(QCoreApplication.translate("MainWindow", u"EXPORT", None))
+        self.export_3.setText(QCoreApplication.translate("MainWindow", u"EXPORT", None))
         self.MainTab.setTabText(self.MainTab.indexOf(self.tab), QCoreApplication.translate("MainWindow", u"Logs", None))
         self.label_Camera.setText(QCoreApplication.translate("MainWindow", u"Camera", None))
         self.openCamera.setText(QCoreApplication.translate("MainWindow", u"Open Camera", None))

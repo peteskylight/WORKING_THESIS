@@ -13,6 +13,11 @@ from reportlab.lib import colors
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Spacer, Paragraph
 from reportlab.lib.styles import getSampleStyleSheet
 from collections import defaultdict
+import os
+from docxtpl import DocxTemplate, InlineImage
+from docx.shared import Inches
+
+
 class LogsTab(QWidget):
     row_selected = Signal(int)  # Signal to notify video player of timestamp
 
@@ -84,6 +89,7 @@ class LogsTab(QWidget):
             self.log_table_3.setSortingEnabled(True)
 
         self.export_2 = self.main_window.findChild(QPushButton, "export_2")
+        self.export_3 = self.main_window.findChild(QPushButton, "export_3")
 
         # Camera preview labels
         self.center_video_preview_label_2 = self.main_window.findChild(QLabel, "center_video_preview_label_2")
@@ -98,6 +104,7 @@ class LogsTab(QWidget):
         self.log_table_3.cellDoubleClicked.connect(self.on_row_double_clicked)
         self.row_selected.connect(self.main_window.update_video_position)
         self.export_2.clicked.connect(self.handle_export_logs)
+        self.export_3.clicked.connect(self.test_docx_template)
 
 
     def setup_table(self, table):
@@ -376,11 +383,15 @@ class LogsTab(QWidget):
         """
         Exports log tables to a PDF file with raw detection times and sorted order.
         """
+        output_dir = os.path.join(os.path.dirname(__file__), "..", "outputs")
+        os.makedirs(output_dir, exist_ok=True)
+        file_path = os.path.join(output_dir, filename)
+
         if not tables:
             print("No data to export.")
             return
 
-        doc = SimpleDocTemplate(filename, pagesize=letter)  # Portrait mode
+        doc = SimpleDocTemplate(file_path, pagesize=letter)  # Portrait mode
         elements = []
         styles = getSampleStyleSheet()
 
@@ -523,3 +534,52 @@ class LogsTab(QWidget):
         self.export_logs_to_pdf(tables, "logs_export.pdf")
         print(summary_data)
        
+
+    def test_docx_template(self):
+        # Load the template
+        output_dir = os.path.join(os.path.dirname(__file__), "..", "outputs")
+
+        # Ensure the directory exists
+        template_path = os.path.join(output_dir, "Output_Template_Thesis.docx")
+        doc = DocxTemplate(template_path)
+        
+        # Define image paths
+        linegraph_all_actions_path = os.path.join(output_dir, "All_Actions.jpg")
+        linegraph_extending_right_path = os.path.join(output_dir, "Extending_Right_Arm.jpg")
+        linegraph_sitting_path = os.path.join(output_dir, "Sitting.jpg")
+        linegraph_standing_path = os.path.join(output_dir, "Standing.jpg")
+
+        # Define the placeholder values (hardcoded for now)
+        context = {
+            "Exam_Title": "Final Examination",
+            "Campus": "Main Campus",
+            "Session_Name": "Morning Session",
+            "Instructor_Name": "Dr. John Doe",
+            "Date_Processed": "2025-03-19",
+            "Acad_year": "2024-2025",
+            "Analytics_ID": "A12345",
+            "Time_Processed": "10:30 AM",
+            "Date_Downloaded": "2025-03-19",
+            "Time_Downloaded": "11:00 AM",
+            "File_Name": "exam_results.docx",
+            "File_Size": "2.3 MB",
+            
+            # Add images dynamically (check if they exist before adding)
+            "LineGraph_All_Actions_AI": InlineImage(doc, linegraph_all_actions_path, width=Inches(3)) if os.path.exists(linegraph_all_actions_path) else "Image not found",
+            "LineGraph_ExtendingRight_Actions_AI": InlineImage(doc, linegraph_extending_right_path, width=Inches(3)) if os.path.exists(linegraph_extending_right_path) else "Image not found",
+            "LineGraph_Sitting_Actions_AI": InlineImage(doc, linegraph_sitting_path, width=Inches(3)) if os.path.exists(linegraph_sitting_path) else "Image not found",
+            "LineGraph_Standing_Actions_AI": InlineImage(doc, linegraph_standing_path, width=Inches(3)) if os.path.exists(linegraph_standing_path) else "Image not found",
+        }
+        
+        # Render the template with the context
+        doc.render(context)
+        
+        output_path = os.path.join(output_dir, "Output_Test_Document.docx")
+
+        # Save the generated document
+        doc.save(output_path)
+        print(f"Test document generated successfully at: {output_path}")
+
+
+
+        
