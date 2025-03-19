@@ -1,7 +1,7 @@
 from PySide6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis
 from PySide6.QtWidgets import QGraphicsScene, QSizePolicy, QVBoxLayout, QPushButton, QWidget,QFileDialog, QApplication
 from PySide6.QtGui import QPainter, QFont
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QThread, Signal
 import pandas as pd
 import os
 
@@ -83,8 +83,12 @@ class ActionVisualization:
         self.main_window.timeFrameRangeSlider.valueChanged.connect(self.update_chart)
 
         # Connect button to export function
-        self.main_window.see_full_data_button.clicked.connect(self.export_to_excel)
-        self.main_window.see_full_data_button.clicked.connect(self.export_to_jpeg)
+        try:
+            self.main_window.see_full_data_button.clicked.disconnect(self.handle_export)
+        except TypeError:
+            pass  # Ignore if no connection exists
+        self.main_window.see_full_data_button.clicked.connect(self.handle_export)
+
 
         self.populate_chart()
 
@@ -158,41 +162,78 @@ class ActionVisualization:
         file_path, _ = QFileDialog.getSaveFileName(None, "Save Excel File", "", "Excel Files (*.xlsx)")
         if file_path:
             df.to_excel(file_path, index=False)
+        
+    def handle_export_to_jpeg(self):
+        if hasattr(self, 'thread') and self.thread.isRunning():
+            return  # Prevent starting another thread while one is running
+        self.thread = JpegExportThread(self.chart_view, self.populate_chart, self.action_labels, self.active_actions)
+        self.thread.finished.connect(self.on_jpeg_export_complete)
+        self.thread.start()
 
-    def export_to_jpeg(self):
-        # Define the output directory
-        output_dir = os.path.join(os.path.dirname(__file__), "..", "outputs")
-        os.makedirs(output_dir, exist_ok=True)  # Ensure the directory exists
+    def on_jpeg_export_complete(self, message):
 
-        original_active_actions = self.active_actions.copy()  # Save the original state
+        print(message) 
+    def handle_export(self):
+        self.export_to_excel()  # Call Excel export
+        self.handle_export_to_jpeg()
 
-        # Export separate charts for each action
-        for action in self.action_labels:
-            self.active_actions = {action}  # Enable only one action at a time
-            self.populate_chart()  # Re-populate the chart
-            self.chart.update()
-            QApplication.processEvents()  # Force UI update before capturing
 
-            # Save the individual action chart
-            action_filename = f"{action.replace(' ', '_')}.jpg"
-            action_path = os.path.join(output_dir, action_filename)
+class JpegExportThread(QThread):
+    finished = Signal(str)  # Signal when export is complete
+    exporting = False
+
+    def __init__(self, chart_view, populate_chart, action_labels, active_actions):
+        super().__init__()
+        self.chart_view = chart_view
+        self.populate_chart = populate_chart
+        self.action_labels = action_labels
+        self.active_actions = active_actions
+
+    def run(self):
+        try:
+            output_dir = os.path.join(os.path.dirname(__file__), "..", "outputs")
+            os.makedirs(output_dir, exist_ok=True)  # Ensure the directory exists
+
+            original_active_actions = self.active_actions.copy()  # Save original actions
+
+            # Export separate charts for each action
+            for action in self.action_labels:
+                print(f"📊 Exporting: {action}")  # Debug log
+                self.active_actions.clear()
+                self.active_actions.add(action)
+                self.populate_chart()
+                self.chart_view.update()
+                QApplication.processEvents()  # Force UI update
+
+                QThread.msleep(500)  # Small delay to allow GUI to update
+
+                # Save individual action chart
+                action_filename = f"{action.replace(' ', '_')}.jpg"
+                action_path = os.path.join(output_dir, action_filename)
+                pixmap = self.chart_view.grab()
+                pixmap.save(action_path, "JPG")
+
+            # Export a chart with all actions
+            print("📊 Exporting: All Actions")  # Debug log
+            self.active_actions.clear()
+            self.active_actions.update(self.action_labels)  # Enable all actions
+            self.populate_chart()
+            self.chart_view.update()
+            QApplication.processEvents()
+
+            QThread.msleep(100)  # Small delay to allow GUI to update
+
+            all_actions_path = os.path.join(output_dir, "All_Actions.jpg")
             pixmap = self.chart_view.grab()
-            pixmap.save(action_path, "JPG")
+            pixmap.save(all_actions_path, "JPG")
 
-        # Export a chart with all actions
-        self.active_actions = set(self.action_labels)  # Enable all actions
-        self.populate_chart()
-        self.chart.update()
-        QApplication.processEvents()  # Force UI update before capturing
+            # Restore original active actions
+            self.active_actions.clear()
+            self.active_actions.update(original_active_actions)
+            self.populate_chart()
+            self.chart_view.update()
 
-        all_actions_path = os.path.join(output_dir, "All_Actions.jpg")
-        pixmap = self.chart_view.grab()
-        pixmap.save(all_actions_path, "JPG")
+            self.finished.emit(f"Charts saved in: {output_dir}")
 
-        # Restore original active actions
-        self.active_actions = original_active_actions
-        self.populate_chart()
-        self.chart.update()
-        QApplication.processEvents()  # Ensure UI returns to normal
-
-        print(f"Charts saved in: {output_dir}")
+        except Exception as e:
+            self.finished.emit(f"Error: {str(e)}")

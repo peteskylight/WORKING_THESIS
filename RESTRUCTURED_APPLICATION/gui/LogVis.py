@@ -6,7 +6,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCharts import QChartView, QChart  
 from PySide6.QtGui import QPainter, QPixmap, QImage, QColor, QImage, QPainter
-from PySide6.QtCore import Qt, QTimer, Signal, QPoint, QRect
+from PySide6.QtCore import Qt, QTimer, Signal, QPoint, QRect, QThread
 import numpy as np
 from reportlab.lib.pagesizes import landscape, A4, letter
 from reportlab.lib import colors
@@ -104,7 +104,7 @@ class LogsTab(QWidget):
         self.log_table_3.cellDoubleClicked.connect(self.on_row_double_clicked)
         self.row_selected.connect(self.main_window.update_video_position)
         self.export_2.clicked.connect(self.handle_export_logs)
-        self.export_3.clicked.connect(self.test_docx_template)
+        self.export_3.clicked.connect(self.handle_generate_docx)
 
 
     def setup_table(self, table):
@@ -533,52 +533,66 @@ class LogsTab(QWidget):
         # Export logs with new summary format
         self.export_logs_to_pdf(tables, "logs_export.pdf")
         print(summary_data)
+
+    def handle_generate_docx(self):
+        self.thread = DocxGenerationThread()
+        self.thread.finished.connect(self.on_docx_generation_complete)
+        self.thread.start()
+
+    def on_docx_generation_complete(self, result):
+        if result.startswith("Error"):
+            print(f"Failed to generate DOCX: {result}")
+        else:
+            print(f"DOCX file generated successfully: {result}")
        
 
-    def test_docx_template(self):
-        # Load the template
-        output_dir = os.path.join(os.path.dirname(__file__), "..", "outputs")
+class DocxGenerationThread(QThread):
+    finished = Signal(str)  # Signal to notify when done
 
-        # Ensure the directory exists
-        template_path = os.path.join(output_dir, "Output_Template_Thesis.docx")
-        doc = DocxTemplate(template_path)
-        
-        # Define image paths
-        linegraph_all_actions_path = os.path.join(output_dir, "All_Actions.jpg")
-        linegraph_extending_right_path = os.path.join(output_dir, "Extending_Right_Arm.jpg")
-        linegraph_sitting_path = os.path.join(output_dir, "Sitting.jpg")
-        linegraph_standing_path = os.path.join(output_dir, "Standing.jpg")
+    def run(self):
+        try:
+            output_dir = os.path.join(os.path.dirname(__file__), "..", "outputs")
+            template_path = os.path.join(output_dir, "Output_Template_Thesis.docx")
+            doc = DocxTemplate(template_path)
 
-        # Define the placeholder values (hardcoded for now)
-        context = {
-            "Exam_Title": "Final Examination",
-            "Campus": "Main Campus",
-            "Session_Name": "Morning Session",
-            "Instructor_Name": "Dr. John Doe",
-            "Date_Processed": "2025-03-19",
-            "Acad_year": "2024-2025",
-            "Analytics_ID": "A12345",
-            "Time_Processed": "10:30 AM",
-            "Date_Downloaded": "2025-03-19",
-            "Time_Downloaded": "11:00 AM",
-            "File_Name": "exam_results.docx",
-            "File_Size": "2.3 MB",
+            # Define image paths
+            linegraph_all_actions_path = os.path.join(output_dir, "All_Actions.jpg")
+            linegraph_extending_right_path = os.path.join(output_dir, "Extending_Right_Arm.jpg")
+            linegraph_sitting_path = os.path.join(output_dir, "Sitting.jpg")
+            linegraph_standing_path = os.path.join(output_dir, "Standing.jpg")
+
+            # Define context for placeholders
+            context = {
+                "Exam_Title": "Final Examination",
+                "Campus": "Main Campus",
+                "Session_Name": "Morning Session",
+                "Instructor_Name": "Dr. John Doe",
+                "Date_Processed": "2025-03-19",
+                "Acad_year": "2024-2025",
+                "Analytics_ID": "A12345",
+                "Time_Processed": "10:30 AM",
+                "Date_Downloaded": "2025-03-19",
+                "Time_Downloaded": "11:00 AM",
+                "File_Name": "exam_results.docx",
+                "File_Size": "2.3 MB",
+                
+                # Add images dynamically
+                "LineGraph_All_Actions_AI": InlineImage(doc, linegraph_all_actions_path, width=Inches(3)) if os.path.exists(linegraph_all_actions_path) else "Image not found",
+                "LineGraph_ExtendingRight_Actions_AI": InlineImage(doc, linegraph_extending_right_path, width=Inches(3)) if os.path.exists(linegraph_extending_right_path) else "Image not found",
+                "LineGraph_Sitting_Actions_AI": InlineImage(doc, linegraph_sitting_path, width=Inches(3)) if os.path.exists(linegraph_sitting_path) else "Image not found",
+                "LineGraph_Standing_Actions_AI": InlineImage(doc, linegraph_standing_path, width=Inches(3)) if os.path.exists(linegraph_standing_path) else "Image not found",
+            }
             
-            # Add images dynamically (check if they exist before adding)
-            "LineGraph_All_Actions_AI": InlineImage(doc, linegraph_all_actions_path, width=Inches(3)) if os.path.exists(linegraph_all_actions_path) else "Image not found",
-            "LineGraph_ExtendingRight_Actions_AI": InlineImage(doc, linegraph_extending_right_path, width=Inches(3)) if os.path.exists(linegraph_extending_right_path) else "Image not found",
-            "LineGraph_Sitting_Actions_AI": InlineImage(doc, linegraph_sitting_path, width=Inches(3)) if os.path.exists(linegraph_sitting_path) else "Image not found",
-            "LineGraph_Standing_Actions_AI": InlineImage(doc, linegraph_standing_path, width=Inches(3)) if os.path.exists(linegraph_standing_path) else "Image not found",
-        }
-        
-        # Render the template with the context
-        doc.render(context)
-        
-        output_path = os.path.join(output_dir, "Output_Test_Document.docx")
+            # Render and save the document
+            doc.render(context)
+            output_path = os.path.join(output_dir, "Output_Test_Document.docx")
+            doc.save(output_path)
 
-        # Save the generated document
-        doc.save(output_path)
-        print(f"Test document generated successfully at: {output_path}")
+            # Emit signal with file path when done
+            self.finished.emit(output_path)
+        
+        except Exception as e:
+            self.finished.emit(f"Error: {str(e)}")
 
 
 
