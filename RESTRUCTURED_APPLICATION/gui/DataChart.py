@@ -1,5 +1,5 @@
 from PySide6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis
-from PySide6.QtWidgets import QGraphicsScene, QSizePolicy, QVBoxLayout, QPushButton, QWidget,QFileDialog
+from PySide6.QtWidgets import QGraphicsScene, QSizePolicy, QVBoxLayout, QPushButton, QWidget,QFileDialog, QApplication
 from PySide6.QtGui import QPainter, QFont
 from PySide6.QtCore import Qt
 import pandas as pd
@@ -164,13 +164,14 @@ class ActionVisualization:
         output_dir = os.path.join(os.path.dirname(__file__), "..", "outputs")
         os.makedirs(output_dir, exist_ok=True)  # Ensure the directory exists
 
-        original_active_actions = self.active_actions.copy()  # Save current active actions
+        original_active_actions = self.active_actions.copy()  # Save the original state
 
         # Export separate charts for each action
         for action in self.action_labels:
-            self.active_actions = {action}  # Enable only the current action
-            self.populate_chart()
+            self.active_actions = {action}  # Enable only one action at a time
+            self.populate_chart()  # Re-populate the chart
             self.chart.update()
+            QApplication.processEvents()  # Force UI update before capturing
 
             # Save the individual action chart
             action_filename = f"{action.replace(' ', '_')}.jpg"
@@ -182,6 +183,7 @@ class ActionVisualization:
         self.active_actions = set(self.action_labels)  # Enable all actions
         self.populate_chart()
         self.chart.update()
+        QApplication.processEvents()  # Force UI update before capturing
 
         all_actions_path = os.path.join(output_dir, "All_Actions.jpg")
         pixmap = self.chart_view.grab()
@@ -191,5 +193,6 @@ class ActionVisualization:
         self.active_actions = original_active_actions
         self.populate_chart()
         self.chart.update()
+        QApplication.processEvents()  # Ensure UI returns to normal
 
         print(f"Charts saved in: {output_dir}")
