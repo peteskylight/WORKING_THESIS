@@ -10,11 +10,12 @@ from pathlib import Path
 class AnalyticsTab:
     def __init__(self, main_window, action_results_front, action_results_center, human_detect_results_front, human_detect_results_center):
         self.main_window = main_window
+        self.Action = self.main_window.Action  # Get the ComboBo
         script_dir = Path(__file__).parent  # Get script's folder
         image_path = script_dir.parent / "assets" / "SEAT PLAN.png"
         self.seat_plan_picture = cv2.imread(str(image_path))
         self.action_selector = None
-        
+    
         self.action_labels = ['All Actions', 'Extending Right Arm', 'Standing', 'Sitting']
         self.human_detect_results_front = human_detect_results_front
         self.human_detect_results_center = human_detect_results_center
@@ -22,79 +23,31 @@ class AnalyticsTab:
         self.action_results_center = action_results_center
         self.action_results_list_front = []  # Initialize as empty list
         self.action_results_list_center = []  # Initialize as empty list
+        if self.main_window.heatmap_frame is None:
+            print("[ERROR] No initial heatmap frame found! Attempting to generate one...")
+            self.main_window.heatmap_frame = self.generate_initial_heatmap()
 
+        # # Ensure `Action` combo box exists and connect signal
         
-
-
-    def toggle_analytics_tab(self):
-        # Toggle the visibility of the tab
-        if self.analytics_tab_index == -1 or not self.MainTab.isTabVisible(self.analytics_tab_index):
-            # Add the tab back
-            self.MainTab.addTab(self.analytics_tab, self.analytics_tab_title)
-            self.analytics_tab_index = self.MainTab.indexOf(self.analytics_tab)
-            self.MainTab.setCurrentIndex(self.analytics_tab_index)
-
-            self.action_selector = QComboBox()
-            self.action_selector.addItems(self.action_labels)  # Now this works
-            self.action_selector.currentIndexChanged.connect(self.update_selected_action)
-            self.action_selector.setFixedSize(120, 30)
-            
-            
-            self.selected_action = 'All Actions'  # Default selection
-        else:
-            # Remove the tab
-            self.MainTab.removeTab(self.analytics_tab_index)
-            self.analytics_tab_index = -1
-
-    def update_selected_action(self):
-        """Updates the selected action from the combo box and refreshes the heatmap."""
-        if self.action_selector:
-            self.selected_action = self.action_selector.currentText()
-            print(f"Selected Action: {self.selected_action}")  # Debugging print
-
-            # Get the latest heatmap frame
-            heatmap_frame = self.get_latest_heatmap_frame()  
-
-            if heatmap_frame is not None:
-                print("[DEBUG] Heatmap frame received, updating...")
-                
-                self.update_heatmap(
-                    heatmap_frame, 
-                    self.selected_action, 
-                    self.human_detect_results_front,  
-                    self.human_detect_results_center,
-                    self.action_results_list_front,  # Pass action results
-                    self.action_results_list_center
-                )
-            else:
-                print("[DEBUG] No heatmap frame available, generating a new one.")
-                new_heatmap = self.generate_full_heatmap()
-                self.update_heatmap(
-                new_heatmap,
-                self.selected_action,
-                self.human_detect_results_front,
-                self.human_detect_results_center,
-                self.action_results_list_front,
-                self.action_results_list_center
-            )
-
-
-    def update_heatmap(self, frame, selected_action, action_results_front, action_results_center, human_detect_results_front, human_detect_results_center):
-        self.human_detect_results_center = human_detect_results_center
-        self.human_detect_results_front = human_detect_results_front
+        self.Action.currentIndexChanged.connect(self.update_selected_action)
        
+
+
+
+    def update_heatmap(self, frame, selected_action=None, human_detect_results_front=None, human_detect_results_center=None, action_results_front=None, action_results_center=None):
         """Updates the heatmap based on the selected action and integrates action detection results."""
+        
+        # Avoid overwriting with None values
+        if human_detect_results_front:
+            self.human_detect_results_front = human_detect_results_front
+        if human_detect_results_center:
+            self.human_detect_results_center = human_detect_results_center
+        
         if frame is None:
             print("[DEBUG] No frame provided for heatmap update.")
             return
-
-        # Ensure action results are valid lists before proceeding
-        if action_results_front is None:
-            action_results_front = []
-
-        if action_results_center is None:
-            action_results_center = []
-
+        self.main_window.heatmap_frame = frame.copy()  # Store the heatmap frame
+        print("[DEBUG] Heatmap frame updated successfully!")
         # Filter data based on the selected action
         filtered_data = []
 
@@ -134,38 +87,35 @@ class AnalyticsTab:
 
 
 
-    def generate_heatmap_based_on_action(self, frame, selected_action):
-        """Generates a heatmap based on the selected action."""
-        
-        filtered_data = []
+    def generate_heatmap_based_on_action(self, selected_action):
+        if not selected_action:
+            print("[BUG] No action selected, displaying unfiltered heatmap.")
+            self.generate_heatmap([])  # Display an empty heatmap or default
+            return
 
-        # Extract track IDs matching the selected action
-        matching_track_ids = set()
+        print(f"[DEBUG] Generating heatmap for action: {selected_action}")
 
-        if selected_action != "All Actions":
-            for frame_results in self.action_results_list_front:
-                for track_id, action in frame_results.items():
-                    if action.lower() == selected_action.lower():
-                        matching_track_ids.add(track_id)
+        # Filter results based on the selected action
+        filtered_results_front = [res for res in self.action_results_list_front if res.get("action") == selected_action]
+        filtered_results_center = [res for res in self.action_results_list_center if res.get("action") == selected_action]
 
-            for frame_results in self.action_results_list_center:
-                for track_id, action in frame_results.items():
-                    if action.lower() == selected_action.lower():
-                        matching_track_ids.add(track_id)
+        # Debugging: Print extracted results
+        print(f"[DEBUG] Found {len(filtered_results_front)} results in front, {len(filtered_results_center)} in center.")
 
-        # Filter human detection results based on matching track IDs
-        for detection in self.human_detect_results_front + self.human_detect_results_center:
-            track_id = detection.get("track_id")
-            if selected_action == "All Actions" or track_id in matching_track_ids:
-                filtered_data.append(detection)
+        # Extract bounding boxes
+        filtered_bboxes = []
+        for action in filtered_results_front + filtered_results_center:
+            bbox = action.get("bbox")
+            if isinstance(bbox, (list, tuple)) and len(bbox) == 4:
+                filtered_bboxes.append(bbox)
 
-        print(f"[DEBUG] Filtered Data for action '{selected_action}':", filtered_data)
+        if not filtered_bboxes:
+            print(f"[BUG] No valid bounding boxes found for action: {selected_action}")
+            return
 
-        if not filtered_data:
-            print("[DEBUG] No data matched the selected action.")
-            return frame  # Return original frame if no matches
-
-        return self.create_heatmap_from_data(filtered_data)
+        # Generate heatmap with valid bounding boxes
+        self.generate_heatmap(filtered_bboxes)
+        print(f"[DEBUG] Heatmap successfully generated for action: {selected_action}")
 
 
 
@@ -327,19 +277,54 @@ class AnalyticsTab:
         
     def generate_heatmap(self, detection_results):
         """Generates a heatmap from detected human positions."""
-        heatmap = np.zeros((480, 640), dtype=np.float32)  # Create a blank heatmap
+        if not detection_results:  # Check if detections are empty
+            print("[DEBUG] No human detection results, returning blank heatmap.")
+            return np.zeros((480, 640, 3), dtype=np.uint8)  # Black heatmap
+
+        heatmap = np.zeros((480, 640), dtype=np.float32)
 
         for detection in detection_results:
             if isinstance(detection, dict) and "bbox" in detection:
                 x, y, _, _ = detection["bbox"]
                 if 0 <= x < 640 and 0 <= y < 480:
-                    heatmap[y, x] += 1  # Increase intensity at detected positions
+                    heatmap[y, x] += 1
 
-        # Normalize and apply colormap
         if heatmap.max() > 0:
             heatmap = np.uint8(255 * (heatmap / heatmap.max()))
-            heatmap_colored = cv2.applyColorMap(heatmap, cv2.COLORMAP_JET)  # Apply color mapping
+            heatmap_colored = cv2.applyColorMap(heatmap, cv2.COLORMAP_JET)
         else:
-            heatmap_colored = np.zeros((480, 640, 3), dtype=np.uint8)  # Black image if no detections
+            heatmap_colored = np.zeros((480, 640, 3), dtype=np.uint8)  
 
         return heatmap_colored
+    
+    def generate_initial_heatmap(self):
+        print("[DEBUG] Generating initial heatmap frame...")
+        return None
+    
+    def update_selected_action(self):
+        """Updates the selected action from the combo box and refreshes the heatmap."""
+        self.selected_action = self.Action.currentText()  # Get selected action
+        print(f"[DEBUG] Selected Action: {self.selected_action}")
+
+        # Ensure action detection results exist before using them
+        if self.action_results_list_front is None or self.action_results_list_center is None:
+            print("[DEBUG] Action results are not available yet!")
+            return  # Prevents passing None values
+
+        # Fetch the latest heatmap frame
+        heatmap_frame = self.get_latest_heatmap_frame()
+        if heatmap_frame is not None:
+            print("[DEBUG] Heatmap frame received, updating...")
+
+            # ✅ Call update_heatmap() directly (without self.AnalyticsTab)
+            self.update_heatmap(
+            heatmap_frame, 
+            self.selected_action,  
+            self.human_detect_results_front,  
+            self.human_detect_results_center,  
+            self.action_results_list_front,  
+            self.action_results_list_center  
+        )
+
+        else:
+            print("[DEBUG] No heatmap frame available.")

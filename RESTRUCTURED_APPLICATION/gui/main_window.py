@@ -62,21 +62,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.FrontVideo = FrontVideo(main_window=self)
         self.CreateDataset = CreateDataset(main_window=self)
         self.fps = 20
-
-
         
-       
-        
-        
-
-        # Ensure `Action` combo box exists and connect signal
-        if hasattr(self, "Action"):
-            self.Action.currentIndexChanged.connect(self.update_selected_action)
-        else:
-            print("[ERROR] Combo box 'Action' not found in UI.")
-
-        self.selected_action = "All Actions"  # Default selection
-
+        self.heatmap_frame = None 
+        self.latest_heatmap_frame = None
 
         self.drawing_utils = DrawingUtils()
         self.tools_utils = Tools()
@@ -133,6 +121,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         self.human_detect_results_front = None
         self.human_detect_results_center = None
+        self.human_detect_results_list_front = None 
+        self.human_detect_results_list_center = None
         self.human_pose_results_front = None
         self.human_pose_results_center = None
         
@@ -270,6 +260,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.timer.timeout.connect(self.update_all_with_timers) #=======Update all and just have conditional statements
         self.timer.start(10) 
         
+        self.AnalyticsTab = AnalyticsTab(
+                                        self, 
+                                        self.action_results_list_front, 
+                                        self.action_results_list_center, 
+                                        self.human_detect_results_list_front, 
+                                        self.human_detect_results_list_center
+                                    )
+        
     def update_all_with_timers(self):
         
         self.clock_counter += self.timer.interval()
@@ -285,30 +283,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.toggleLabelVisibility()
             self.toggle_record_label_counter = 0
 
-    def update_selected_action(self):
-        """Updates the selected action from the combo box and refreshes the heatmap."""
-        self.selected_action = self.Action.currentText()  # Get action from ComboBox
-        print(f"[DEBUG] Selected Action: {self.selected_action}")
-
-        # Ensure action detection results exist before using them
-        if self.action_results_list_front is None or self.action_results_list_center is None:
-            print("[DEBUG] Action results are not available yet!")
-            return  # Prevents passing None values
-
-        # Fetch the latest heatmap frame
-        heatmap_frame = self.get_latest_heatmap_frame()
-        if heatmap_frame is not None:
-            print("[DEBUG] Heatmap frame received, updating...")
-            self.AnalyticsTab.update_heatmap(
-                heatmap_frame, 
-                self.selected_action,
-                self.action_results_list_front,  # Pass action results
-                self.action_results_list_center
-            )
-        else:
-            print("[DEBUG] No heatmap frame available.")
-
-
+   
     
     def get_latest_heatmap_frame(self):
         """Retrieves the latest heatmap frame for analysis."""
@@ -385,17 +360,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.MainTab.addTab(self.analytics_tab, self.analytics_tab_title)
             self.analytics_tab_index = self.MainTab.indexOf(self.analytics_tab)
             self.MainTab.setCurrentIndex(self.analytics_tab_index)
-
-            # Create the action selector combo box
-            self.action_selector = QComboBox()
-            self.action_selector.addItems(self.action_labels)
-            self.action_selector.currentIndexChanged.connect(self.update_selected_action)
-            self.action_selector.setFixedSize(120, 30) 
-
-         
-            self.layout().addWidget(self.action_selector)
-
-            self.selected_action = 'All Actions'  # Default selection
         else:
             # Remove the tab
             self.MainTab.removeTab(self.analytics_tab_index)
@@ -453,8 +417,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def switch_to_analytics_tab(self):
         from gui import ActionVisualization
-        self.action_selector = QComboBox(self)
-        self.action_labels = ['All Actions', 'Extending Right Arm', 'Standing', 'Sitting']
     
         
         
@@ -465,7 +427,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.play_pause_button_analytics.setEnabled(True)    
             self.play_pause_button_analytics.setText("PLAY")
             self.activate_analytics(activation=True)
-            self.activate_Log           ##!!!!
+            self.activate_Log()           ##!!!!
             self.play_pause_button_video_preview.setText("PLAY PREVIEW")
             self.import_video_button_front.setEnabled(False)
             self.import_video_button_center.setEnabled(False)
@@ -601,8 +563,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 return  # Stop execution if detection data is missing
 
             self.AnalyticsTab.update_heatmap(
-                frame=heatmap_frame, 
-                selected_action=self.selected_action,
+                frame=heatmap_frame,
                 human_detect_results_front=self.human_detect_results_front,
                 human_detect_results_center=self.human_detect_results_center,
                 action_results_front=self.action_results_list_front,  # Ensure this exists
