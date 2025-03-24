@@ -390,6 +390,7 @@ class VideoPlayerThread(QThread):
 
             cv2.putText(black_frame, f"Student ID: {track_id}", (int(bbox[0]), int(bbox[1] - 20)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 1)
             cv2.rectangle(black_frame, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 2)
+            print(f"Track ID: {track_id}, BBox: {bbox}")
         
         return video_frame, black_frame
     
@@ -437,7 +438,7 @@ class VideoPlayerThread(QThread):
         
         return video_frame, black_frame
 
-    def preload_frames(self):
+    def preload_frames(self, frame=None):
         results = None
         keypoints = None
         center_video_black_frame = None
@@ -587,13 +588,18 @@ class SeekingVideoPlayerThread(QThread):
     frames_signal = Signal(object)
     #cv2.setNumThreads(1)  # Disable OpenCV multi-threading to reduce CPU usage
 
-    def __init__(self, center_video_path, front_video_path, main_window):
+    def __init__(self, center_video_path, front_video_path, main_window, selected_action, filtered_bboxes_front, filtered_bboxes_center):
         super().__init__()
 
         self.main_window = main_window
 
         self.center_video_path = center_video_path
         self.front_video_path = front_video_path
+
+
+        self.filtered_bboxes_front = filtered_bboxes_front
+        self.filtered_bboxes_center = filtered_bboxes_center
+        self.selected_action = selected_action
 
         #Separate captures for each video
 
@@ -777,45 +783,61 @@ class SeekingVideoPlayerThread(QThread):
     #     self.seat_plan_picture_previous_frame = self.heatmap_image
     #     return self.heatmap_image
 
-    def drawing_classroom_heatmap(self, frame, results, H_transform):
+    def drawing_classroom_heatmap(self, frame, results_front, results_center):
         """
         Uses homography to transform detected person locations onto the heatmap.
         Then, overlays a gradient heatmap circle at the transformed location.
 
-        - H_transform: Homography matrix for mapping detections to the heatmap.
+        - results_front: List of bounding boxes (x1, y1, x2, y2) from the front camera
+        - results_center: List of bounding boxes (x1, y1, x2, y2) from the center camera
+        - selected_action: The action currently selected for filtering (optional)
         """
 
-        # Use a cached heatmap to avoid recomputing everything
+        # Reset heatmap on first frame
         if self.isFirstFrame:
             self.heatmap_image = self.seat_plan_picture.copy()
             self.isFirstFrame = False
         else:
             self.heatmap_image = frame.copy()
 
-        #Resize in order to make good homography Transformation
-        #self.heatmap_image = self.extend_frame_width()
-
-        # Define the radius and precompute the gradient circle
         radius = 150
         gradient_circle = self.create_gradient_circle(radius, (0, 0, 255), 16)
 
-        for person_id, bbox in results.items():
-            x1, y1, x2, y2 = bbox  # Bounding box coordinates
+        # Process both front & center camera bounding boxes
+        for results, homography_matrix in [
+            (results_front, self.H_front),
+            (results_center, self.H_center)
+        ]:
+            print(f"[DEBUG] Bounding Boxes Front: {results_front}")
+            print(f"[DEBUG] Bounding Boxes Center: {results_center}")
+            if not results:
+                continue  # Skip if no bounding boxes exist
 
-            # Compute the center of the whole bounding box
-            center_point = np.array([[[(x1 + x2) / 2, (y1 + y2) / 2]]], dtype=np.float32)
+            if homography_matrix is None or homography_matrix.shape != (3, 3):
+                print("[ERROR] Invalid homography matrix")
+                continue  
 
-            # Apply homography transformation
-            transformed_point = cv2.perspectiveTransform(center_point, H_transform)
-            mapped_x, mapped_y = transformed_point[0][0]  # Extract transformed coordinates
+            for bbox in results:
+                if not isinstance(bbox, (list, tuple)) or len(bbox) != 4:
+                    print(f"[ERROR] Unexpected bbox format (Expected [x1, y1, x2, y2]): {bbox}")
+                    continue
 
-            # Overlay the heatmap gradient at the transformed location
-            self.overlay_image_alpha(self.heatmap_image, gradient_circle, (int(mapped_x - radius), int(mapped_y - radius)))
+                x1, y1, x2, y2 = map(int, bbox)  # Ensure correct bbox format
+                center_point = np.array([[[ (x1 + x2) / 2, (y1 + y2) / 2 ]]], dtype=np.float32)
+                transformed_point = cv2.perspectiveTransform(center_point, homography_matrix)
+                mapped_x, mapped_y = transformed_point[0][0]
 
-        # Cache the last processed heatmap frame
-        self.seat_plan_picture_previous_frame = self.heatmap_image
+                # Ensure valid heatmap coordinates
+                mapped_x = max(0, min(mapped_x, self.heatmap_image.shape[1] - 1))
+                mapped_y = max(0, min(mapped_y, self.heatmap_image.shape[0] - 1))
 
+                # Overlay the heatmap
+                self.overlay_image_alpha(self.heatmap_image, gradient_circle, (int(mapped_x - radius), int(mapped_y - radius)))
+
+        # Cache previous heatmap
+        self.seat_plan_picture_previous_frame = self.heatmap_image  
         return self.heatmap_image
+
 
 
         # Function to create a gradient circle
@@ -861,39 +883,53 @@ class SeekingVideoPlayerThread(QThread):
 
 
 
-    def extend_frame_width(self,frame: np.ndarray, extension: int = 300) -> np.ndarray:
+    def extend_frame_width(self, frame: np.ndarray, extension: int = 300) -> np.ndarray:
         """
         Extends the width of a given frame by adding black padding on both sides.
 
         Parameters:
         frame (np.ndarray): The input frame (1920x1080 expected).
-        extension (int): The number of pixels to extend on each side. Default is 500.
+        extension (int): The number of pixels to extend on each side. Default is 300.
 
         Returns:
         np.ndarray: The processed frame with extended width.
         """
-        height, width, channels = frame.shape
-        
+        if frame is None:
+            print("[ERROR] Frame is None! Cannot extend width.")
+            return None  # Return None or handle appropriately
+
+        if not isinstance(frame, np.ndarray):
+            print(f"[ERROR] Invalid frame type: {type(frame)}")
+            return None
+
+        try:
+            height, width, channels = frame.shape
+        except AttributeError:
+            print("[ERROR] Frame has no shape attribute!")
+            return None
+
         # Ensure the input frame is 1920x1080
         if width != 1920 or height != 1080:
-            raise ValueError("Expected a 1920x1080 frame.")
-        
+            raise ValueError(f"Expected a 1920x1080 frame, got {width}x{height}")
+
         # Create a new black frame with extended width
         new_width = width + (2 * extension)
         extended_frame = np.zeros((height, new_width, channels), dtype=np.uint8)
-        
+
         # Place the original frame in the center
         extended_frame[:, extension:extension + width] = frame
-        
+
         return extended_frame
 
-    def preload_frames(self):
+    def preload_frames(self, frame=None):
         results = None
         keypoints = None
         center_video_black_frame = None
         front_video_black_frame = None
         front_classroom_heatmap = None
         center_classroom_heatmap = None
+        results_front = self.filtered_bboxes_front
+        results_center = self.filtered_bboxes_center
 
         front_video_results = self.main_window.human_detect_results_front
         front_video_keypoints = self.main_window.human_pose_results_front
@@ -978,17 +1014,13 @@ class SeekingVideoPlayerThread(QThread):
                                                                                   actions=front_video_actions[int(self.current_frame_index)])
                     heatmap_frame_threshold = 30
                     if self.current_frame_index % heatmap_frame_threshold == 0:
+                        # Call heatmap function with properly filtered results
                         front_classroom_heatmap = self.drawing_classroom_heatmap(
                             frame=self.seat_plan_picture_previous_frame,
-                            results=front_video_results[int(self.current_frame_index)],
-                            H_transform=self.H_front  # Apply front video homography
-                        )
+                            results_front=results_front,  
+                            results_center=results_center,
+                         )
 
-                        center_classroom_heatmap = self.drawing_classroom_heatmap(
-                            frame=front_classroom_heatmap,
-                            results=center_video_results[int(self.current_frame_index)],
-                            H_transform=self.H_center  # Apply center video homography
-                        )
 
                         # Store the heatmap in the queue
                         self.classroom_heatmap_frames_queue.put(center_classroom_heatmap)

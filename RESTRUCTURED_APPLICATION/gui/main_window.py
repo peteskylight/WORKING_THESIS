@@ -62,13 +62,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.FrontVideo = FrontVideo(main_window=self)
         self.CreateDataset = CreateDataset(main_window=self)
         self.fps = 20
-        
-        self.heatmap_frame = None 
         self.latest_heatmap_frame = None
+        self.heatmap_frame = None  # ✅ Define it before it's used
+        self.AnalyticsTab = None
 
         self.drawing_utils = DrawingUtils()
         self.tools_utils = Tools()
         self.video_utils = VideoUtils()
+        
         
         self.videoWidth = None
         self.videoHeight = None
@@ -143,8 +144,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.video_player_thread_preview_2 = None
         self.video_player_thread_logs = None               ## double check
 
-
-
+        self.center_video_path = None
+        self.front_video_path = None
         
         self.import_video_button_center.clicked.connect(self.CenterVideo.browse_video)
 
@@ -260,13 +261,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.timer.timeout.connect(self.update_all_with_timers) #=======Update all and just have conditional statements
         self.timer.start(10) 
         
-        self.AnalyticsTab = AnalyticsTab(
-                                        self, 
-                                        self.action_results_list_front, 
-                                        self.action_results_list_center, 
-                                        self.human_detect_results_list_front, 
-                                        self.human_detect_results_list_center
-                                    )
         
     def update_all_with_timers(self):
         
@@ -283,14 +277,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.toggleLabelVisibility()
             self.toggle_record_label_counter = 0
 
-   
-    
-    def get_latest_heatmap_frame(self):
-        """Retrieves the latest heatmap frame for analysis."""
-        if hasattr(self, "latest_heatmap_frame"):
-            return self.latest_heatmap_frame
-        print("[DEBUG] No stored heatmap frame found.")
-        return None
         
     
     def center(self):
@@ -451,8 +437,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                             action_results_front=self.action_results_list_front,
                                             action_results_center=self.action_results_list_center,
                                             human_detect_results_front = self.human_detect_results_front,
-                                            human_detect_results_center = self.human_detect_results_center 
-                                            )    
+                                            human_detect_results_center = self.human_detect_results_center,
+                                            center_video_path=self.center_video_path,
+                                            front_video_path=self.front_video_path,
+                                            ) 
+            self.video_utils = VideoPlayerThread(
+            main_window=self,
+            center_video_path=self.center_video_path,
+            front_video_path=self.front_video_path
+                                    ) 
             
             self.LogsVis = LogsTab(main_window=self, 
                                 action_results_list_front=self.action_results_list_front or [], 
@@ -501,6 +494,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.import_video_button_center.setEnabled(True)
             self.video_player_thread_preview.pause(not self.video_player_thread_preview.paused)
 
+       
+
 
     def toggle_play_pause_analytics(self):
         center_video_directory = self.videoDirectory_center.text()
@@ -521,7 +516,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.video_player_thread_analytics is None:
             self.video_player_thread_analytics = SeekingVideoPlayerThread(center_video_path=center_video_directory,
                                                                            front_video_path=front_video_directory,
-                                                                           main_window=self
+                                                                           main_window=self,
+                                                                           selected_action = None, 
+                                                                           filtered_bboxes_front = None, 
+                                                                           filtered_bboxes_center= None
+                                                                            
                                                                             )
         # if self.video_player_thread_analytics is not None or self.video_player_thread_analytics.isRunning():
             self.play_pause_button_analytics.setText("PLAY")
@@ -535,6 +534,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             self.play_pause_button_analytics.setText("PAUSE")
             self.video_player_thread_analytics.pause(not self.video_player_thread_analytics.paused) 
+
+    def extract_bounding_boxes(self, human_detect_results):
+        """Extracts bounding boxes from human detection results."""
+        
+        if not human_detect_results or not isinstance(human_detect_results, list):
+
+            return {}
+
+        bbox_results = {}  # Store bounding boxes by person ID
+
+        for idx, person_data in enumerate(human_detect_results):
+
+            if isinstance(person_data, dict) and "track_id" in person_data and "bbox" in person_data:
+                track_id = person_data["track_id"]  # Unique identifier
+                bbox_results[track_id] = {"bbox": person_data["bbox"]}
+            
+
+
+        return bbox_results
     
     def update_frame_for_analytics(self, frame_list):
         if frame_list is None or len(frame_list) < 3:
@@ -563,12 +581,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 return  # Stop execution if detection data is missing
 
             self.AnalyticsTab.update_heatmap(
-                frame=heatmap_frame,
-                human_detect_results_front=self.human_detect_results_front,
-                human_detect_results_center=self.human_detect_results_center,
-                action_results_front=self.action_results_list_front,  # Ensure this exists
-                action_results_center=self.action_results_list_center
-            )
+            frame=heatmap_frame,
+            selected_action=self.Action.currentText(),  # Pass selected action
+            human_detect_results_front=self.human_detect_results_front,
+            human_detect_results_center=self.human_detect_results_center,  # Merge human detection results
+            action_results_list_center=self.action_results_list_center, 
+            action_results_list_front=self.action_results_list_front  
+        )
 
     def update_frame_for_logs(self, frame_list):
          if frame_list is None or len(frame_list) < 3:
@@ -604,7 +623,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # If the log thread is None, initialize it and start playback
         if self.video_player_thread_logs is None:
-            self.video_player_thread_logs = SeekingVideoPlayerThread(
+            self.video_player_thread_logs = VideoPlayerThread(
                 center_video_path=center_video_directory,
                 front_video_path=front_video_directory,
                 main_window=self

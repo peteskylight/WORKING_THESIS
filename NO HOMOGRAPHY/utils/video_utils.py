@@ -691,23 +691,32 @@ class SeekingVideoPlayerThread(QThread):
         
         return video_frame, black_frame
     
-    def drawing_classroom_heatmap(self, frame, results):
-        # Use a cached heatmap to avoid recomputing everything
-        if self.isFirstFrame:
-            self.heatmap_image = self.seat_plan_picture.copy()
-            self.isFirstFrame = False
-        else:
-            self.heatmap_image = frame.copy()
+    def drawing_classroom_heatmap(self, frame, results_front, results_center, selected_action, merged_results):
+        """Draws a heatmap based on the selected action and detection results"""
+        
+        # Reset heatmap for a fresh update
+        self.heatmap_image = frame.copy()
 
-        # Process people in parallel
+        # Customize heatmap based on action type (Example: Different colors per action)
+        action_color = {
+            "walking": (0, 255, 0),  # Green
+            "sitting": (0, 0, 255),  # Red
+            "standing": (255, 255, 0)  # Yellow
+        }.get(selected_action, (0, 0, 255))  # Default: Red
+
         radius = 150
-        gradient_circle = self.create_gradient_circle(radius, (0, 0, 255), 16)  # Precompute once
+        gradient_circle = self.create_gradient_circle(radius, action_color, 16)
 
-        for person_id, bbox in results.items():
+        # Use `merged_results` if provided; otherwise, merge front and center results
+        if merged_results is not None:
+            results_to_process = merged_results
+        else:
+            results_to_process = {**results_front, **results_center}  # Merge dictionaries
+
+        for person_id, bbox in results_to_process.items():
             center = (int((bbox[0] + bbox[2]) / 2), int((bbox[1] + bbox[3]) / 2))
             self.overlay_image_alpha(self.heatmap_image, gradient_circle, (center[0] - radius, center[1] - radius))
 
-        self.seat_plan_picture_previous_frame = self.heatmap_image
         return self.heatmap_image
 
 

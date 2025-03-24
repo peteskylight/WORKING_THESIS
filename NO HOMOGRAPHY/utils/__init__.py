@@ -3,3 +3,4 @@ from utils.drawing_utils import DrawingUtils, ThumbnailRangeSlider
 from utils.tools import Tools
 from utils.camera import CameraFeed
 from utils.cvfpscalc import CvFpsCalc
+from gui_commands import AnalyticsTab

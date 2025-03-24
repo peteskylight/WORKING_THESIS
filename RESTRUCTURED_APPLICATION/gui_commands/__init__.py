@@ -2,3 +2,4 @@ from gui_commands.center_video import CenterVideo
 from gui_commands.create_dataset import CreateDataset
 from gui_commands.front_video import FrontVideo
 from gui_commands.analytics_tab import AnalyticsTab
+from utils.video_utils import SeekingVideoPlayerThread
