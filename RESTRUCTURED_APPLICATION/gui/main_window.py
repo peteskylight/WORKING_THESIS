@@ -519,7 +519,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                                                            main_window=self,
                                                                            selected_action = None, 
                                                                            filtered_bboxes_front = None, 
-                                                                           filtered_bboxes_center= None
+                                                                           filtered_bboxes_center= None,
                                                                             
                                                                             )
         # if self.video_player_thread_analytics is not None or self.video_player_thread_analytics.isRunning():
@@ -574,20 +574,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 starting_y=self.front_starting_y,
                 whole_classroom_height=self.whole_classroom_height
             )
+            self.AnalyticsTab.update_heatmap(
+            frame=heatmap_frame,
+        )
 
 
             if self.human_detect_results_front is None or self.human_detect_results_center is None:
                 print("[ERROR] Detection data is missing! Heatmap cannot be updated.")
                 return  # Stop execution if detection data is missing
 
-            self.AnalyticsTab.update_heatmap(
-            frame=heatmap_frame,
-            selected_action=self.Action.currentText(),  # Pass selected action
-            human_detect_results_front=self.human_detect_results_front,
-            human_detect_results_center=self.human_detect_results_center,  # Merge human detection results
-            action_results_list_center=self.action_results_list_center, 
-            action_results_list_front=self.action_results_list_front  
-        )
 
     def update_frame_for_logs(self, frame_list):
          if frame_list is None or len(frame_list) < 3:

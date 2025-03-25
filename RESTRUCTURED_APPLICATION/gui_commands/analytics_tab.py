@@ -14,6 +14,7 @@ class AnalyticsTab:
         selected_action = None
         filtered_bboxes_front = {}
         filtered_bboxes_center = {}
+        frame = {}
         self.video_utils = SeekingVideoPlayerThread(center_video_path, front_video_path, main_window, selected_action, filtered_bboxes_front, filtered_bboxes_center)
         self.merged_results = {}
         self.action_results_list_front = action_results_front
@@ -68,42 +69,20 @@ class AnalyticsTab:
         self.video_utils.filtered_bboxes_center = filtered_bboxes_center
         self.video_utils.selected_action = selected_action
 
-        # Call preload_frames without passing the bbox data explicitly
-        self.video_utils.preload_frames(frame=self.heatmap_image.copy())
 
+        frame = self.heatmap_image.copy()
+        self.video_utils.preload_frames()
+        return frame
 
+    def update_heatmap(self, frame): 
+        """Updates the heatmap display without filtering."""
 
-    def update_heatmap(self, frame, selected_action, action_results_list_front, action_results_list_center, human_detect_results_front, human_detect_results_center):
-        """Updates the heatmap based on the selected action."""
-        
-        if frame is None:
-            print("[DEBUG] No frame provided for heatmap update.")
+        if frame is None or frame.size == 0:
+            print("[ERROR] Invalid frame received! Skipping heatmap update.")
             return
 
-        self.main_window.heaWtmap_frame = frame.copy()
+        self.main_window.heatmap_frame = frame.copy()
         print("[DEBUG] Heatmap frame updated successfully!")
-
-        # **Step 1: Check if the selected action exists in the results**
-        found = any(
-            selected_action in actions for actions in (action_results_list_front + action_results_list_center)
-        )
-
-        if not found:
-            print(f"[DEBUG] No data found for action: {selected_action}, displaying unfiltered heatmap.")
-
-        # **Step 2: Filter bounding boxes if a specific action is selected**
-        if selected_action and selected_action != "All Actions":
-            filtered_bboxes_front, filtered_bboxes_center = self.get_filtered_bboxes(
-                selected_action,
-                action_results_list_front,
-                action_results_list_center,
-            )
-
-            if not filtered_bboxes_front and not filtered_bboxes_center:
-                print(f"[DEBUG] No data found for action: {selected_action}, displaying unfiltered heatmap.")
-
-            # Generate heatmap using filtered bounding boxes
-            frame = self.generate_heatmap(filtered_bboxes_front + filtered_bboxes_center)
 
         # **Step 3: Convert frame to QImage for QLabel display**
         height, width = frame.shape[:2]
@@ -139,9 +118,6 @@ class AnalyticsTab:
                         if selected_action in [a.lower() for a in actions.values()]]
 
 
-        print(f"[DEBUG] Indexes of '{selected_action}' in front: {indexes_front}")
-        print(f"[DEBUG] Indexes of '{selected_action}' in center: {indexes_center}")
-
         # **Step 2: Extract bounding boxes using the found indexes**
         for i in indexes_front:
             if 0 <= i < len(human_detect_results_front):
@@ -159,65 +135,10 @@ class AnalyticsTab:
                         x1, y1, x2, y2 = bbox
                         filtered_bboxes_center.append((x1, y1, x2 - x1, y2 - y1))
 
-        print(f"[DEBUG] Filtered bounding boxes (Front): {filtered_bboxes_front}")
-        print(f"[DEBUG] Filtered bounding boxes (Center): {filtered_bboxes_center}")
 
         return filtered_bboxes_front, filtered_bboxes_center
 
 
-
-
-
-    def generate_heatmap(self, bbox_list):
-        """Generates a heatmap based on bounding boxes."""
-        if not bbox_list:
-            return self.seat_plan_picture.copy()  # Return default if no bounding boxes
-        
-        heatmap = self.seat_plan_picture.copy()
-        for bbox in bbox_list:
-            center = (int((bbox[0] + bbox[2]) / 2), int((bbox[1] + bbox[3]) / 2))
-            radius = 150  # Heatmap blur size
-            gradient_circle = self.create_gradient_circle(radius, (0, 0, 255), 16)
-            self.overlay_image_alpha(heatmap, gradient_circle, (center[0] - radius, center[1] - radius))
-
-        return heatmap
-    
-    def create_gradient_circle(self, radius, color, max_alpha):
-            Y, X = np.ogrid[:2*radius, :2*radius]
-            center = radius
-            dist_from_center = np.sqrt((X - center) ** 2 + (Y - center) ** 2)
-
-            alpha = np.clip(max_alpha - (max_alpha * (dist_from_center / radius)), 0, max_alpha).astype(np.uint8)
-
-            # Vectorized assignment
-            gradient_circle = np.zeros((2*radius, 2*radius, 4), dtype=np.uint8)
-            gradient_circle[..., :3] = color  # Set RGB channels
-            gradient_circle[..., 3] = alpha  # Set alpha channel
-
-            return gradient_circle
-    
-    def overlay_image_alpha(self, img, img_overlay, pos):
-        """
-        Blends an overlay image (e.g., heatmap) onto another image with transparency.
-        """
-        x, y = pos
-        h, w = img_overlay.shape[:2]
-
-        # Compute overlap regions
-        y1, y2 = max(0, y), min(img.shape[0], y + h)
-        x1, x2 = max(0, x), min(img.shape[1], x + w)
-
-        y1o, y2o = max(0, -y), min(h, img.shape[0] - y)
-        x1o, x2o = max(0, -x), min(w, img.shape[1] - x)
-
-        if y1 >= y2 or x1 >= x2 or y1o >= y2o or x1o >= x2o:
-            return
-
-        # Alpha blending
-        img_overlay_crop = img_overlay[y1o:y2o, x1o:x2o]
-        alpha = img_overlay_crop[..., 3:4] / 255.0  # Keep alpha as (h, w, 1) for broadcasting
-        img[y1:y2, x1:x2, :3] = (alpha * img_overlay_crop[..., :3] +
-                                (1 - alpha) * img[y1:y2, x1:x2, :3]).astype(np.uint8)
 
 
     def generate_full_heatmap(self):

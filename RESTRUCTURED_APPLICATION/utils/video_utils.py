@@ -438,7 +438,7 @@ class VideoPlayerThread(QThread):
         
         return video_frame, black_frame
 
-    def preload_frames(self, frame=None):
+    def preload_frames(self):
         results = None
         keypoints = None
         center_video_black_frame = None
@@ -921,7 +921,7 @@ class SeekingVideoPlayerThread(QThread):
 
         return extended_frame
 
-    def preload_frames(self, frame=None):
+    def preload_frames(self):
         results = None
         keypoints = None
         center_video_black_frame = None
