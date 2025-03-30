@@ -115,7 +115,7 @@ class CameraFeed:
                     self.folder_count += 1
                     os.mkdir(os.path.join(destination_directory, str(self.folder_count)))
                     self.countdown = int(self.main_window.interval_slider.value())  # Set countdown
-                    self.countdown_timer.start(1000)  # Restart the countdown timer
+                    self.countdown_timer.start(500)  # Restart the countdown timer
 
             if self.countdown == 0:
                 self.main_window.status_label.setText("RECORDING")
