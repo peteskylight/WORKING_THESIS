@@ -603,8 +603,7 @@ class SeekingVideoPlayerThread(QThread):
 
         #Separate captures for each video
 
-        self.center_cap = cv2.VideoCapture(self.center_video_path)
-        self.front_cap = cv2.VideoCapture(self.front_video_path)
+        self.center_cap = cv2.VideoCapture(self.center_video_path) 
 
         #For all
         self.running = True
@@ -645,9 +644,7 @@ class SeekingVideoPlayerThread(QThread):
             (11, 13), (12, 14), (13, 15), (14, 16)
         ]
 
-
         # Define 4 corresponding points from the center video frame to the heatmap
-
 
         self.src_pts_center = np.array([
                             [655,121],  # Top-left
@@ -706,10 +703,7 @@ class SeekingVideoPlayerThread(QThread):
     def drawing_bounding_box(self, video_frame, results):
 
         black_frame = np.zeros((1080, 1920, 3), dtype=np.uint8)
-        item_count = 0
 
-        
-        
         for track_id, bbox in results.items():
             x1, y1, x2, y2 = bbox
             cv2.putText(video_frame, f"Student ID: {track_id}", (int(bbox[0]), int(bbox[1] - 20)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 1)
@@ -764,25 +758,6 @@ class SeekingVideoPlayerThread(QThread):
         
         return video_frame, black_frame
     
-    # def drawing_classroom_heatmap(self, frame, results):
-    #     # Use a cached heatmap to avoid recomputing everything
-    #     if self.isFirstFrame:
-    #         self.heatmap_image = self.seat_plan_picture.copy()
-    #         self.isFirstFrame = False
-    #     else:
-    #         self.heatmap_image = frame.copy()
-
-    #     # Process people in parallel
-    #     radius = 150
-    #     gradient_circle = self.create_gradient_circle(radius, (0, 0, 255), 16)  # Precompute once
-
-    #     for person_id, bbox in results.items():
-    #         center = (int((bbox[0] + bbox[2]) / 2), int((bbox[1] + bbox[3]) / 2))
-    #         self.overlay_image_alpha(self.heatmap_image, gradient_circle, (center[0] - radius, center[1] - radius))
-
-    #     self.seat_plan_picture_previous_frame = self.heatmap_image
-    #     return self.heatmap_image
-
     def drawing_classroom_heatmap(self, frame, results_front, results_center):
         """
         Uses homography to transform detected person locations onto the heatmap.
@@ -839,7 +814,6 @@ class SeekingVideoPlayerThread(QThread):
         return self.heatmap_image
 
 
-
         # Function to create a gradient circle
     def create_gradient_circle(self, radius, color, max_alpha):
         Y, X = np.ogrid[:2*radius, :2*radius]
@@ -854,8 +828,6 @@ class SeekingVideoPlayerThread(QThread):
         gradient_circle[..., 3] = alpha  # Set alpha channel
 
         return gradient_circle
-
-
 
     # Function to overlay image with alpha
     def overlay_image_alpha(self, img, img_overlay, pos):
@@ -880,7 +852,6 @@ class SeekingVideoPlayerThread(QThread):
         alpha = img_overlay_crop[..., 3:4] / 255.0  # Keep alpha as (h, w, 1) for broadcasting
         img[y1:y2, x1:x2, :3] = (alpha * img_overlay_crop[..., :3] +
                                 (1 - alpha) * img[y1:y2, x1:x2, :3]).astype(np.uint8)
-
 
 
     def extend_frame_width(self, frame: np.ndarray, extension: int = 300) -> np.ndarray:

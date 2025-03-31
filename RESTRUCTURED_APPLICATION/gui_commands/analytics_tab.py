@@ -117,7 +117,6 @@ class AnalyticsTab:
         indexes_center = [i for i, actions in enumerate(action_results_list_center) 
                         if selected_action in [a.lower() for a in actions.values()]]
 
-
         # **Step 2: Extract bounding boxes using the found indexes**
         for i in indexes_front:
             if 0 <= i < len(human_detect_results_front):
