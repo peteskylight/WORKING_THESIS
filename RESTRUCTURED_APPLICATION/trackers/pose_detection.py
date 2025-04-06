@@ -16,10 +16,10 @@ class PoseDetection:
         self.human_detection_conf = humanDetectConf
         self.human_pose_model = YOLO(humanPoseModel)
         # if USE_TENSORRT:
-        # self.human_detection_model.to('cuda')  # Move model to GPU
-        # self.human_detection_model.half()
-        # self.human_pose_model.to('cuda')  # Move model to GPU
-        # self.human_pose_model.half()
+        self.human_detection_model.to('cuda')  # Move model to GPU
+        self.human_detection_model.half()
+        self.human_pose_model.to('cuda')  # Move model to GPU
+        self.human_pose_model.half()
         self.human_pose_conf = humanPoseConf
     
         self.drawing_utils = DrawingUtils()
@@ -133,7 +133,8 @@ class HumanDetectionThread(QThread):
                                                   persist=True,
                                                   classes=0,
                                                   iou=0.3,
-                                                  agnostic_nms=True)[0]
+                                                  agnostic_nms=True,
+                                                  verbose=False)[0]
                 id_name_dict = results.names
                 student_dict = {}
             else:
@@ -142,7 +143,8 @@ class HumanDetectionThread(QThread):
                                                   persist=True,
                                                   classes=0,
                                                   iou=0.3,
-                                                  agnostic_nms=True)[0]
+                                                  agnostic_nms=True,
+                                                  verbose=False)[0]
                 id_name_dict = results.names
                 student_dict = {}
 

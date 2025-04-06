@@ -46,7 +46,7 @@ class CameraFeed:
         self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 0) 
 
         self.timer.start(10)  # Keep the camera feed timer at 10 milliseconds
-        self.countdown_timer.start(1000)  # Set the countdown timer to 1000 milliseconds (1 second)
+        self.countdown_timer.start(200)  # Set the countdown timer to 1000 milliseconds (1 second)
 
     def update_frame(self): #GET THE FRAME HERE
         ret, output_frame = self.cap.read()
@@ -117,7 +117,7 @@ class CameraFeed:
                     self.folder_count += 1
                     os.mkdir(os.path.join(destination_directory, str(self.folder_count)))
                     self.countdown = int(self.main_window.interval_slider.value())  # Set countdown
-                    self.countdown_timer.start(1000)  # Restart the countdown timer
+                    self.countdown_timer.start(200)  # Restart the countdown timer
 
             if self.countdown == 0:
                 self.main_window.status_label.setText("RECORDING")
