@@ -1,6 +1,7 @@
 *.pt
 *.avi
 *.mp4
+*.pyc
 THESISVENV/
 THESISVIRTUALVENV/
 
