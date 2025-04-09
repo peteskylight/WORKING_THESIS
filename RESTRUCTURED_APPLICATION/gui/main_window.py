@@ -257,25 +257,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         self.day_label.setText(f"{current_date}")
         
-        self.timer = QTimer(self) #TIMER FOR ALL!!!
-        self.timer.timeout.connect(self.update_all_with_timers) #=======Update all and just have conditional statements
-        self.timer.start(10) 
+        # self.timer = QTimer(self) #TIMER FOR ALL!!!
+        # self.timer.timeout.connect(self.update_all_with_timers) #=======Update all and just have conditional statements
+        # self.timer.start(10) 
         
         
-    def update_all_with_timers(self):
+    # def update_all_with_timers(self):
         
-        self.clock_counter += self.timer.interval()
-        self.toggle_record_label_counter += self.timer.interval()
+    #     self.clock_counter += self.timer.interval()
+    #     self.toggle_record_label_counter += self.timer.interval()
                 
 
-        if self.clock_counter >= self.clock_interval:
-            self.CreateDataset.update_usage()
-            self.CreateDataset.update_time()
-            self.clock_counter = 0
+    #     if self.clock_counter >= self.clock_interval:
+    #         self.CreateDataset.update_usage()
+    #         self.CreateDataset.update_time()
+    #         self.clock_counter = 0
 
-        if self.toggle_record_label_counter >= self.toggle_record_label_interval:
-            self.toggleLabelVisibility()
-            self.toggle_record_label_counter = 0
+    #     if self.toggle_record_label_counter >= self.toggle_record_label_interval:
+    #         self.toggleLabelVisibility()
+    #         self.toggle_record_label_counter = 0
 
         
     
@@ -314,12 +314,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     color: rgb(0, 255, 0);
                 }
             """)
-        self.blink_timer.stop()
+        # self.blink_timer.stop()
         self.status_label.setText("NOT RECORDING")
         self.status_label.setVisible(True)
         
-    def toggleLabelVisibility(self):
-        self.status_label.setVisible(not self.status_label.isVisible())
+    # def toggleLabelVisibility(self):
+    #     self.status_label.setVisible(not self.status_label.isVisible())
         
     def updateIntervalLabel(self, value):
         self.interval_label.setText(str(value))   ##!
@@ -447,13 +447,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             front_video_path=self.front_video_path
                                     ) 
             
-            self.LogsVis = LogsTab(main_window=self, 
-                                action_results_list_front=self.action_results_list_front or [], 
-                                action_results_list_center=self.action_results_list_center or [],
-                                min_time = min_value,
-                                max_time = max_value 
-                              )
-            self.LogsVis.row_selected.connect(self.update_video_position)
+            # self.LogsVis = LogsTab(main_window=self, 
+            #                     action_results_list_front=self.action_results_list_front or [], 
+            #                     action_results_list_center=self.action_results_list_center or [],
+            #                     min_time = min_value,
+            #                     max_time = max_value 
+            #                   )
+            # self.LogsVis.row_selected.connect(self.update_video_position)
 
 
         else:
@@ -593,17 +593,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             center_frame = frame_list[0]
             front_frame = frame_list[1]
 
-            self.LogsVis.update_frame_for_center_video_label(
-                frame=center_frame,
-                center_starting_y=self.center_starting_y,                              ### double check
-                front_starting_y=self.center_video_height
-            )
+            # self.LogsVis.update_frame_for_center_video_label(
+            #     frame=center_frame,
+            #     center_starting_y=self.center_starting_y,                              ### double check
+            #     front_starting_y=self.center_video_height
+            # )
 
-            self.LogsVis.update_frame_for_front_video_label(
-                frame=front_frame,
-                starting_y=self.front_starting_y,
-                whole_classroom_height=self.whole_classroom_height
-            ) 
+            # self.LogsVis.update_frame_for_front_video_label(
+            #     frame=front_frame,
+            #     starting_y=self.front_starting_y,
+            #     whole_classroom_height=self.whole_classroom_height
+            # ) 
 
     def toggle_play_pause_logs(self):
         center_video_directory = self.videoDirectory_center.text()
@@ -646,7 +646,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def toggle_play_pause_analytics_2(self):
         """ Toggles play/pause for the logs in the Logs tab. """    ## i think this is useless?
-        self.LogsVis.toggle_play_pause_logs()
+        # self.LogsVis.toggle_play_pause_logs()
     
 
     '''

@@ -13,7 +13,7 @@ class CreateDataset:
     def __init__(self, main_window):
         self.main_window = main_window
         self.camera_feed_instance = CameraFeed(self.main_window.camera_feed, self.main_window.white_frame_feed, self.main_window)
-        self.fps_limit = 18  # Set FPS limit
+        self.fps_limit = 30  # Set FPS limit
         self.frame_interval = 1.0 / self.fps_limit  # Time per frame
 
     def start_camera(self):
