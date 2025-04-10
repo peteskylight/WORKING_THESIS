@@ -27,7 +27,7 @@ class CameraFeed:
         self.frame_count = 0
         self.alreadyChecked = False
         self.countdown = 0
-        self.frame_interval_counter = 0  # New counter to manage countdown timing
+        self.frame_interval_counter = 0
         
         self.label = label
         self.white_frame_label = white_frame_label
@@ -49,7 +49,6 @@ class CameraFeed:
         returned_frame = output_frame
         returned_frame, normalized_keypoints, bbox = self.pose_detection.getHumanPoseKeypoints(frame=output_frame)
 
-        # Visualizations
         if self.main_window.showCameraLandmarksChkBox.isChecked():
             self.drawing_utils.drawPoseLandmarks(frame=returned_frame, keypoints=normalized_keypoints)
         
@@ -71,33 +70,43 @@ class CameraFeed:
         if self.main_window.show_skeleton_white_frame.isChecked():
             self.drawing_utils.draw_keypoints_and_skeleton(frame=white_frame, keypoints=normalized_keypoints)
 
-        # Countdown check every ~200ms (i.e., every 6 frames at ~30fps)
         self.frame_interval_counter += 1
         if self.frame_interval_counter >= 6:
             self.frame_interval_counter = 0
             if self.countdown > 0:
                 self.countdown -= 1
 
-        # Logging
         if self.main_window.recording_button.text() == "STOP\nRECORDING":
             if self.main_window.status_label.text() == "RECORDING":
                 chosen_directory = self.main_window.directoryLineEdit.text()
                 chosen_action = self.main_window.action_comboBox.currentText()
                 destination_directory = os.path.join(chosen_directory, chosen_action)
 
-                self.folder_count = self.tools_utils.count_folders(directory=destination_directory)
+                if not self.alreadyChecked:
+                    # Get the number of existing folders for this action to set folder_count
+                    if os.path.exists(destination_directory):
+                        existing_folders = [f for f in os.listdir(destination_directory) if os.path.isdir(os.path.join(destination_directory, f)) and f.isdigit()]
+                        if existing_folders:
+                            existing_folders = sorted(map(int, existing_folders))
+                            self.folder_count = existing_folders[-1] + 1
+                        else:
+                            self.folder_count = 0
+                    else:
+                        os.makedirs(destination_directory)
+                        self.folder_count = 0
+                    self.alreadyChecked = True
 
-                if not os.path.isdir(os.path.join(destination_directory, str(self.folder_count))):
-                    os.mkdir(os.path.join(destination_directory, str(self.folder_count)))
-                
+                current_folder_path = os.path.join(destination_directory, str(self.folder_count))
+                if not os.path.exists(current_folder_path):
+                    os.makedirs(current_folder_path)
+
                 self.record_and_save_keypoints(normalized_keypoints=normalized_keypoints, frame_num=self.frame_count)
                 self.frame_count += 1
 
-                if self.frame_count % int(self.main_window.sequence_slider.value()) == 0:
+                if self.frame_count >= 30:
                     self.main_window.status_label.setText("NOT RECORDING")
                     self.frame_count = 0
                     self.folder_count += 1
-                    os.mkdir(os.path.join(destination_directory, str(self.folder_count)))
                     self.countdown = int(self.main_window.interval_slider.value())
 
             if self.countdown == 0:
@@ -105,8 +114,8 @@ class CameraFeed:
 
         elif self.main_window.recording_button.text() == "START\nRECORDING":
             self.frame_count = 0
+            self.alreadyChecked = False  # Reset on fresh start
 
-        # Display on QLabel
         if ret:
             if self.countdown > 0:
                 countdown_text = f"{self.countdown}"
@@ -148,12 +157,6 @@ class CameraFeed:
         chosen_directory = self.main_window.directoryLineEdit.text()
         chosen_action = self.main_window.action_comboBox.currentText()
         destination_directory = os.path.join(chosen_directory, chosen_action)
-        no_of_sequences = self.main_window.sequence_slider.value()
-
-        if not os.path.isdir(destination_directory):
-            QMessageBox.critical(self.main_window, "Error", "The specified directory does not exist. Check the chosen directory.")
-            self.main_window.toggle_button()
-            return
 
         final_destination_directory = os.path.join(destination_directory, str(self.folder_count))
         npy_path = os.path.join(final_destination_directory, str(frame_num))
